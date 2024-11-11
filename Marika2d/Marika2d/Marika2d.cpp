@@ -1,5 +1,3 @@
-// Marika2d.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
 
 #include <iostream>
 #include <sstream>
@@ -11,6 +9,13 @@
 #include "Marika2d/Common/Log/LogSystem.h"
 #include "Marika2d/Common/Serialize/SerializeSystem.h"
 
+#include "Third/rapidjson/document.h"
+#include "Third/rapidjson/writer.h"
+#include "Third/rapidjson/prettywriter.h"
+#include "Third/rapidjson/stringbuffer.h"
+
+#include "Serializer.h"
+
 class BaseClass
 {
 public:
@@ -20,23 +25,67 @@ public:
     }
 };
 
-class TestClass : public BaseClass, public Mrk::ISerializable
+class SubTestClass : public ISerializable
 {
-    MRK_SERIALIZABLE(TestClass)
+    //MRK_SERIALIZABLE(SubTestClass)
 public:
-    virtual inline void Serialize(Mrk::OutSerializeStream* stream)
+    virtual inline void Serialize(SerializeObject* obj) const
     {
-        MRK_WRITE_FIELD(field1);
-        MRK_WRITE_FIELD(field2);
-        MRK_WRITE_FIELD(field3);
-        MRK_WRITE_FIELD(field4);
+        obj->AddMember("subField1", new SerializeNumber(subField1));
+        obj->AddMember("subField2", new SerializeNumber(subField2));
+        obj->AddMember("subField3", new SerializeNumber(subField3));
+        obj->AddMember("subField4", new SerializeString(subField4));
     }
-    virtual inline void DeSerialize(Mrk::InSerializeStream* stream)
+    virtual inline void DeSerialize(SerializeObject* obj)
     {
-        MRK_READ_FIELD(field1, field1);
-        MRK_READ_FIELD(field2, field2);
-        MRK_READ_FIELD(field3, field3);
-        MRK_READ_FIELD(field4, field4);
+        SerializeCast::To<SerializeNumber>(obj->GetMember("subField1"))->ReadNum(subField1);
+        SerializeCast::To<SerializeNumber>(obj->GetMember("subField2"))->ReadNum(subField2);
+        SerializeCast::To<SerializeNumber>(obj->GetMember("subField3"))->ReadNum(subField3);
+        SerializeCast::To<SerializeString>(obj->GetMember("subField4"))->ReadStr(subField4);
+    }
+
+public:
+    int subField1 = 1;
+    float subField2 = 3;
+    double subField3 = 5;
+    std::string subField4 = "SubTest";
+};
+
+class TestClass : public BaseClass, public ISerializable
+{
+    //MRK_SERIALIZABLE(TestClass)
+public:
+    virtual inline void Serialize(SerializeObject* obj) const
+    {
+        obj->AddMember("field1", new SerializeNumber(field1));
+        obj->AddMember("field2", new SerializeNumber(field2));
+        obj->AddMember("field3", new SerializeNumber(field3));
+        obj->AddMember("field4", new SerializeString(field4));
+        obj->AddMember("field5", new SerializeObject(field5));
+
+        auto arr = new SerializeArray();
+        for (auto elem : field6)
+        {
+            arr->Append(new SerializeNumber(elem));
+        }
+        obj->AddMember("field6", arr);
+    }
+    virtual inline void DeSerialize(SerializeObject* obj)
+    {
+        SerializeCast::To<SerializeNumber>(obj->GetMember("field1"))->ReadNum(field1);
+        SerializeCast::To<SerializeNumber>(obj->GetMember("field2"))->ReadNum(field2);
+        SerializeCast::To<SerializeNumber>(obj->GetMember("field3"))->ReadNum(field3);
+        SerializeCast::To<SerializeString>(obj->GetMember("field4"))->ReadStr(field4);
+        SerializeCast::To<SerializeObject>(obj->GetMember("field5"))->ReadObj(field5);
+
+        field6.clear();
+        auto arr = SerializeCast::To<SerializeArray>(obj->GetMember("field6"));
+        for (size_t i = 0; i < arr->Count(); i++)
+        {
+            int elem;
+            SerializeCast::To<SerializeNumber>(arr->At(i))->ReadNum(elem);
+            field6.push_back(elem);
+        }
     }
 
 public:
@@ -46,104 +95,32 @@ public:
     }
 
 public:
-    int field1 = 0;
-    float field2 = 0;
-    double field3 = 0;
-    std::string field4 = "NULL";
+    int field1 = 2;
+    float field2 = 4;
+    double field3 = 6;
+    std::string field4 = "Test";
+    SubTestClass* field5 = new SubTestClass();
+    std::vector<int> field6 = { 1, 2, 3, 4, 5 };
 };
-
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
-
-// 窗口大小变化时的回调函数
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) 
-{
-    glViewport(0, 0, width, height);
-}
 
 int main() 
 {
-    Mrk::LogSystem::Init(Mrk::LogTargetType::Console);
-    MRK_LOG_ERROR("Test Error");
-    Mrk::LogSystem::Log("12345");
-
     TestClass* test = new TestClass();
-    test->field1 = 12345;
-    test->field2 = 1.2345f;
-    test->field3 = 1.23456789;
-    test->field4 = "Hello World";
+    test->field1 = 0;
+    test->field2 = 0;
+    test->field3 = 0;
+    test->field4 = "NULL";
+    test->field5->subField1 = 0;
+    test->field5->subField2 = 0;
+    test->field5->subField3 = 0;
+    test->field5->subField4 = "NULL";
+    test->field6 = { 2, 4, 6, 8, 10 };
 
-    Mrk::SerializeStream stream;
+    TestClass* newTest = new TestClass();
+    SerializeObject* obj = new SerializeObject();
+    obj->WriteObj(newTest);
 
-    Mrk::OutSerializeStream os(&stream);
-    test->Serialize(&os);
+    test->DeSerialize(obj);
 
-    Mrk::InSerializeStream is(&stream);
-    TestClass* test2 = new TestClass();
-    test2->DeSerialize(&is);
-
-    std::istringstream input("asdca");
-    std::string k = "hello";
-    input >> k;
-
-    //Mrk::SerializeManager::GetInstance().RegisteClass<TestClass>("TestClass");
-    auto test3 = Mrk::SerializeManager::GetInstance().Create("TestClass");
-
-    BaseClass* base = dynamic_cast<BaseClass*>(test3);
-    base->VirFunc();
-
-    // 初始化 GLFW
-    if (!glfwInit()) {
-        std::cerr << "无法初始化 GLFW" << std::endl;
-        return -1;
-    }
-
-    // 设置 GLFW 使用的 OpenGL 版本
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // 创建 GLFW 窗口
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "GLFW + GLAD 窗口", nullptr, nullptr);
-    if (!window) {
-        std::cerr << "无法创建 GLFW 窗口" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    // 设置当前上下文
-    glfwMakeContextCurrent(window);
-
-    // 初始化 GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "无法初始化 GLAD" << std::endl;
-        return -1;
-    }
-
-    // 设置视口
-    glViewport(0, 0, WIDTH, HEIGHT);
-
-    // 注册窗口大小变化时的回调函数
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // 渲染循环
-    while (!glfwWindowShouldClose(window)) {
-        // 处理输入
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, true);
-        }
-
-        // 清空颜色缓冲
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // 交换缓冲并检查事件
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // 释放资源并退出
-    glfwDestroyWindow(window);
-    glfwTerminate();
     return 0;
 }
