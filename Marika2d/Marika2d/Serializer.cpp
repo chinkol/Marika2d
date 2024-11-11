@@ -4,12 +4,13 @@
 #include "Third/rapidjson/stringbuffer.h"
 
 #include <filesystem>
+#include <iostream>
 
-SerializeField::~SerializeField()
+SerializeValue::~SerializeValue()
 {
 }
 
-SerializeType SerializeField::GetType()
+SerializeType SerializeValue::GetType()
 {
 	return this->type;
 }
@@ -36,7 +37,7 @@ void SerializeObject::ReadObj(ISerializable* obj)
 	obj->DeSerialize(this);
 }
 
-void SerializeObject::AddMember(std::string_view memberName, SerializeField* member)
+void SerializeObject::AddMember(std::string_view memberName, SerializeValue* member)
 {
 	if (!members.try_emplace(memberName.data(), member).second)
 	{
@@ -44,7 +45,7 @@ void SerializeObject::AddMember(std::string_view memberName, SerializeField* mem
 	}
 }
 
-SerializeField* SerializeObject::GetMember(std::string_view memberName)
+SerializeValue* SerializeObject::GetMember(std::string_view memberName)
 {
 	auto ret = members.find(memberName.data());
 
@@ -64,6 +65,11 @@ SerializeNumber::SerializeNumber() :
 SerializeNumber::~SerializeNumber()
 {
 	free(num);
+}
+
+std::type_index SerializeNumber::GetNumType()
+{
+	return numType;
 }
 
 SerializeString::SerializeString() : 
@@ -93,7 +99,7 @@ SerializeArray::SerializeArray()
 	type = SerializeType::Array;
 }
 
-void SerializeArray::Append(SerializeField* elem)
+void SerializeArray::Append(SerializeValue* elem)
 {
 	elems.emplace_back(elem);
 }
@@ -103,7 +109,7 @@ size_t SerializeArray::Count()
 	return elems.size();
 }
 
-SerializeField* SerializeArray::At(size_t index)
+SerializeValue* SerializeArray::At(size_t index)
 {
 	if (index > elems.size() - 1)
 	{
@@ -148,24 +154,23 @@ void SerializeObjectIter::Reset()
 
 bool SerializeObjectIter::HasNext()
 {
-	return curr != obj->members.end();;
+	return curr != obj->members.end();
 }
 
-std::pair<std::string_view, SerializeField*> SerializeObjectIter::GetNext()
+std::pair<std::string, SerializeValue*> SerializeObjectIter::GetNext()
 {
 	if (curr == obj->members.end())
 	{
 		throw;
 	}
 
-	auto& ret = curr;
+	auto res = std::make_pair(curr->first, curr->second);
 	curr++;
-	return std::make_pair(ret->first, ret->second);
+	return res;
 }
 
 void JsonSerializer::ToFile(SerializeObject* obj, std::string_view filename)
 {
-	Json::Document jdoc;
 	jdoc.SetObject();
 	auto& jalloc = jdoc.GetAllocator();
 
@@ -173,11 +178,16 @@ void JsonSerializer::ToFile(SerializeObject* obj, std::string_view filename)
 	while (iter.HasNext())
 	{
 		auto next = iter.GetNext();
-		Json::Value val;
-		SerializeSub(val, next.second);
-		std::string j = "sasd";
-		jdoc.AddMember(Json::GenericStringRef(next.first.data()), val, jalloc);
+		Json::Value jval;
+		SerializeSub(jval, next.second);
+		jdoc.AddMember(Json::Value(next.first.c_str(), jalloc), jval, jalloc);
 	}
+
+	Json::StringBuffer buffer;
+	Json::PrettyWriter<Json::StringBuffer> writer(buffer);
+	jdoc.Accept(writer);
+
+	std::cout << "Serialized JSON: " << buffer.GetString() << std::endl;
 }
 
 SerializeObject* JsonSerializer::FromFile(std::string_view filename)
@@ -185,25 +195,96 @@ SerializeObject* JsonSerializer::FromFile(std::string_view filename)
 	return nullptr;
 }
 
-void JsonSerializer::SerializeSub(Json::Value& value, SerializeField* sub)
+void JsonSerializer::SerializeSub(Json::Value& jValue, SerializeValue* sValue)
 {
-	Json::Value subValue;
-
-	switch (sub->GetType())
+	switch (sValue->GetType())
 	{
 	case SerializeType::Bool:
+	{
 		bool b;
-		SerializeCast::To<SerializeBool>(sub)->ReadBool(b);
-		subValue.SetBool(b);
+		SerializeCast::To<SerializeBool>(sValue)->ReadBool(b);
+		jValue.SetBool(b);
 		break;
+	}
 	case SerializeType::Number:
+	{
+		auto sNum = SerializeCast::To<SerializeNumber>(sValue);
+		auto sNumType = sNum->GetNumType();
+		if (sNumType == typeid(float_t))
+		{
+			float f;
+			sNum->ReadNum(f);
+			jValue.SetFloat(f);
+		}
+		else if (sNumType == typeid(double_t))
+		{
+			double d;
+			sNum->ReadNum(d);
+			jValue.SetDouble(d);
+		}
+		else if (sNumType == typeid(int16_t ))
+		{
+			int16_t i16;
+			sNum->ReadNum(i16);
+			jValue.SetInt(i16);
+		}
+		else if (sNumType == typeid(int32_t))
+		{
+			int32_t i32;
+			sNum->ReadNum(i32);
+			jValue.SetInt(i32);
+		}
+		else if (sNumType == typeid(int64_t))
+		{
+			int64_t i64;
+			sNum->ReadNum(i64);
+			jValue.SetInt64(i64);
+		}
+		else if (sNumType == typeid(uint16_t) || sNumType == typeid(uint32_t) || sNumType == typeid(uint64_t))
+		{
+			uint64_t ui64;
+			sNum->ReadNum(ui64);
+			jValue.SetUint64(ui64);
+		}
 		break;
+	}
 	case SerializeType::String:
+	{
+		std::string s;
+		SerializeCast::To<SerializeString>(sValue)->ReadStr(s);
+		jValue.SetString(s.c_str(), jdoc.GetAllocator());
 		break;
+	}
 	case SerializeType::Array:
+	{
+		jValue.SetArray();
+
+		auto sArr = SerializeCast::To<SerializeArray>(sValue);
+		auto& jalloc = jdoc.GetAllocator();
+		for (size_t i = 0; i < sArr->Count(); i++)
+		{
+			Json::Value subJValue;
+			SerializeSub(subJValue, sArr->At(i));
+			jValue.PushBack(subJValue, jalloc);
+		}
 		break;
+	}
 	case SerializeType::Object:
+	{
+		auto& jalloc = jdoc.GetAllocator();
+		jValue.SetObject();
+
+		auto sObj = SerializeCast::To<SerializeObject>(sValue);
+		SerializeObjectIter iter(sObj);
+		while (iter.HasNext())
+		{
+			auto next = iter.GetNext();
+			Json::Value subJValue;
+			SerializeSub(subJValue, next.second);
+			jValue.AddMember(Json::Value(next.first.c_str(), jalloc), subJValue, jalloc);
+		}
 		break;
+	}
 	default:
 		break;
 	}

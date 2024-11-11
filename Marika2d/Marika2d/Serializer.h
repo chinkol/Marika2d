@@ -5,11 +5,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <typeindex>
 
+#define RAPIDJSON_HAS_STDSTRING 1
 #include "Third/rapidjson/document.h"
 
 class SerializeObject;
-class SerializeField;
+class SerializeValue;
 
 class ISerializer
 {
@@ -24,7 +26,8 @@ public:
 	virtual void ToFile(SerializeObject* field, std::string_view filename) override;
 	virtual SerializeObject* FromFile(std::string_view filename) override;
 private:
-	void SerializeSub(Json::Value& value, SerializeField* sub);
+	void SerializeSub(Json::Value& jValue, SerializeValue* sValue);
+	Json::Document jdoc;
 };
 
 enum class SerializeType
@@ -36,10 +39,10 @@ enum class SerializeType
 	Object,
 };
 
-class SerializeField
+class SerializeValue
 {
 public:
-	virtual ~SerializeField();
+	virtual ~SerializeValue();
 	SerializeType GetType();
 protected:
 	SerializeType type;
@@ -47,7 +50,7 @@ protected:
 
 class ISerializable;
 
-class SerializeObject : public SerializeField
+class SerializeObject : public SerializeValue
 {
 	friend class SerializeObjectIter;
 public:
@@ -56,11 +59,11 @@ public:
 
 	void WriteObj(const ISerializable* obj);
 	void ReadObj(ISerializable* obj);
-	void AddMember(std::string_view memberName, SerializeField* member);
-	SerializeField* GetMember(std::string_view memberName);
+	void AddMember(std::string_view memberName, SerializeValue* member);
+	SerializeValue* GetMember(std::string_view memberName);
 
 private:
-	std::map<std::string, SerializeField*> members;
+	std::map<std::string, SerializeValue*> members;
 };
 
 class SerializeObjectIter
@@ -70,27 +73,27 @@ public:
 
 	void Reset();
 	bool HasNext();
-	std::pair<std::string_view, SerializeField*> GetNext();
+	std::pair<std::string, SerializeValue*> GetNext();
 
 private:
 	SerializeObject* obj;
-	std::map<std::string, SerializeField*>::iterator curr;
+	std::map<std::string, SerializeValue*>::iterator curr;
 };
 
-class SerializeArray : public SerializeField
+class SerializeArray : public SerializeValue
 {
 public:
 	SerializeArray();
 
 	size_t Count();
-	void Append(SerializeField* elem);
-	SerializeField* At(size_t index);
+	void Append(SerializeValue* elem);
+	SerializeValue* At(size_t index);
 
 private:
-	std::vector<SerializeField*> elems;
+	std::vector<SerializeValue*> elems;
 };
 
-class SerializeNumber : public SerializeField
+class SerializeNumber : public SerializeValue
 {
 public:
 	SerializeNumber();
@@ -99,11 +102,13 @@ public:
 
 	template <typename T> void WriteNum(T num);
 	template <typename T> void ReadNum(T& num);
+	std::type_index GetNumType();
 private:
+	std::type_index numType = typeid(nullptr);
 	void* num;
 };
 
-class SerializeString : public SerializeField
+class SerializeString : public SerializeValue
 {
 public:
 	SerializeString();
@@ -116,7 +121,7 @@ private:
 	std::string str;
 };
 
-class SerializeBool : public SerializeField
+class SerializeBool : public SerializeValue
 {
 public:
 	SerializeBool();
@@ -138,13 +143,13 @@ public:
 
 struct SerializeCast
 {
-	template<typename T> static T* To(SerializeField* field);
+	template<typename T> static T* To(SerializeValue* field);
 };
 
 template<typename T>
-inline T* SerializeCast::To(SerializeField* field)
+inline T* SerializeCast::To(SerializeValue* field)
 {
-	static_assert(std::is_base_of_v<SerializeField, T>, "Serialize Cast Type Is Not A SerializeField !");
+	static_assert(std::is_base_of_v<SerializeValue, T>, "Serialize Cast Type Is Not A SerializeField !");
 
 	auto res = dynamic_cast<T*>(field);
 
@@ -161,6 +166,7 @@ inline SerializeNumber::SerializeNumber(T num)
 {
 	static_assert(std::is_arithmetic_v<T>, "Param Type Is Not A Num Type !");
 
+	this->numType = typeid(T);
 	this->type = SerializeType::Number;
 	this->num = std::malloc(sizeof(T));
 
@@ -177,6 +183,7 @@ inline SerializeNumber::SerializeNumber(T num)
 template<typename T>
 inline void SerializeNumber::WriteNum(T num)
 {
+	this->numType = typeid(T);
 	this->num = num;
 }
 

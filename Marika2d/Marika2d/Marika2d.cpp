@@ -120,7 +120,11 @@ int main()
     SerializeObject* obj = new SerializeObject();
     obj->WriteObj(newTest);
 
-    test->DeSerialize(obj);
+    //test->DeSerialize(obj);
+
+    JsonSerializer serializer;
+
+    serializer.ToFile(obj, "");
 
     return 0;
 }
