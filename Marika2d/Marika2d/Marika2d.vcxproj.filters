@@ -18,12 +18,6 @@
     <ClCompile Include="Marika2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Third\glad\src\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Marika2d\Common\Serialize\SerializeSystem.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Marika2d\Common\Log\LogSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -33,7 +27,10 @@
     <ClCompile Include="Marika2d\Common\Utility\Utility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Serializer.cpp">
+    <ClCompile Include="Marika2d\Common\Serialize\SerializeSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Marika2d\Common\Singleton\Singleton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,9 +102,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Third\configor\json.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Marika2d\Common\Serialize\SerializeSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Marika2d\Common\Log\LogSystem.h">
@@ -239,7 +233,10 @@
     <ClInclude Include="Third\rapidjson\writer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Serializer.h">
+    <ClInclude Include="Marika2d\Common\Serialize\SerializeSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Marika2d\Common\Singleton\Singleton.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -108,12 +108,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Marika2d\Third\glfw\lib\;$(SolutionDir)Marika2d\Third\box2d\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>box2dd.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\SourceCode\Marika2d\Marika2d\Third\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Third.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,19 +136,18 @@
   <ItemGroup>
     <ClCompile Include="Marika2d\Common\Config\ConfigSystem.cpp" />
     <ClCompile Include="Marika2d\Common\Log\LogSystem.cpp" />
-    <ClCompile Include="Marika2d\Common\Serialize\SerializeSystem.cpp" />
     <ClCompile Include="Marika2d.cpp" />
-    <ClCompile Include="Serializer.cpp" />
-    <ClCompile Include="Third\glad\src\glad.c" />
+    <ClCompile Include="Marika2d\Common\Serialize\SerializeSystem.cpp" />
+    <ClCompile Include="Marika2d\Common\Singleton\Singleton.cpp" />
     <ClCompile Include="Marika2d\Common\Utility\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Marika2d\Common\Config\ConfigSystem.h" />
     <ClInclude Include="Marika2d\Common\Def\UtilityDef.h" />
     <ClInclude Include="Marika2d\Common\Log\LogSystem.h" />
-    <ClInclude Include="Marika2d\Common\Serialize\SerializeSystem.h" />
     <ClInclude Include="Marika2d\Common\Def\Def.h" />
-    <ClInclude Include="Serializer.h" />
+    <ClInclude Include="Marika2d\Common\Serialize\SerializeSystem.h" />
+    <ClInclude Include="Marika2d\Common\Singleton\Singleton.h" />
     <ClInclude Include="Third\box2d\include\base.h" />
     <ClInclude Include="Third\box2d\include\box2d.h" />
     <ClInclude Include="Third\box2d\include\collision.h" />
