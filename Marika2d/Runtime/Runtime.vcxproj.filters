@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Third\box2d\include\base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\box2d\include\box2d.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\box2d\include\collision.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\box2d\include\id.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\box2d\include\math_functions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\box2d\include\types.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\glad\include\glad.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\glad\include\khrplatform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\glfw\include\glfw3native.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\glfw\include\glfw3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\conversion.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\declare.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\encoding.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\exception.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\iterator.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\parser.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\serializer.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\stream.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\token.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\value.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\details\wrapper.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\configor.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\configor\json.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\msinttypes\inttypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\msinttypes\stdint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\error\en.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\error\error.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\biginteger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\clzll.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\diyfp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\dtoa.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\ieee754.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\itoa.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\meta.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\pow10.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\regex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\stack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\strfunc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\strtod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\internal\swap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\allocators.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\cursorstreamwrapper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\document.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\encodedstream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\encodings.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\filereadstream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\filewritestream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\fwd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\istreamwrapper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\memorybuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\memorystream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\ostreamwrapper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\pointer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\prettywriter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\rapidjson.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\reader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\schema.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\stream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\stringbuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\uri.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\rapidjson\writer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\Common.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\Common.pdb" />
+    <None Include="lib\Common.idb" />
+  </ItemGroup>
+</Project>
