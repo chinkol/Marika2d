@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -22,6 +22,7 @@
     <ClCompile Include="Config\ConfigSystem.cpp" />
     <ClCompile Include="Log\LogSystem.cpp" />
     <ClCompile Include="Memory\MemCtrlSystem.cpp" />
+    <ClCompile Include="OpenGL\OpenGL.cpp" />
     <ClCompile Include="Serialize\SerializeSystem.cpp" />
     <ClCompile Include="Singleton\Singleton.cpp" />
     <ClCompile Include="Utility\Utility.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="Def\UtilityDef.h" />
     <ClInclude Include="Log\LogSystem.h" />
     <ClInclude Include="Memory\MemCtrlSystem.h" />
+    <ClInclude Include="OpenGL\OpenGL.h" />
     <ClInclude Include="Serialize\SerializeSystem.h" />
     <ClInclude Include="Singleton\Singleton.h" />
     <ClInclude Include="Utility\Utility.h" />

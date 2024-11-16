@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Marika2d;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Runtime;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,9 +135,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Application.cpp" />
+    <ClCompile Include="Core\Component\Component.cpp" />
+    <ClCompile Include="Core\GameObject\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Core\Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Application.h" />
+    <ClInclude Include="Core\Component\Component.h" />
+    <ClInclude Include="Core\Object\Object.h" />
+    <ClInclude Include="Core\GameObject\GameObject.h" />
     <ClInclude Include="Third\box2d\include\base.h" />
     <ClInclude Include="Third\box2d\include\box2d.h" />
     <ClInclude Include="Third\box2d\include\collision.h" />

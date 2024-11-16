@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -585,11 +585,32 @@
     <ClInclude Include="spdlog\stopwatch.h" />
     <ClInclude Include="spdlog\tweakme.h" />
     <ClInclude Include="spdlog\version.h" />
+    <ClInclude Include="stb_image\stb_connected_components.h" />
+    <ClInclude Include="stb_image\stb_c_lexer.h" />
+    <ClInclude Include="stb_image\stb_divide.h" />
+    <ClInclude Include="stb_image\stb_ds.h" />
+    <ClInclude Include="stb_image\stb_dxt.h" />
+    <ClInclude Include="stb_image\stb_easy_font.h" />
+    <ClInclude Include="stb_image\stb_herringbone_wang_tile.h" />
+    <ClInclude Include="stb_image\stb_hexwave.h" />
+    <ClInclude Include="stb_image\stb_image.h" />
+    <ClInclude Include="stb_image\stb_image_resize2.h" />
+    <ClInclude Include="stb_image\stb_image_write.h" />
+    <ClInclude Include="stb_image\stb_include.h" />
+    <ClInclude Include="stb_image\stb_leakcheck.h" />
+    <ClInclude Include="stb_image\stb_perlin.h" />
+    <ClInclude Include="stb_image\stb_rect_pack.h" />
+    <ClInclude Include="stb_image\stb_sprintf.h" />
+    <ClInclude Include="stb_image\stb_textedit.h" />
+    <ClInclude Include="stb_image\stb_tilemap_editor.h" />
+    <ClInclude Include="stb_image\stb_truetype.h" />
+    <ClInclude Include="stb_image\stb_voxel_render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\src\glad.c" />
     <ClCompile Include="glm\detail\glm.cpp" />
     <ClCompile Include="glm\glm.cppm" />
+    <ClCompile Include="stb_image\stb_vorbis.c" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\box2dd.lib" />

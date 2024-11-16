@@ -8,6 +8,9 @@
 #include "Common/Serialize/SerializeSystem.h"
 #include "Common/Memory/MemCtrlSystem.h"
 
+#include "Core/GameObject/GameObject.h"
+#include "Core/Component/Component.h"
+
 #include "Third/rapidjson/document.h"
 #include "Third/rapidjson/writer.h"
 #include "Third/rapidjson/prettywriter.h"
@@ -95,11 +98,12 @@ class Test1 : public Test
 public:
 	virtual inline void DeSerialize(const Json::Value& jobj)
 	{
-		MRK_DESERIALIZE_BASED(Test);
+		Test::DeSerialize(jobj);
 
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield1")->value, testfield1);;
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield2")->value, testfield2);;
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield3")->value, testfield3);;
+		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield1")->value, testfield1);
+		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield2")->value, testfield2);
+		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield3")->value, testfield3);
+
 	}
 
 	virtual inline void Serialize(Json::Value& jobj, Mrk::JsonAlloc& jalloc) const
@@ -129,6 +133,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main()
 {
+	auto gameobject1 = Mrk::GameObjectFactory::CreateNew("GameObject");
+	auto gameobject2 = Mrk::GameObjectFactory::CreateNew("GameObject");
+	Mrk::GameObjectOperate::AttachChild(gameobject1, gameobject2);
+	Mrk::GameObjectOperate::DetachChild(gameobject1, gameobject2);
+	Mrk::GameObjectOperate::DetachComponent<Mrk::Component>(gameobject1);
+
+	auto component1 = Mrk::ComponentFactory::CreateNew("Component");
+
 	test();
 
 	// 初始化 GLFW
@@ -184,5 +196,6 @@ int main()
 	// 释放资源并退出
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
 	return 0;
 }

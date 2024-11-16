@@ -23,7 +23,7 @@
 #endif // !MRK_JSONSTR_LENGTHMAX
 
 #ifndef MRK_SERIALIZABLE
-#define MRK_SERIALIZABLE(x) private: static inline bool _mrk_ ## x ## _serialize_register_  = []() { Mrk::SerializeSystem::RegisteClass<x>(#x); return true; }();
+#define MRK_SERIALIZABLE(x) private: static inline bool _mrk_macro_ ## x ## _serialize_register_  = []() { Mrk::SerializeSystem::RegisteClass<x>(#x); return true; }();
 #endif // !MRK_SERIALIZABLE
 
 #ifndef MRK_SERIALIZE_CLASS
@@ -82,7 +82,7 @@ namespace Mrk
 	class ISerializable
 	{
 	public:
-		virtual inline void DeSerialize(const Json::Value& jobj) { }
+		virtual inline void DeSerialize(const Json::Value& jobj) {}
 		virtual inline void Serialize(Json::Value& jobj, JsonAlloc& jalloc) const {}
 	};
 
