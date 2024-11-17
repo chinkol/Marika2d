@@ -11,7 +11,12 @@
 #include <map>
 
 #ifndef MRK_POOLABLE
-#define MRK_POOLABLE(x) public: static constexpr uint32_t _mrk_macro_poolable_alloc_count_ = x; private:
+#define MRK_POOLABLE(x, y)	public:																\
+static constexpr uint32_t _mrk_macro_poolable_alloc_count_ = y;									\
+void* operator new(size_t size){																\
+	return (void*)Mrk::MemCtrlSystem::Alloc<x>();}												\
+void operator delete(void* ptr){																\
+	Mrk::MemCtrlSystem::DeAlloc<x>(ptr);}
 #endif // !MRK_POOLABLE
 
 namespace Mrk
@@ -87,17 +92,27 @@ namespace Mrk
 	{
 		MRK_SINGLETON(MemCtrlSystem)
 	public:
+		template<typename T>
+		static void* Alloc()
+		{
+			static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>* objectPool = TryEmplaceObjPool<T>();
+			return objectPool->Alloc();
+		}
+
+		template<typename T>
+		static void DeAlloc(void* ptr)
+		{
+			static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>* objectPool = TryEmplaceObjPool<T>();
+			objectPool->DeAlloc(ptr);
+		}
+
 		template<typename T, typename ...Args>
 		static std::shared_ptr<T> CreateNew(Args&&... args)
 		{
 			if constexpr (Internal::HasPoolableMacro<T>::value)
 			{
-				static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_> objectPool;
-				static bool _mrk_object_pool_register_ = []() { Instance().objectPools.try_emplace(typeid(T), &objectPool); return true; }();
-
-				return std::shared_ptr<T>(new (objectPool.Alloc()) T(std::forward<Args&&>(args)...), [](T* obj) {
-					objectPool.DeAlloc(obj);
-					});
+				static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>* objectPool = TryEmplaceObjPool<T>();
+				return std::shared_ptr<T>(new T(std::forward<Args&&>(args)...));
 			}
 			else
 			{
@@ -106,13 +121,22 @@ namespace Mrk
 		}
 
 	private:
+		template<typename T> static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>* TryEmplaceObjPool()
+		{
+			auto ret = Instance().objectPools.try_emplace(typeid(T), nullptr);
+			if (ret.second)
+			{
+				ret.first->second = new Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>();
+			}
+			return dynamic_cast<Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>*>(ret.first->second);
+		}
 		std::map<std::type_index, Internal::ObjectPoolBase*> objectPools;
 	};
 }
 
 class MemCtrlTest
 {
-	MRK_POOLABLE(10)
+	MRK_POOLABLE(MemCtrlTest, 10)
 public:
 	int field1 = 1;
 	float field2 = 2.0;
@@ -123,7 +147,9 @@ inline void test()
 {
 	for (size_t i = 0; i < 1000; i++)
 	{
-		Mrk::MemCtrlSystem::CreateNew<MemCtrlTest>();
+		auto m = new MemCtrlTest();
+		auto s = std::shared_ptr<MemCtrlTest>(m);
+		auto s1 = s;
 	}
 }
 

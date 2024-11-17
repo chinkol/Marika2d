@@ -49,7 +49,7 @@ namespace Mrk
 	inline void ComponentFactory::RegisterComponent(std::string_view classname)
 	{
 		auto ret = Instance().creators.try_emplace(classname.data(), []() {
-			return MemCtrlSystem::CreateNew<Component>();
+			return Mrk::MemCtrlSystem::CreateNew<T>();
 			});
 		if (!ret.second)
 		{
@@ -61,7 +61,7 @@ namespace Mrk
 	inline std::shared_ptr<Component> ComponentFactory::CreateNew()
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		return CreateNew(T::GetStaticClassName());
+		return Mrk::MemCtrlSystem::CreateNew<T>();
 	}
 }
 

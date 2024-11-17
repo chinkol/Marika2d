@@ -23,6 +23,7 @@ namespace Mrk
 		template<typename T>
 		static void RegisterGameObject(std::string_view classname);
 		static std::shared_ptr<GameObject> CreateNew(std::string_view classname);
+		template<typename T> std::shared_ptr<GameObject> CreateNew();
 	private:
 		GameObjectFactory() = default;
 		std::map<std::string, std::function<std::shared_ptr<GameObject>()>> creators;
@@ -70,7 +71,7 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
 		auto ret = Instance().creators.try_emplace(classname.data(), []() {
-			return MemCtrlSystem::CreateNew<T>();
+			return Mrk::MemCtrlSystem::CreateNew<T>();
 			});
 		if (!ret.second)
 		{
@@ -79,10 +80,17 @@ namespace Mrk
 	}
 
 	template<typename T>
+	inline std::shared_ptr<GameObject> GameObjectFactory::CreateNew()
+	{
+		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
+		return Mrk::MemCtrlSystem::CreateNew<T>();
+	}
+
+	template<typename T>
 	inline void GameObjectOperate::AttachComponent(const std::shared_ptr<GameObject>& holder)
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		AttachComponent(ComponentFactory::CreateNew<T>(), holder);
+		AttachComponent(Mrk::MemCtrlSystem::CreateNew<T>(), holder);
 	}
 
 	template<typename T>

@@ -373,12 +373,9 @@ namespace Mrk
 		std::enable_if_t<std::is_polymorphic_v<T>, void>
 			static Extract(const Json::Value& jobj, std::shared_ptr<T>& sobj)
 		{
-			//T* vobj = nullptr;
-			//Extract(jobj, vobj);
-			//sobj.reset(vobj);
-			
-			//修改，现在构造到对象池(可能)
-			sobj = MemCtrlSystem::CreateNew<T>();
+			T* vobj = nullptr;
+			Extract(jobj, vobj);
+			sobj.reset(vobj);
 		}
 
 		// 处理 stl str
