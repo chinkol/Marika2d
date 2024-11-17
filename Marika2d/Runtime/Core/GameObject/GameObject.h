@@ -24,6 +24,7 @@ namespace Mrk
 		static void RegisterGameObject(std::string_view classname);
 		static std::shared_ptr<GameObject> CreateNew(std::string_view classname);
 		template<typename T> std::shared_ptr<GameObject> CreateNew();
+		static const std::map<std::string, std::function<std::shared_ptr<GameObject>()>>& GetCreators();
 	private:
 		GameObjectFactory() = default;
 		std::map<std::string, std::function<std::shared_ptr<GameObject>()>> creators;

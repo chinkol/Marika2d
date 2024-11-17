@@ -111,7 +111,6 @@ namespace Mrk
 		{
 			if constexpr (Internal::HasPoolableMacro<T>::value)
 			{
-				static Internal::ObjectPool<T, T::_mrk_macro_poolable_alloc_count_>* objectPool = TryEmplaceObjPool<T>();
 				return std::shared_ptr<T>(new T(std::forward<Args&&>(args)...));
 			}
 			else

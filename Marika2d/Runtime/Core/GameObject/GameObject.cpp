@@ -23,6 +23,11 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_v
 	return ret->second();
 }
 
+const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& Mrk::GameObjectFactory::GetCreators()
+{
+	return Instance().creators;
+}
+
 void Mrk::GameObjectOperate::AttachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent)
 {
 	assert(child && parent);

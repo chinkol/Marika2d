@@ -7,6 +7,7 @@
 #include "Common/Log/LogSystem.h"
 #include "Common/Serialize/SerializeSystem.h"
 #include "Common/Memory/MemCtrlSystem.h"
+#include "Common/Def/UtilityDef.h"
 
 #include "Core/GameObject/GameObject.h"
 #include "Core/Component/Component.h"
@@ -131,6 +132,38 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+class TestComponent1 : public Mrk::Component
+{
+	MRK_COMPONENT(TestComponent1)
+	MRK_POOLABLE(TestComponent1, 10)
+public:
+	void Update() 
+	{
+		std::cout << "Hello World !\n";
+	}
+	~TestComponent1()
+	{
+		std::cout << "BeyBey World !\n";
+	}
+
+	void PreUpdate() {}
+};
+class TestComponent2 : public Mrk::Component
+{
+	MRK_COMPONENT(TestComponent2)
+};
+class TestComponent3 : public Mrk::Component
+{
+	MRK_COMPONENT(TestComponent3)
+	MRK_POOLABLE(TestComponent1, 20)
+};
+class TestComponent4 : public Mrk::Component
+{
+	MRK_COMPONENT(TestComponent4)
+};
+
+MRK_TRAIT_HAS_MEMFUNC(Func2)
+
 int main()
 {
 	auto gameobject1 = Mrk::GameObjectFactory::CreateNew("GameObject");
@@ -141,61 +174,21 @@ int main()
 
 	auto component1 = Mrk::ComponentFactory::CreateNew("Component");
 
+	auto testCom1 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+	//Mrk::ComponentLoopSystem::AddComponent(testCom1);
+
+	while (1)
+	{
+		auto testCom = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+		Mrk::ComponentLoopSystem::AddComponent(testCom);
+		Mrk::ComponentLoopSystem::Invoke("Update");
+	}
+
 	test();
 
-	// 初始化 GLFW
-	if (!glfwInit()) {
-		std::cerr << "无法初始化 GLFW" << std::endl;
-		return -1;
-	}
+	//TraitHasFunc2<HasTest>::value;
 
-	// 设置 GLFW 使用的 OpenGL 版本
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	// 创建 GLFW 窗口
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "GLFW + GLAD 窗口", nullptr, nullptr);
-	if (!window) {
-		std::cerr << "无法创建 GLFW 窗口" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-
-	// 设置当前上下文
-	glfwMakeContextCurrent(window);
-
-	// 初始化 GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cerr << "无法初始化 GLAD" << std::endl;
-		return -1;
-	}
-
-	// 设置视口
-	glViewport(0, 0, WIDTH, HEIGHT);
-
-	// 注册窗口大小变化时的回调函数
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// 渲染循环
-	while (!glfwWindowShouldClose(window)) {
-		// 处理输入
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetWindowShouldClose(window, true);
-		}
-
-		// 清空颜色缓冲
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		// 交换缓冲并检查事件
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	// 释放资源并退出
-	glfwDestroyWindow(window);
-	glfwTerminate();
+	
 
 	return 0;
 }
