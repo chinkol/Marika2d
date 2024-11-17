@@ -9,6 +9,7 @@
 #include "Common/Memory/MemCtrlSystem.h"
 #include "Common/Def/UtilityDef.h"
 
+#include "Application/Application.h"
 #include "Core/GameObject/GameObject.h"
 #include "Core/Component/Component.h"
 
@@ -137,35 +138,54 @@ class TestComponent1 : public Mrk::Component
 	MRK_COMPONENT(TestComponent1)
 	MRK_POOLABLE(TestComponent1, 10)
 public:
-	void Update() 
-	{
-		std::cout << "Hello World !\n";
-	}
 	~TestComponent1()
 	{
-		std::cout << "BeyBey World !\n";
+		std::cout << "TestComponent1 : BeyBey World !\n";
 	}
-
-	void PreUpdate() 
+	void PreUpdate()
 	{
-		std::cout << "Agein World !\n";
+		std::cout << "TestComponent1 : Hello World !\n";
+	}
+	void Update() 
+	{
+		std::cout << "TestComponent1 : Agein World !\n";
 	}
 };
 class TestComponent2 : public Mrk::Component
 {
 	MRK_COMPONENT(TestComponent2)
+public:
+	~TestComponent2()
+	{
+		std::cout << "TestComponent2 : BeyBey World !\n";
+	}
+	void PreUpdate()
+	{
+		std::cout << "TestComponent2 : Hello World !\n";
+	}
+	void Update()
+	{
+		std::cout << "TestComponent2 : Agein World !\n";
+	}
 };
 class TestComponent3 : public Mrk::Component
 {
 	MRK_COMPONENT(TestComponent3)
 	MRK_POOLABLE(TestComponent1, 20)
+public:
+	~TestComponent3()
+	{
+		std::cout << "TestComponent3 : BeyBey World !\n";
+	}
+	void PreUpdate()
+	{
+		std::cout << "TestComponent3 : Hello World !\n";
+	}
+	void Update()
+	{
+		std::cout << "TestComponent3 : Agein World !\n";
+	}
 };
-class TestComponent4 : public Mrk::Component
-{
-	MRK_COMPONENT(TestComponent4)
-};
-
-MRK_TRAIT_HAS_MEMFUNC(Func2)
 
 int main()
 {
@@ -177,29 +197,45 @@ int main()
 
 	auto component1 = Mrk::ComponentFactory::CreateNew("Component");
 
-	auto testCom1 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-	//Mrk::ComponentLoopSystem::AddComponent(testCom1);
+	auto testCom11 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom11);
+	auto testCom12 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom12);
+	auto testCom13 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom13);
+
+	auto testCom21 = Mrk::ComponentFactory::CreateNew<TestComponent2>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom21);
+	auto testCom22 = Mrk::ComponentFactory::CreateNew<TestComponent2>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom22);
+
+	auto testCom31 = Mrk::ComponentFactory::CreateNew<TestComponent3>();
+	Mrk::ComponentLoopSystem::AddComponent(testCom31);
 
 	uint64_t loopTimes = 0;
-	while (1)
-	{
-		auto testCom = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-		Mrk::ComponentLoopSystem::AddComponent(testCom);
 
-		Mrk::ComponentLoopSystem::Invoke("Update");
+	Mrk::Window window(1280, 800, "GLFW + ImGui Window");
+
+	window.Run([&]() {
 		Mrk::ComponentLoopSystem::Invoke("PreUpdate");
+		Mrk::ComponentLoopSystem::Invoke("Update");
+		});
 
-		if (loopTimes++ % 100 == 0)
-		{
-			Mrk::ComponentLoopSystem::Clean();
-		}
-	}
+	//while (1)
+	//{
+	//	auto testCom = Mrk::ComponentFactory::CreateNew<TestComponent1>();
+	//	Mrk::ComponentLoopSystem::AddComponent(testCom);
 
-	test();
+	//	Mrk::ComponentLoopSystem::Invoke("Update");
+	//	Mrk::ComponentLoopSystem::Invoke("PreUpdate");
 
-	//TraitHasFunc2<HasTest>::value;
+	//	if (loopTimes++ % 100 == 0)
+	//	{
+	//		Mrk::ComponentLoopSystem::Clean();
+	//	}
+	//}
 
-	
+	//test();
 
 	return 0;
 }

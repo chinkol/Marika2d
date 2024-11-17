@@ -5,8 +5,6 @@
 #include "Common/Singleton/Singleton.h"
 #include "Common/Memory/MemCtrlSystem.h"
 
-#include "Third/proxy/proxy.h"
-
 #include <map>
 #include <string>
 
