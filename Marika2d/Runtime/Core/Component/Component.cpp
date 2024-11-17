@@ -26,7 +26,10 @@ void Mrk::ComponentLoopSystem::Invoke(std::string_view loopState)
 		{
 			for (auto& callback : *callbacks)
 			{
-				callback.Invoke();
+				if (!callback.Expired())
+				{
+					callback.Invoke();
+				}
 			}
 		}
 	}
@@ -41,13 +44,10 @@ Mrk::ComponentCallBack::ComponentCallBack(const std::shared_ptr<Component>& comp
 
 void Mrk::ComponentCallBack::Invoke()
 {
-	if (!component.expired())
+	auto scom = component.lock();
+	//if (scom->Enable())
 	{
-		auto scom = component.lock();
-		//if (scom->Enable())
-		{
-			(scom.get()->*callback)();
-		}
+		(scom.get()->*callback)();
 	}
 }
 

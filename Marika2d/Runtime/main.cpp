@@ -146,7 +146,10 @@ public:
 		std::cout << "BeyBey World !\n";
 	}
 
-	void PreUpdate() {}
+	void PreUpdate() 
+	{
+		std::cout << "Agein World !\n";
+	}
 };
 class TestComponent2 : public Mrk::Component
 {
@@ -177,11 +180,19 @@ int main()
 	auto testCom1 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
 	//Mrk::ComponentLoopSystem::AddComponent(testCom1);
 
+	uint64_t loopTimes = 0;
 	while (1)
 	{
 		auto testCom = Mrk::ComponentFactory::CreateNew<TestComponent1>();
 		Mrk::ComponentLoopSystem::AddComponent(testCom);
+
 		Mrk::ComponentLoopSystem::Invoke("Update");
+		Mrk::ComponentLoopSystem::Invoke("PreUpdate");
+
+		if (loopTimes++ % 100 == 0)
+		{
+			Mrk::ComponentLoopSystem::Clean();
+		}
 	}
 
 	test();

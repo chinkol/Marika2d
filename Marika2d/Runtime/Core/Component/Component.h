@@ -11,7 +11,7 @@
 #include <string>
 
 #ifndef MRK_COMPONENT
-#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) template<typename T> friend class ComponentTarit; static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
+#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) template<typename T> friend class ComponentTarit; private: static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
 #endif // !MRK_COMPONENT
 
 namespace Mrk
@@ -96,6 +96,16 @@ namespace Mrk
 		MRK_SINGLETON(ComponentLoopSystem)
 	public:
 		static void Invoke(std::string_view loopState);
+		static void Clean()
+		{
+			for (auto& [_, state] : Instance().loopStates)
+			{
+				for (auto& [_, callbacks] : state)
+				{
+					callbacks->erase(std::remove_if(callbacks->begin(), callbacks->end(), [](ComponentCallBack& callback) { return callback.Expired(); }), callbacks->end());
+				}
+			}
+		}
 		template<typename T> static void AddComponent(const std::shared_ptr<T>& component);
 
 	private:
