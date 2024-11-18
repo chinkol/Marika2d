@@ -22,7 +22,6 @@
     <ClCompile Include="Config\ConfigSystem.cpp" />
     <ClCompile Include="Log\LogSystem.cpp" />
     <ClCompile Include="Memory\MemCtrlSystem.cpp" />
-    <ClCompile Include="OpenGL\OpenGL.cpp" />
     <ClCompile Include="Serialize\SerializeSystem.cpp" />
     <ClCompile Include="Singleton\Singleton.cpp" />
     <ClCompile Include="Utility\Utility.cpp" />
@@ -33,7 +32,6 @@
     <ClInclude Include="Def\UtilityDef.h" />
     <ClInclude Include="Log\LogSystem.h" />
     <ClInclude Include="Memory\MemCtrlSystem.h" />
-    <ClInclude Include="OpenGL\OpenGL.h" />
     <ClInclude Include="Serialize\SerializeSystem.h" />
     <ClInclude Include="Singleton\Singleton.h" />
     <ClInclude Include="Utility\Utility.h" />
@@ -94,7 +92,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Runtime\lib</OutDir>
+    <OutDir>$(SolutionDir)lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

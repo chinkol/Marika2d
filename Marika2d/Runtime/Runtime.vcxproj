@@ -73,6 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Runtime\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,13 +110,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Runtime;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\SourceCode\Marika2d\Marika2d\Runtime\lib;$(SolutionDir)$(ProjectName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Third.lib;Common.lib;Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,17 +136,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Application.cpp" />
-    <ClCompile Include="Core\Component\Component.cpp" />
-    <ClCompile Include="Core\GameObject\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Core\Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\Application.h" />
-    <ClInclude Include="Core\Component\Component.h" />
-    <ClInclude Include="Core\Object\Object.h" />
-    <ClInclude Include="Core\GameObject\GameObject.h" />
     <ClInclude Include="Third\box2d\include\base.h" />
     <ClInclude Include="Third\box2d\include\box2d.h" />
     <ClInclude Include="Third\box2d\include\collision.h" />
@@ -207,13 +200,6 @@
     <ClInclude Include="Third\rapidjson\stringbuffer.h" />
     <ClInclude Include="Third\rapidjson\uri.h" />
     <ClInclude Include="Third\rapidjson\writer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\Common.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lib\Common.idb" />
-    <None Include="lib\Common.pdb" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

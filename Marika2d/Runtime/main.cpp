@@ -9,7 +9,7 @@
 #include "Common/Memory/MemCtrlSystem.h"
 #include "Common/Def/UtilityDef.h"
 
-#include "Application/Application.h"
+#include "Core/Application/Application.h"
 #include "Core/GameObject/GameObject.h"
 #include "Core/Component/Component.h"
 
@@ -21,221 +21,16 @@
 #include "Third/glad/include/glad.h"
 #include "Third/glfw/include/glfw3.h"
 
-class SubTest : public Mrk::ISerializable
-{
-	MRK_SERIALIZABLE(SubTest)
-public:
-	virtual inline void DeSerialize(const Json::Value& jobj)
-	{
-		MRK_DESERIALIZE_FIELD(field1, field1);
-		MRK_DESERIALIZE_FIELD(field2, field2);
-		MRK_DESERIALIZE_FIELD(field3, field3);
-		MRK_DESERIALIZE_FIELD(field4, field4);
-		MRK_DESERIALIZE_FIELD(field5, field5);
-		MRK_DESERIALIZE_FIELD(field6, field6);
-	}
-
-	virtual inline void Serialize(Json::Value& jobj, Mrk::JsonAlloc& jalloc) const
-	{
-		MRK_SERIALIZE_CLASS(SubTest);
-
-		MRK_SERIALIZE_FIELD(field1);
-		MRK_SERIALIZE_FIELD(field2);
-		MRK_SERIALIZE_FIELD(field3);
-		MRK_SERIALIZE_FIELD(field4);
-		MRK_SERIALIZE_FIELD(field5);
-		MRK_SERIALIZE_FIELD(field6);
-	}
-
-public:
-	int field1 = 0;
-	float field2 = 0;
-	double field3 = 0;
-	std::string field4 = "NULL";
-	std::vector<int> field5 = { 2, 5, 6, 8, 10 };
-	bool field6 = true;
-};
-
-class Test : public Mrk::ISerializable
-{
-	MRK_SERIALIZABLE(Test)
-public:
-	virtual inline void DeSerialize(const Json::Value& jobj)
-	{
-		MRK_DESERIALIZE_FIELD(field1, field1);
-		MRK_DESERIALIZE_FIELD(field2, field2);
-		MRK_DESERIALIZE_FIELD(field3, field3);
-		MRK_DESERIALIZE_FIELD(field4, field4);
-		MRK_DESERIALIZE_FIELD(field5, field5);
-		MRK_DESERIALIZE_FIELD(field6, field6);
-		MRK_DESERIALIZE_FIELD(field7, field7);
-	}
-
-	virtual inline void Serialize(Json::Value& jobj, Mrk::JsonAlloc& jalloc) const
-	{
-		MRK_SERIALIZE_CLASS(Test);
-
-		MRK_SERIALIZE_FIELD(field1);
-		MRK_SERIALIZE_FIELD(field2);
-		MRK_SERIALIZE_FIELD(field3);
-		MRK_SERIALIZE_FIELD(field4);
-		MRK_SERIALIZE_FIELD(field5);
-		MRK_SERIALIZE_FIELD(field6);
-		MRK_SERIALIZE_FIELD(field7);
-	}
-
-public:
-	int field1 = 0;
-	float field2 = 0;
-	double field3 = 0;
-	std::string field4 = "NULL";
-	std::map<std::string, std::shared_ptr<SubTest>> field5{ {"Serializable", std::make_shared<SubTest>()}, {"2", std::make_shared<SubTest>()}, {"114514", std::make_shared<SubTest>()}, {"序列化测试", std::make_shared<SubTest>()} };
-	std::vector<int> field6 = { 1, 3, 5, 7, 9 };
-	bool field7 = true;
-};
-
-class Test1 : public Test
-{
-	MRK_SERIALIZABLE(Test1)
-public:
-	virtual inline void DeSerialize(const Json::Value& jobj)
-	{
-		Test::DeSerialize(jobj);
-
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield1")->value, testfield1);
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield2")->value, testfield2);
-		Mrk::JsonValueExtractor::Extract(jobj.FindMember("testfield3")->value, testfield3);
-
-	}
-
-	virtual inline void Serialize(Json::Value& jobj, Mrk::JsonAlloc& jalloc) const
-	{
-		Test::Serialize(jobj, jalloc);
-		MRK_SERIALIZE_CLASS(Test1);
-
-		jobj.AddMember(Json::Value("testfield1", jalloc), Mrk::JsonValueCreator::Create(testfield1, jalloc), jalloc);
-		jobj.AddMember(Json::Value("testfield2", jalloc), Mrk::JsonValueCreator::Create(testfield2, jalloc), jalloc);
-		jobj.AddMember(Json::Value("testfield3", jalloc), Mrk::JsonValueCreator::Create(testfield3, jalloc), jalloc);
-	}
-
-public:
-	int testfield1 = 0;
-	float testfield2 = 0;
-	double testfield3 = 0;
-};
-
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
-
-// 窗口大小变化时的回调函数
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
-
-class TestComponent1 : public Mrk::Component
-{
-	MRK_COMPONENT(TestComponent1)
-	MRK_POOLABLE(TestComponent1, 10)
-public:
-	~TestComponent1()
-	{
-		std::cout << "TestComponent1 : BeyBey World !\n";
-	}
-	void PreUpdate()
-	{
-		std::cout << "TestComponent1 : Hello World !\n";
-	}
-	void Update() 
-	{
-		std::cout << "TestComponent1 : Agein World !\n";
-	}
-};
-class TestComponent2 : public Mrk::Component
-{
-	MRK_COMPONENT(TestComponent2)
-public:
-	~TestComponent2()
-	{
-		std::cout << "TestComponent2 : BeyBey World !\n";
-	}
-	void PreUpdate()
-	{
-		std::cout << "TestComponent2 : Hello World !\n";
-	}
-	void Update()
-	{
-		std::cout << "TestComponent2 : Agein World !\n";
-	}
-};
-class TestComponent3 : public Mrk::Component
-{
-	MRK_COMPONENT(TestComponent3)
-	MRK_POOLABLE(TestComponent1, 20)
-public:
-	~TestComponent3()
-	{
-		std::cout << "TestComponent3 : BeyBey World !\n";
-	}
-	void PreUpdate()
-	{
-		std::cout << "TestComponent3 : Hello World !\n";
-	}
-	void Update()
-	{
-		std::cout << "TestComponent3 : Agein World !\n";
-	}
-};
-
 int main()
 {
-	auto gameobject1 = Mrk::GameObjectFactory::CreateNew("GameObject");
-	auto gameobject2 = Mrk::GameObjectFactory::CreateNew("GameObject");
-	Mrk::GameObjectOperate::AttachChild(gameobject1, gameobject2);
-	Mrk::GameObjectOperate::DetachChild(gameobject1, gameobject2);
-	Mrk::GameObjectOperate::DetachComponent<Mrk::Component>(gameobject1);
-
-	auto component1 = Mrk::ComponentFactory::CreateNew("Component");
-
-	auto testCom11 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom11);
-	auto testCom12 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom12);
-	auto testCom13 = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom13);
-
-	auto testCom21 = Mrk::ComponentFactory::CreateNew<TestComponent2>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom21);
-	auto testCom22 = Mrk::ComponentFactory::CreateNew<TestComponent2>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom22);
-
-	auto testCom31 = Mrk::ComponentFactory::CreateNew<TestComponent3>();
-	Mrk::ComponentLoopSystem::AddComponent(testCom31);
-
-	uint64_t loopTimes = 0;
-
-	Mrk::Window window(1280, 800, "GLFW + ImGui Window");
-
-	window.Run([&]() {
-		Mrk::ComponentLoopSystem::Invoke("PreUpdate");
-		Mrk::ComponentLoopSystem::Invoke("Update");
+	auto context = Mrk::Application::GetAppContext();
+	context.mainwndTitle = "Marika Engine Runtime";
+	context.mainwndBox = { 1280, 800 };
+	context.loopCallBacks.push_back([]() {
+		ImGui::ShowDebugLogWindow();
 		});
-
-	//while (1)
-	//{
-	//	auto testCom = Mrk::ComponentFactory::CreateNew<TestComponent1>();
-	//	Mrk::ComponentLoopSystem::AddComponent(testCom);
-
-	//	Mrk::ComponentLoopSystem::Invoke("Update");
-	//	Mrk::ComponentLoopSystem::Invoke("PreUpdate");
-
-	//	if (loopTimes++ % 100 == 0)
-	//	{
-	//		Mrk::ComponentLoopSystem::Clean();
-	//	}
-	//}
-
-	//test();
+	Mrk::Application::SetAppContext(context);
+	Mrk::Application::Run();
 
 	return 0;
 }

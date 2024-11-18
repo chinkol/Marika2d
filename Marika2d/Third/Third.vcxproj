@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Common\lib</OutDir>
+    <OutDir>$(SolutionDir)lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -628,10 +628,6 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="stb_image\stb_vorbis.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\box2dd.lib" />
-    <Library Include="lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\detail\func_common.inl" />
