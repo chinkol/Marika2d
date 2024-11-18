@@ -9,7 +9,7 @@
 #include <string>
 
 #ifndef MRK_COMPONENT
-#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) template<typename T> friend class ComponentTarit; private: static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
+#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) friend struct Mrk::ComponentTrait<x>; private: static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
 #endif // !MRK_COMPONENT
 
 namespace Mrk
@@ -31,29 +31,57 @@ namespace Mrk
 		std::map<std::string, std::function<std::shared_ptr<Component>()>> creators;
 	};
 
-	template<typename T>
-	class ComponentTrait
+	class ComponentCallBack
 	{
+	public:
+		using CallBack = void(Component::*)();
+		ComponentCallBack(const std::shared_ptr<Component>& component, CallBack callback);
+		void Invoke();
+		bool Expired();
 	private:
+		std::weak_ptr<Component> component;
+		CallBack callback;
+	};
+
+	template<typename T>
+	struct ComponentTrait
+	{
 		template <typename U> static auto HasStart(U* ptr) -> decltype(ptr->Start(), std::true_type()) {};
 		template <typename U> static std::false_type HasStart(...) {};
+		static ComponentCallBack::CallBack GetStart() { return (ComponentCallBack::CallBack)&T::Start; }
+
 		template <typename U> static auto HasPreUpdate(U* ptr) -> decltype(ptr->PreUpdate(), std::true_type()) {};
 		template <typename U> static std::false_type HasPreUpdate(...) {};
+		static ComponentCallBack::CallBack GetPreUpdate() { return (ComponentCallBack::CallBack)&T::PreUpdate; }
+
 		template <typename U> static auto HasUpdate(U* ptr) -> decltype(ptr->Update(), std::true_type()) {};
 		template <typename U> static std::false_type HasUpdate(...) {};
+		static ComponentCallBack::CallBack GetUpdate() { return (ComponentCallBack::CallBack)&T::Update; }
+
 		template <typename U> static auto HasLateUpdate(U* ptr) -> decltype(ptr->LateUpdate(), std::true_type()) {};
 		template <typename U> static std::false_type HasLateUpdate(...) {};
+		static ComponentCallBack::CallBack GetLateUpdate() { return (ComponentCallBack::CallBack)&T::LateUpdate; }
+
 		template <typename U> static auto HasFixedUpdate(U* ptr) -> decltype(ptr->FixedUpdate(), std::true_type()) {};
 		template <typename U> static std::false_type HasFixedUpdate(...) {};
+		static ComponentCallBack::CallBack GetFixedUpdate() { return (ComponentCallBack::CallBack)&T::FixedUpdate; }
+
 		template <typename U> static auto HasPreDraw(U* ptr) -> decltype(ptr->PreDraw(), std::true_type()) {};
 		template <typename U> static std::false_type HasPreDraw(...) {};
+		static ComponentCallBack::CallBack GetPreDraw() { return (ComponentCallBack::CallBack)&T::PreDraw; }
+
 		template <typename U> static auto HasDraw(U* ptr) -> decltype(ptr->Draw(), std::true_type()) {};
 		template <typename U> static std::false_type HasDraw(...) {};
+		static ComponentCallBack::CallBack GetDraw() { return (ComponentCallBack::CallBack)&T::Draw; }
+
 		template <typename U> static auto HasLateDraw(U* ptr) -> decltype(ptr->LateDraw(), std::true_type()) {};
 		template <typename U> static std::false_type HasLateDraw(...) {};
+		static ComponentCallBack::CallBack GetLateDraw() { return (ComponentCallBack::CallBack)&T::LateDraw; }
+
 		template <typename U> static auto HasDispose(U* ptr) -> decltype(ptr->Dispose(), std::true_type()) {};
 		template <typename U> static std::false_type HasDispose(...) {};
-	public:
+		static ComponentCallBack::CallBack GetDispose() { return (ComponentCallBack::CallBack)&T::Dispose; }
+
 		static constexpr bool hasStart = decltype(HasStart<T>(nullptr))::value;
 		static constexpr bool hasPreUpdate = decltype(HasPreUpdate<T>(nullptr))::value;
 		static constexpr bool hasUpdate = decltype(HasUpdate<T>(nullptr))::value;
@@ -77,24 +105,12 @@ namespace Mrk
 		std::weak_ptr<GameObject> holder;
 	};
 
-	class ComponentCallBack
+	class ComponentHouse : public Singleton<ComponentHouse>
 	{
-	public:
-		using CallBack = void(Component::*)();
-		ComponentCallBack(const std::shared_ptr<Component>& component, CallBack callback);
-		void Invoke();
-		bool Expired();
-	private:
-		std::weak_ptr<Component> component;
-		CallBack callback;
-	};
-
-	class ComponentLoopSystem : public Singleton<ComponentLoopSystem>
-	{
-		MRK_SINGLETON(ComponentLoopSystem)
+		MRK_SINGLETON(ComponentHouse)
 	public:
 		static void Invoke(std::string_view loopState);
-		static void Clean()
+		static void Cleanup()
 		{
 			for (auto& [_, state] : Instance().loopStates)
 			{
@@ -107,7 +123,7 @@ namespace Mrk
 		template<typename T> static void AddComponent(const std::shared_ptr<T>& component);
 
 	private:
-		ComponentLoopSystem() = default;
+		ComponentHouse() = default;
 		template<typename T> static std::vector<ComponentCallBack>* TryEmplaceBatch(std::string_view loopState);
 		std::map<std::string, std::map<std::type_index, std::vector<ComponentCallBack>*>> loopStates; // [loopstate, [comtype, {loopfuncs}]];
 	};
@@ -116,7 +132,7 @@ namespace Mrk
 namespace Mrk
 {
 	template<typename T>
-	inline void ComponentLoopSystem::AddComponent(const std::shared_ptr<T>& component)
+	inline void ComponentHouse::AddComponent(const std::shared_ptr<T>& component)
 	{
 		auto& loopStates = Instance().loopStates; //debug
 
@@ -124,42 +140,42 @@ namespace Mrk
 		if constexpr (ComponentTrait<T>::hasPreUpdate)
 		{
 			static std::vector<ComponentCallBack>* preUpdateBatch = TryEmplaceBatch<T>("PreUpdate");
-			preUpdateBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::PreUpdate);
+			preUpdateBatch->emplace_back(component, ComponentTrait<T>::GetPreUpdate());
 		}
 		if constexpr (ComponentTrait<T>::hasUpdate)
 		{
 			static std::vector<ComponentCallBack>* updateBatch = TryEmplaceBatch<T>("Update");
-			updateBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::Update);
+			updateBatch->emplace_back(component, ComponentTrait<T>::GetUpdate());
 		}
 		if constexpr (ComponentTrait<T>::hasLateUpdate)
 		{
 			static std::vector<ComponentCallBack>* lateUpdateBatch = TryEmplaceBatch<T>("LateUpdate");
-			lateUpdateBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::LateUpdate);
+			lateUpdateBatch->emplace_back(component, ComponentTrait<T>::GetLateUpdate());
 		}
 		if constexpr (ComponentTrait<T>::hasFixedUpdate)
 		{
 			static std::vector<ComponentCallBack>* fixedUpdateBatch = TryEmplaceBatch<T>("FixedUpdate");
-			fixedUpdateBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::FixedUpdate);
+			fixedUpdateBatch->emplace_back(component, ComponentTrait<T>::GetFixedUpdate());
 		}
 		if constexpr (ComponentTrait<T>::hasPreDraw)
 		{
 			static std::vector<ComponentCallBack>* preDrawBatch = TryEmplaceBatch<T>("PreDraw");
-			preDrawBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::PreDraw);
+			preDrawBatch->emplace_back(component, ComponentTrait<T>::GetPreDraw());
 		}
 		if constexpr (ComponentTrait<T>::hasDraw)
 		{
 			static std::vector<ComponentCallBack>* DrawBatch = TryEmplaceBatch<T>("Draw");
-			DrawBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::Draw);
+			DrawBatch->emplace_back(component, ComponentTrait<T>::GetDraw());
 		}
 		if constexpr (ComponentTrait<T>::hasLateDraw)
 		{
 			static std::vector<ComponentCallBack>* LateDrawBatch = TryEmplaceBatch<T>("LateDraw");
-			LateDrawBatch->emplace_back(component, (ComponentCallBack::CallBack)&T::LateDraw);
+			LateDrawBatch->emplace_back(component, ComponentTrait<T>::GetLateDraw());
 		}
 	}
 
 	template<typename T>
-	inline std::vector<ComponentCallBack>* ComponentLoopSystem::TryEmplaceBatch(std::string_view loopState)
+	inline std::vector<ComponentCallBack>* ComponentHouse::TryEmplaceBatch(std::string_view loopState)
 	{
 		auto& batches = Instance().loopStates.try_emplace(loopState.data(), std::map<std::type_index, std::vector<ComponentCallBack>*>()).first->second;
 		auto& batch = batches.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
@@ -170,7 +186,13 @@ namespace Mrk
 	inline void ComponentFactory::RegisterComponent(std::string_view classname)
 	{
 		auto ret = Instance().creators.try_emplace(classname.data(), []() {
-			return Mrk::MemCtrlSystem::CreateNew<T>();
+			auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
+			ComponentHouse::AddComponent(newCom);
+			if constexpr (ComponentTrait<T>::hasStart)
+			{
+				newCom->Start();
+			}
+			return newCom;
 			});
 		if (!ret.second)
 		{
@@ -182,19 +204,12 @@ namespace Mrk
 	inline std::shared_ptr<T> ComponentFactory::CreateNew()
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		return Mrk::MemCtrlSystem::CreateNew<T>();
+		auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
+		ComponentHouse::AddComponent(newCom);
+		if constexpr (ComponentTrait<T>::hasStart)
+		{
+			newCom->Start();
+		}
+		return newCom;
 	}
 }
-
-class TestComponent : public Mrk::Component
-{
-	MRK_COMPONENT(TestComponent)
-	MRK_POOLABLE(TestComponent, 10)
-public:
-	inline void Update()
-	{
-		std::cout << "TestComponent Update" << "\n";
-	}
-};
-
-

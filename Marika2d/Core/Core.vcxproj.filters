@@ -36,6 +36,12 @@
     <ClCompile Include="ID\IDCreater.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Render.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -57,6 +63,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ID\IDCreater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Render.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

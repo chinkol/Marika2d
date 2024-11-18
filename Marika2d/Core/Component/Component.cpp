@@ -17,7 +17,7 @@ std::weak_ptr<Mrk::GameObject> Mrk::Component::GetHolder()
 	return holder;
 }
 
-void Mrk::ComponentLoopSystem::Invoke(std::string_view loopState)
+void Mrk::ComponentHouse::Invoke(std::string_view loopState)
 {
 	auto state = Instance().loopStates.find(loopState.data());
 	if (state != Instance().loopStates.end())

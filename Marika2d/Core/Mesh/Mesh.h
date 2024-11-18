@@ -51,7 +51,7 @@ namespace Mrk
 		GLuint ebo = 0;
 	};
 
-	class MeshLoader : Singleton<MeshLoader>
+	class MeshLoader : public Singleton<MeshLoader>
 	{
 		MRK_SINGLETON(MeshLoader)
 	public:
@@ -61,7 +61,7 @@ namespace Mrk
 		}
 	};
 
-	class MeshLib : Singleton<MeshLib>
+	class MeshLib : public Singleton<MeshLib>
 	{
 		MRK_SINGLETON(MeshLib)
 	public:

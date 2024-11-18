@@ -20,21 +20,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\Application.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="GameObject\GameObject.cpp" />
     <ClCompile Include="ID\IDCreater.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="OpenGL\OpenGL.cpp" />
+    <ClCompile Include="Render\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
+    <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="GameObject\GameObject.h" />
     <ClInclude Include="ID\IDCreater.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="OpenGL\OpenGL.h" />
+    <ClInclude Include="Render\Render.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

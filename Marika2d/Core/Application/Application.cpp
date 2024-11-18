@@ -35,13 +35,13 @@ void Mrk::Window::Run(const std::function<void()>& externCallBack)
         externCallBack();
 
         //内部循环
-        Mrk::ComponentLoopSystem::Invoke("PreUpdate");
-        Mrk::ComponentLoopSystem::Invoke("Update");
-        Mrk::ComponentLoopSystem::Invoke("LateUpdate");
-        Mrk::ComponentLoopSystem::Invoke("FixedUpdate");    //TODO : 改定时
-        Mrk::ComponentLoopSystem::Invoke("PreDraw");
-        Mrk::ComponentLoopSystem::Invoke("Draw");
-        Mrk::ComponentLoopSystem::Invoke("LateDraw");
+        Mrk::ComponentHouse::Invoke("PreUpdate");
+        Mrk::ComponentHouse::Invoke("Update");
+        Mrk::ComponentHouse::Invoke("LateUpdate");
+        Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : 改定时
+        Mrk::ComponentHouse::Invoke("PreDraw");
+        Mrk::ComponentHouse::Invoke("Draw");
+        Mrk::ComponentHouse::Invoke("LateDraw");
 
         // 渲染 ImGui
         ImGui::Render();

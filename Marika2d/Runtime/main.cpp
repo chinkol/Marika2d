@@ -21,8 +21,40 @@
 #include "Third/glad/include/glad.h"
 #include "Third/glfw/include/glfw3.h"
 
+class TestComponent : public Mrk::Component
+{
+	MRK_COMPONENT(TestComponent)
+public:
+	void Start()
+	{
+		std::cout << "Start\n";
+	}
+	void PreUpdate()
+	{
+		std::cout << "PreUpdate\n";
+	}
+	void Update()
+	{
+		std::cout << "Update\n";
+	}
+	void FixedUpdate()
+	{
+		std::cout << "FixedUpdate\n";
+	}
+	void Draw()
+	{
+		std::cout << "Draw\n";
+	}
+	void LateDraw()
+	{
+		std::cout << "LateDraw\n";
+	}
+};
+
 int main()
 {
+	auto com1 = Mrk::ComponentFactory::CreateNew("TestComponent");
+
 	auto context = Mrk::Application::GetAppContext();
 	context.mainwndTitle = "Marika Engine Runtime";
 	context.mainwndBox = { 1280, 800 };
