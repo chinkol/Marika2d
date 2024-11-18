@@ -24,7 +24,7 @@
 class TestComponent : public Mrk::Component
 {
 	MRK_COMPONENT(TestComponent)
-public:
+private:
 	void Start()
 	{
 		std::cout << "Start\n";

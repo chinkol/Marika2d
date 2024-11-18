@@ -190,7 +190,7 @@ namespace Mrk
 			ComponentHouse::AddComponent(newCom);
 			if constexpr (ComponentTrait<T>::hasStart)
 			{
-				newCom->Start();
+				(newCom.get()->*ComponentTrait<T>::GetStart())();
 			}
 			return newCom;
 			});
@@ -208,7 +208,7 @@ namespace Mrk
 		ComponentHouse::AddComponent(newCom);
 		if constexpr (ComponentTrait<T>::hasStart)
 		{
-			newCom->Start();
+			(newCom.get()->*ComponentTrait<T>::GetStart())();
 		}
 		return newCom;
 	}
