@@ -25,6 +25,10 @@ class TestComponent : public Mrk::Component
 {
 	MRK_COMPONENT(TestComponent)
 private:
+	void Awake()
+	{
+		std::cout << "Awake\n";
+	}
 	void Start()
 	{
 		std::cout << "Start\n";

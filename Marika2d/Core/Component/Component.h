@@ -9,7 +9,7 @@
 #include <string>
 
 #ifndef MRK_COMPONENT
-#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) friend struct Mrk::ComponentTrait<x>; private: static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
+#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) friend struct Mrk::ComponentTrait<x>; static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
 #endif // !MRK_COMPONENT
 
 namespace Mrk
@@ -36,9 +36,12 @@ namespace Mrk
 	public:
 		using CallBack = void(Component::*)();
 		ComponentCallBack(const std::shared_ptr<Component>& component, CallBack callback);
-		void Invoke();
-		bool Expired();
+		const Component* GetComponentPtr() const;	//maybe nullptr
+		void Invoke() const;
+		void InvokeNotCheck() const;
+		bool Expired() const;
 	private:
+		Component* componentPtr = nullptr;
 		std::weak_ptr<Component> component;
 		CallBack callback;
 	};
@@ -46,6 +49,10 @@ namespace Mrk
 	template<typename T>
 	struct ComponentTrait
 	{
+		template <typename U> static auto HasAwake(U* ptr) -> decltype(ptr->Awake(), std::true_type()) {};
+		template <typename U> static std::false_type HasAwake(...) {};
+		static ComponentCallBack::CallBack GetAwake() { return (ComponentCallBack::CallBack)&T::Awake; }
+
 		template <typename U> static auto HasStart(U* ptr) -> decltype(ptr->Start(), std::true_type()) {};
 		template <typename U> static std::false_type HasStart(...) {};
 		static ComponentCallBack::CallBack GetStart() { return (ComponentCallBack::CallBack)&T::Start; }
@@ -82,6 +89,7 @@ namespace Mrk
 		template <typename U> static std::false_type HasDispose(...) {};
 		static ComponentCallBack::CallBack GetDispose() { return (ComponentCallBack::CallBack)&T::Dispose; }
 
+		static constexpr bool hasAwake = decltype(HasAwake<T>(nullptr))::value;
 		static constexpr bool hasStart = decltype(HasStart<T>(nullptr))::value;
 		static constexpr bool hasPreUpdate = decltype(HasPreUpdate<T>(nullptr))::value;
 		static constexpr bool hasUpdate = decltype(HasUpdate<T>(nullptr))::value;
@@ -108,24 +116,18 @@ namespace Mrk
 	class ComponentHouse : public Singleton<ComponentHouse>
 	{
 		MRK_SINGLETON(ComponentHouse)
+		using TypeBatch = std::vector<ComponentCallBack>;
+		using LoopBatch = std::map<std::type_index, TypeBatch*>;
 	public:
 		static void Invoke(std::string_view loopState);
-		static void Cleanup()
-		{
-			for (auto& [_, state] : Instance().loopStates)
-			{
-				for (auto& [_, callbacks] : state)
-				{
-					callbacks->erase(std::remove_if(callbacks->begin(), callbacks->end(), [](ComponentCallBack& callback) { return callback.Expired(); }), callbacks->end());
-				}
-			}
-		}
+		static void Cleanup();
 		template<typename T> static void AddComponent(const std::shared_ptr<T>& component);
 
 	private:
 		ComponentHouse() = default;
-		template<typename T> static std::vector<ComponentCallBack>* TryEmplaceBatch(std::string_view loopState);
-		std::map<std::string, std::map<std::type_index, std::vector<ComponentCallBack>*>> loopStates; // [loopstate, [comtype, {loopfuncs}]];
+		static void Cleanup(const LoopBatch& batch);
+		template<typename T> static TypeBatch* TryEmplaceBatch(std::string_view loopState);
+		std::map<std::string, LoopBatch> loopBatches; // [loopstate, [comtype, {loopfuncs}]];
 	};
 }
 
@@ -134,8 +136,6 @@ namespace Mrk
 	template<typename T>
 	inline void ComponentHouse::AddComponent(const std::shared_ptr<T>& component)
 	{
-		auto& loopStates = Instance().loopStates; //debug
-
 		assert(component);
 		if constexpr (ComponentTrait<T>::hasPreUpdate)
 		{
@@ -175,11 +175,11 @@ namespace Mrk
 	}
 
 	template<typename T>
-	inline std::vector<ComponentCallBack>* ComponentHouse::TryEmplaceBatch(std::string_view loopState)
+	inline Mrk::ComponentHouse::TypeBatch* ComponentHouse::TryEmplaceBatch(std::string_view loopState)
 	{
-		auto& batches = Instance().loopStates.try_emplace(loopState.data(), std::map<std::type_index, std::vector<ComponentCallBack>*>()).first->second;
-		auto& batch = batches.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
-		return batch;
+		auto& loopBacth = Instance().loopBatches.try_emplace(loopState.data(), std::map<std::type_index, std::vector<ComponentCallBack>*>()).first->second;
+		auto& bacth = loopBacth.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
+		return bacth;
 	}
 
 	template<typename T>
@@ -188,9 +188,9 @@ namespace Mrk
 		auto ret = Instance().creators.try_emplace(classname.data(), []() {
 			auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
 			ComponentHouse::AddComponent(newCom);
-			if constexpr (ComponentTrait<T>::hasStart)
+			if constexpr (ComponentTrait<T>::hasAwake)
 			{
-				(newCom.get()->*ComponentTrait<T>::GetStart())();
+				(newCom.get()->*ComponentTrait<T>::GetAwake())();
 			}
 			return newCom;
 			});
@@ -206,9 +206,9 @@ namespace Mrk
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
 		auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
 		ComponentHouse::AddComponent(newCom);
-		if constexpr (ComponentTrait<T>::hasStart)
+		if constexpr (ComponentTrait<T>::hasAwake)
 		{
-			(newCom.get()->*ComponentTrait<T>::GetStart())();
+			(newCom.get()->*ComponentTrait<T>::GetAwake())();
 		}
 		return newCom;
 	}
