@@ -46,8 +46,8 @@ bool Mrk::OctNodeBordor::IsContainPoint(const glm::vec3& point)
 
 void Mrk::OctNodeBordor::Growth(const OctElem& elem)
 {
-	auto newOuterMin = glm::vec3(std::min(outerMin.x, elem.min.x), std::min(outerMin.y, elem.min.y), std::min(outerMin.z, elem.min.z));
-	auto newOuterMax = glm::vec3(std::max(outerMax.x, elem.max.x), std::max(outerMax.y, elem.max.y), std::max(outerMax.z, elem.max.z));
+	outerMin = glm::vec3(std::min(outerMin.x, elem.min.x), std::min(outerMin.y, elem.min.y), std::min(outerMin.z, elem.min.z));
+	outerMax = glm::vec3(std::max(outerMax.x, elem.max.x), std::max(outerMax.y, elem.max.y), std::max(outerMax.z, elem.max.z));
 }
 
 Mrk::OctNodeBase::OctNodeBase(const OctNodeBordor& border, OctNode* parent) :
