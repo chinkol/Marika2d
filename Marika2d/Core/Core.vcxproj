@@ -24,10 +24,12 @@
     <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="GameObject\GameObject.cpp" />
     <ClCompile Include="ID\IDCreater.cpp" />
+    <ClCompile Include="Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="OpenGL\OpenGL.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -35,10 +37,12 @@
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="GameObject\GameObject.h" />
     <ClInclude Include="ID\IDCreater.h" />
+    <ClInclude Include="Mesh\MeshRenderer.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="OpenGL\OpenGL.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="Scene\Scene.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

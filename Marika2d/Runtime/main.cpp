@@ -12,6 +12,7 @@
 #include "Core/Application/Application.h"
 #include "Core/GameObject/GameObject.h"
 #include "Core/Component/Component.h"
+#include "Core/Scene/Scene.h"
 
 #include "Third/rapidjson/document.h"
 #include "Third/rapidjson/writer.h"
@@ -57,6 +58,8 @@ private:
 
 int main()
 {
+	Mrk::OctTree octTree(1000, 1000, 1000);
+
 	auto com1 = Mrk::ComponentFactory::CreateNew("TestComponent");
 
 	auto context = Mrk::Application::GetAppContext();
