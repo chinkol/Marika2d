@@ -90,6 +90,10 @@ Mrk::ComponentCallBack::ComponentCallBack(const std::shared_ptr<Component>& comp
 	component(component),
 	callback(callback)
 {
+	if (component)
+	{
+		componentPtr = component.get();
+	}
 }
 
 const Mrk::Component* Mrk::ComponentCallBack::GetComponentPtr() const
@@ -99,16 +103,16 @@ const Mrk::Component* Mrk::ComponentCallBack::GetComponentPtr() const
 
 void Mrk::ComponentCallBack::Invoke() const
 {
-	auto scom = component.lock();
-	//if (scom->Enable())
+	if (!component.expired())
 	{
-		(scom.get()->*callback)();
+		(component.lock().get()->*callback)();
 	}
 }
 
 void Mrk::ComponentCallBack::InvokeNotCheck() const
 {
-	(componentPtr->*callback)();
+	(component.lock().get()->*callback)();
+	//(componentPtr->*callback)();
 }
 
 bool Mrk::ComponentCallBack::Expired() const

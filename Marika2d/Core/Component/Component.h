@@ -178,8 +178,8 @@ namespace Mrk
 	inline Mrk::ComponentHouse::TypeBatch* ComponentHouse::TryEmplaceBatch(std::string_view loopState)
 	{
 		auto& loopBacth = Instance().loopBatches.try_emplace(loopState.data(), std::map<std::type_index, std::vector<ComponentCallBack>*>()).first->second;
-		auto& bacth = loopBacth.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
-		return bacth;
+		auto& batch = loopBacth.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
+		return batch;
 	}
 
 	template<typename T>

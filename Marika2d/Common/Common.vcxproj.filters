@@ -60,7 +60,4 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\Third.lib" />
-  </ItemGroup>
 </Project>

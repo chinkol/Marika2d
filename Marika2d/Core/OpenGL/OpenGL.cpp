@@ -1,123 +1,115 @@
 #include "OpenGL.h"
 
-#include "Third/stb_image/stb_image.h"
+#include "Third/SOIL2/SOIL2.h"
 
-inline Mrk::EBO::EBO(const GLuint* data, size_t size)
+Mrk::EBO::EBO(const GLuint* data, size_t size)
 {
 	glGenBuffers(1, &id);
 	Bind();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
-inline Mrk::EBO::~EBO() 
+Mrk::EBO::~EBO() 
 {
 	glDeleteBuffers(1, &id); 
 }
 
-inline void Mrk::EBO::Bind() const 
+void Mrk::EBO::Bind() const 
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id); 
 }
 
-inline void Mrk::EBO::UnBind() const 
+void Mrk::EBO::UnBind() const 
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); 
 }
 
-inline GLuint Mrk::EBO::GetID() const
+GLuint Mrk::EBO::GetID() const
 {
 	return id;
 }
 
-inline Mrk::Texture::Texture(std::string_view path)
+Mrk::Texture::Texture(std::string_view path)
 {
-	glGenTextures(1, &id);
+	id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS);
+
 	Bind();
-
-	int width, height, channels;
-	auto imageData = stbi_load(path.data(), &width, &height, &channels, 0);
-
-	GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, imageData);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	UnBind();
-
-	stbi_image_free(imageData);
 }
 
-inline Mrk::Texture::~Texture() 
+Mrk::Texture::~Texture() 
 {
 	glDeleteTextures(1, &id); 
 }
 
-inline void Mrk::Texture::Bind() const 
+void Mrk::Texture::Bind() const 
 {
 	glBindTexture(GL_TEXTURE_2D, id); 
 }
 
-inline void Mrk::Texture::UnBind() const 
+void Mrk::Texture::UnBind() const 
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-inline GLuint Mrk::Texture::GetID() const
+GLuint Mrk::Texture::GetID() const
 {
 	return id;
 }
 
-inline Mrk::VBO::VBO(const void* data, size_t size)
+Mrk::VBO::VBO(const void* data, size_t size)
 {
 	glGenBuffers(1, &id);
 	Bind();
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
-inline Mrk::VBO::~VBO() 
+Mrk::VBO::~VBO() 
 { 
 	glDeleteBuffers(1, &id); 
 }
 
-inline void Mrk::VBO::Bind() const 
+void Mrk::VBO::Bind() const 
 { 
 	glBindBuffer(GL_ARRAY_BUFFER, id); 
 }
 
-inline void Mrk::VBO::UnBind() const 
+void Mrk::VBO::UnBind() const 
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0); 
 }
 
-inline GLuint Mrk::VBO::GetID() const
+GLuint Mrk::VBO::GetID() const
 {
 	return id;
 }
 
-inline Mrk::VAO::VAO() 
+Mrk::VAO::VAO() 
 {
 	glGenVertexArrays(1, &id);
 }
 
-inline Mrk::VAO::~VAO() 
+Mrk::VAO::~VAO() 
 { 
 	glDeleteVertexArrays(1, &id); 
 }
 
-inline void Mrk::VAO::Bind() const
+void Mrk::VAO::Bind() const
 {
 	glBindVertexArray(id);
 }
 
-inline void Mrk::VAO::UnBind() const
+void Mrk::VAO::UnBind() const
 {
 	glBindVertexArray(0); 
 }
 
-inline GLuint Mrk::VAO::GetID() const
+GLuint Mrk::VAO::GetID() const
 {
 	return id;
 }
@@ -127,17 +119,17 @@ Mrk::ShaderProgram& Mrk::OpenGLContext::GetShaderProgram()
 	return Instance().program;
 }
 
-inline Mrk::OpenGLContext::OpenGLContext() :
+Mrk::OpenGLContext::OpenGLContext() :
 	program()
 {
 }
 
-inline Mrk::ShaderProgram::ShaderProgram()
+Mrk::ShaderProgram::ShaderProgram()
 {
 	id = glCreateProgram();
 }
 
-inline void Mrk::ShaderProgram::AddShader(const Shader& shader)
+void Mrk::ShaderProgram::AddShader(const Shader& shader)
 {
 	auto ret = shaders.try_emplace(shader.GetType(), shader);
 	if (!ret.second)
@@ -161,7 +153,7 @@ void Mrk::ShaderProgram::Delete()
 	glDeleteProgram(id);
 }
 
-inline void Mrk::ShaderProgram::Link()
+void Mrk::ShaderProgram::Link()
 {
 	glLinkProgram(id);
 }
@@ -171,7 +163,7 @@ void Mrk::ShaderProgram::Use()
 	glUseProgram(id);
 }
 
-inline Mrk::Shader::Shader(std::string_view shaderPath, Type shaderType) :
+Mrk::Shader::Shader(std::string_view shaderPath, Type shaderType) :
 	type(shaderType)
 {
 	std::string code;
@@ -205,17 +197,17 @@ inline Mrk::Shader::Shader(std::string_view shaderPath, Type shaderType) :
 	};
 }
 
-inline GLuint Mrk::Shader::GetID() const
+GLuint Mrk::Shader::GetID() const
 {
 	return id;
 }
 
-inline Mrk::Shader::Type Mrk::Shader::GetType() const
+Mrk::Shader::Type Mrk::Shader::GetType() const
 {
 	return type;
 }
 
-inline void Mrk::Shader::Delete()
+void Mrk::Shader::Delete()
 {
 	glDeleteShader(id);
 }

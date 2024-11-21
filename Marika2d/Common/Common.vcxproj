@@ -36,9 +36,6 @@
     <ClInclude Include="Singleton\Singleton.h" />
     <ClInclude Include="Utility\Utility.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\Third.lib" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

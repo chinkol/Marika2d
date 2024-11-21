@@ -1,13 +1,17 @@
 #include <iostream>
 
 #include "Core/Application/Application.h"
+#include "Core/OpenGL/OpenGL.h"
 
 void EditorLoop()
 {
+	static auto ddstex = Mrk::Texture("OpenGL-DDS/Textures/desertcube1024.dds");
+
 	ImGui::DockSpaceOverViewport();
 
 	//viewport
 	ImGui::Begin("main viewport");
+	ImGui::Image((ImTextureID)ddstex.GetID(), ImGui::GetWindowSize());
 	ImGui::End();
 
 	ImGui::Begin("edit viewport");
@@ -66,5 +70,5 @@ int main()
 		EditorLoop();
 		});
 	Mrk::Application::SetAppContext(context);
-	Mrk::Application::Run();
+	Mrk::Application::Run();	
 }

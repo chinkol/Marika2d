@@ -490,6 +490,25 @@
     <ClInclude Include="rapidjson\stringbuffer.h" />
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
+    <ClInclude Include="SOIL2\image_DXT.h" />
+    <ClInclude Include="SOIL2\image_helper.h" />
+    <ClInclude Include="SOIL2\pkm_helper.h" />
+    <ClInclude Include="SOIL2\pvr_helper.h" />
+    <ClInclude Include="SOIL2\SOIL2.h" />
+    <ClInclude Include="SOIL2\stbi_DDS.h" />
+    <ClInclude Include="SOIL2\stbi_DDS_c.h" />
+    <ClInclude Include="SOIL2\stbi_ext.h" />
+    <ClInclude Include="SOIL2\stbi_ext_c.h" />
+    <ClInclude Include="SOIL2\stbi_pkm.h" />
+    <ClInclude Include="SOIL2\stbi_pkm_c.h" />
+    <ClInclude Include="SOIL2\stbi_pvr.h" />
+    <ClInclude Include="SOIL2\stbi_pvr_c.h" />
+    <ClInclude Include="SOIL2\stbi_qoi.h" />
+    <ClInclude Include="SOIL2\stbi_qoi_c.h" />
+    <ClInclude Include="SOIL2\stbi_qoi_write.h" />
+    <ClInclude Include="SOIL2\stb_image.h" />
+    <ClInclude Include="SOIL2\stb_image_write.h" />
+    <ClInclude Include="SOIL2\wfETC.h" />
     <ClInclude Include="spdlog\async.h" />
     <ClInclude Include="spdlog\async_logger-inl.h" />
     <ClInclude Include="spdlog\async_logger.h" />
@@ -595,26 +614,6 @@
     <ClInclude Include="spdlog\stopwatch.h" />
     <ClInclude Include="spdlog\tweakme.h" />
     <ClInclude Include="spdlog\version.h" />
-    <ClInclude Include="stb_image\stb_connected_components.h" />
-    <ClInclude Include="stb_image\stb_c_lexer.h" />
-    <ClInclude Include="stb_image\stb_divide.h" />
-    <ClInclude Include="stb_image\stb_ds.h" />
-    <ClInclude Include="stb_image\stb_dxt.h" />
-    <ClInclude Include="stb_image\stb_easy_font.h" />
-    <ClInclude Include="stb_image\stb_herringbone_wang_tile.h" />
-    <ClInclude Include="stb_image\stb_hexwave.h" />
-    <ClInclude Include="stb_image\stb_image.h" />
-    <ClInclude Include="stb_image\stb_image_resize2.h" />
-    <ClInclude Include="stb_image\stb_image_write.h" />
-    <ClInclude Include="stb_image\stb_include.h" />
-    <ClInclude Include="stb_image\stb_leakcheck.h" />
-    <ClInclude Include="stb_image\stb_perlin.h" />
-    <ClInclude Include="stb_image\stb_rect_pack.h" />
-    <ClInclude Include="stb_image\stb_sprintf.h" />
-    <ClInclude Include="stb_image\stb_textedit.h" />
-    <ClInclude Include="stb_image\stb_tilemap_editor.h" />
-    <ClInclude Include="stb_image\stb_truetype.h" />
-    <ClInclude Include="stb_image\stb_voxel_render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\src\glad.c" />
@@ -627,7 +626,10 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="stb_image\stb_vorbis.c" />
+    <ClCompile Include="SOIL2\image_DXT.c" />
+    <ClCompile Include="SOIL2\image_helper.c" />
+    <ClCompile Include="SOIL2\SOIL2.c" />
+    <ClCompile Include="SOIL2\wfETC.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\detail\func_common.inl" />

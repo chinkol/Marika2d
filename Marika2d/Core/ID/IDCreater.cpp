@@ -20,7 +20,7 @@ Mrk::ID Mrk::IDGenerater::Generate()
         Instance().sequence = 0;
     }
     Instance().lastTimeStamp = timeStamp;
-    Mrk::ID id{ (timeStamp << timeStampLeftShift) | Instance().sequence };
+    Mrk::ID id{ (uint64_t)(timeStamp << timeStampLeftShift) | Instance().sequence };
     return id;
 }
 
