@@ -31,7 +31,7 @@ GLuint Mrk::EBO::GetID() const
 
 Mrk::Texture::Texture(std::string_view path)
 {
-	id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS);
+	id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
 
 	Bind();
 	glGenerateMipmap(GL_TEXTURE_2D);

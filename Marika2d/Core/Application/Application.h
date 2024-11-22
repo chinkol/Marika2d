@@ -47,6 +47,9 @@ namespace Mrk
         glm::i32vec2 mainwndBox = { 800, 600 };   // width, height
         glm::vec4 mainViewport = { 0, 0, 800, 600 };   // left, top, width, height
 
+        //project dir
+        std::string projDir = "D:/SourceCode/Marika2d/Marika2d/TestProject";
+
         // callback
         std::vector<std::function<void()>> loopCallBacks;
     };

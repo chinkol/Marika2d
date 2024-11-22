@@ -61,9 +61,9 @@ namespace Mrk
 		}
 	};
 
-	class MeshLib : public Singleton<MeshLib>
+	class MeshHouse : public Singleton<MeshHouse>
 	{
-		MRK_SINGLETON(MeshLib)
+		MRK_SINGLETON(MeshHouse)
 	public:
 		std::shared_ptr<Mesh> GetMesh(std::string_view meshPath)
 		{
@@ -75,7 +75,7 @@ namespace Mrk
 			return ret.first->second;
 		}
 	private:
-		MeshLib() = default;
+		MeshHouse() = default;
 		std::map<std::string, std::shared_ptr<Mesh>> meshs;
 	};
 }

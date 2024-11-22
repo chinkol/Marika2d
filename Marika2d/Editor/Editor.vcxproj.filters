@@ -18,5 +18,19 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\ResourceImporter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Plugin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource\ResourceImporter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Plugin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
