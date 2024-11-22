@@ -4,6 +4,7 @@
 #include "Core/OpenGL/OpenGL.h"
 
 #include "Editor/Resource/ResourceImporter.h"
+#include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
 #include "Third/ImGuiFileDialog/ImGuiFileDialog.h"
@@ -101,13 +102,17 @@ void ModelImprotTest()
 
 int main()
 {
+	Mrk::PluginSystem::Init();
+
 	auto context = Mrk::Application::GetAppContext();
 	context.mainwndTitle = "Marika Engine Editor";
 	context.mainwndBox = { 1280, 800 };
 	context.loopCallBacks.push_back([]() {
 		EditorLoop();
-		ModelImprotTest();
-		ImguiFileDialogTest();
+		//ModelImprotTest();
+		//ImguiFileDialogTest();
+		Mrk::PluginSystem::Update();
+		Mrk::PluginSystem::Draw();
 		});
 	Mrk::Application::SetAppContext(context);
 	Mrk::Application::Run();	

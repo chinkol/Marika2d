@@ -41,6 +41,7 @@ namespace Mrk
 	class IPlugin
 	{
 	public:
+		virtual ~IPlugin() = default;
 		virtual inline void Update() {};
 		virtual inline void Draw() {};
 		virtual std::string_view GetPluginName() = 0;
