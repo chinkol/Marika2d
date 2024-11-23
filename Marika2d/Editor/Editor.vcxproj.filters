@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\ResourceImporter.cpp">
+    <ClCompile Include="Asset\AssetSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Plugin\Plugin.cpp">
@@ -26,7 +26,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Resource\ResourceImporter.h">
+    <ClInclude Include="Asset\AssetSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Plugin.h">

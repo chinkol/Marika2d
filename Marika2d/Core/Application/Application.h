@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Common/Singleton/Singleton.h"
 
 #include "Third/glm/glm.hpp"
@@ -42,16 +40,20 @@ namespace Mrk
     struct AppContext
     {
         // mainwnd
-        std::string mainwndTitle = "Marika Window";
-        bool mainViewportFillMainWnd = true;
-        glm::i32vec2 mainwndBox = { 800, 600 };   // width, height
-        glm::vec4 mainViewport = { 0, 0, 800, 600 };   // left, top, width, height
+        std::string windowTitle = "Marika Window";
+        glm::i32vec2 windowSize = { 800, 600 };   // width, height
 
-        //project dir
+        // viewport
+        bool viewportFill = true;
+        glm::vec4 viewport = { 0, 0, 800, 600 };   // left, top, width, height
+
+        // project dir
         std::string projDir = "D:/SourceCode/Marika2d/Marika2d/TestProject";
 
-        // callback
-        std::vector<std::function<void()>> loopCallBacks;
+        // callbacks
+        std::function<void()> appInitedCallBack;
+        std::function<void()> updateCallBack;
+        std::function<void()> drawCallBack;
     };
 
     class Application : public Singleton<Application>
@@ -64,9 +66,9 @@ namespace Mrk
 
     private:
         Application();
-        AppContext  context;
+
+    private:
+        AppContext context;
         Window* window;
     };
 }
-
-

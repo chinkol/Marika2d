@@ -1683,15 +1683,6 @@
     <ClInclude Include="assimp\ZipArchiveIOSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiFileDialog\dirent\dirent.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiFileDialog\ImGuiFileDialog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiFileDialog\ImGuiFileDialogConfig.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\src\glad.c">
@@ -1734,9 +1725,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SOIL2\wfETC.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGuiFileDialog\ImGuiFileDialog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

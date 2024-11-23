@@ -526,9 +526,6 @@
     <ClInclude Include="glm\vec3.hpp" />
     <ClInclude Include="glm\vec4.hpp" />
     <ClInclude Include="glm\vector_relational.hpp" />
-    <ClInclude Include="ImGuiFileDialog\dirent\dirent.h" />
-    <ClInclude Include="ImGuiFileDialog\ImGuiFileDialog.h" />
-    <ClInclude Include="ImGuiFileDialog\ImGuiFileDialogConfig.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
@@ -706,7 +703,6 @@
     <ClCompile Include="glad\src\glad.c" />
     <ClCompile Include="glm\detail\glm.cpp" />
     <ClCompile Include="glm\glm.cppm" />
-    <ClCompile Include="ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />

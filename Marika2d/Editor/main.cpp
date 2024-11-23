@@ -3,11 +3,11 @@
 #include "Core/Application/Application.h"
 #include "Core/OpenGL/OpenGL.h"
 
-#include "Editor/Resource/ResourceImporter.h"
+#include "Editor/Asset/AssetSystem.h"
 #include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
-#include "Third/ImGuiFileDialog/ImGuiFileDialog.h"
+#include "Third/imgui/imgui_browser.h"
 
 void EditorLoop()
 {
@@ -69,24 +69,11 @@ void EditorLoop()
 		{
 			if (ImGui::MenuItem("Import"))
 			{
-				IGFD::FileDialogConfig config;
-				config.path = ".";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", config);
+				Mrk::PluginAssetImport::GetInstance()->SelectFiles();
 			}
 			ImGui::EndMenu();
 		}
-
 		ImGui::EndMainMenuBar();
-	}
-
-	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
-	{
-		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
-			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-			std::cout << filePathName << "\t" << filePath << "\n";
-		}
-		ImGuiFileDialog::Instance()->Close();
 	}
 }
 void ImguiFileDialogTest()
@@ -95,25 +82,29 @@ void ImguiFileDialogTest()
 }
 void ModelImprotTest()
 {
-	Mrk::IModelImporter* fbxImporter = new Mrk::FbxImporter();
-	auto i = fbxImporter->GetExtension();
-	//fbxImporter->Import("..");
+	
 }
 
 int main()
 {
-	Mrk::PluginSystem::Init();
-
 	auto context = Mrk::Application::GetAppContext();
-	context.mainwndTitle = "Marika Engine Editor";
-	context.mainwndBox = { 1280, 800 };
-	context.loopCallBacks.push_back([]() {
+
+	context.windowTitle = "Marika Engine Editor";
+	context.windowSize = { 1280, 800 };
+
+	context.appInitedCallBack = []() {
+		Mrk::PluginSystem::Init();
+		};
+
+	context.updateCallBack = []() {
 		EditorLoop();
-		//ModelImprotTest();
-		//ImguiFileDialogTest();
 		Mrk::PluginSystem::Update();
+		};
+
+	context.drawCallBack = []() {
 		Mrk::PluginSystem::Draw();
-		});
+		};
+
 	Mrk::Application::SetAppContext(context);
-	Mrk::Application::Run();	
+	Mrk::Application::Run();
 }

@@ -136,11 +136,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
-    <ClCompile Include="Resource\ResourceImporter.cpp" />
+    <ClCompile Include="Asset\AssetSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Plugin\Plugin.h" />
-    <ClInclude Include="Resource\ResourceImporter.h" />
+    <ClInclude Include="Asset\AssetSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

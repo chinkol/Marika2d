@@ -2,16 +2,33 @@
 
 #include "Common/Singleton/Singleton.h"
 
+#include "Third/imgui/imgui_browser.h"
+
+#include <iostream>
 #include <string>
 #include <functional>
 #include <vector>
+#include <map>
 
 #ifndef MRK_PLUGIN
 #define MRK_PLUGIN(x)												\
+friend class PluginSystem;											\
+public:																\
+static inline x* GetInstance() {									\
+	return instance;												\
+}																	\
+private:															\
+inline x() {														\
+	x::instance = this;												\
+}																	\
 virtual inline std::string_view GetPluginName() override {			\
-	return #x; }													\
+	return #x;														\
+}																	\
 static inline bool _mrk_##x##_editor_plugin_register_ = [](){		\
-	Mrk::PluginSystem::RegisterPlugin<x>(); return true;}();
+	Mrk::PluginSystem::RegisterPlugin<x>();							\
+	return true;													\
+}();																\
+static inline x* instance = nullptr;
 #endif // !MRK_PLUGIN
 
 namespace Mrk
@@ -22,19 +39,12 @@ namespace Mrk
 	{
 		MRK_SINGLETON(PluginSystem)
 	public:
-		template<typename T>
-		static void RegisterPlugin() 
-		{
-			static_assert(std::is_base_of_v<IPlugin, T>, "T Is Not A Plugin");
-			Instance().creators.push_back([]() {
-				return new T();
-				});
-		}
+		template<typename T> static void RegisterPlugin();
 		static void Init();
 		static void Update();
 		static void Draw();
 	private:
-		std::vector<std::function<IPlugin*()>> creators;
+		std::vector<std::function<IPlugin* ()>> creators;
 		std::vector<IPlugin*> plugins;
 	};
 
@@ -42,17 +52,40 @@ namespace Mrk
 	{
 	public:
 		virtual ~IPlugin() = default;
+		virtual inline void Init() {};
 		virtual inline void Update() {};
 		virtual inline void Draw() {};
 		virtual std::string_view GetPluginName() = 0;
 	};
 
-	class FileDlgBackEnd : public IPlugin
+	class PluginAssetImport : public IPlugin
 	{
-		MRK_PLUGIN(FileDlgBackEnd)
+		MRK_PLUGIN(PluginAssetImport)
 	public:
+		void SelectFiles();
 
+	private:
+		virtual void Init() override;
+		virtual void Update();
+		
+	private:
+		ImGui::FileBrowser fileDlg;
+		ImGui::FileBrowser saveDlg;
+		std::vector<std::filesystem::path> fromPathes;
+		std::filesystem::path toPath;
 	};
+}
+
+namespace Mrk
+{
+	template<typename T>
+	inline void PluginSystem::RegisterPlugin()
+	{
+		static_assert(std::is_base_of_v<IPlugin, T>, "T Is Not A Plugin");
+		Instance().creators.push_back([]() {
+			return new T();
+			});
+	}
 }
 
 

@@ -21,31 +21,7 @@ void Mrk::Window::Run(const std::function<void()>& externCallBack)
 {
     while (!ShouldClose())
     {
-        // 清屏
-        glViewport(0, 0, width, height);
-        glClearColor(0.1f, 0.2f, 0.3f, 0.4f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //启动 ImGui 帧
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        //外部循环
         externCallBack();
-
-        //内部循环
-        Mrk::ComponentHouse::Invoke("PreUpdate");
-        Mrk::ComponentHouse::Invoke("Update");
-        Mrk::ComponentHouse::Invoke("LateUpdate");
-        Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : 改定时
-        Mrk::ComponentHouse::Invoke("PreDraw");
-        Mrk::ComponentHouse::Invoke("Draw");
-        Mrk::ComponentHouse::Invoke("LateDraw");
-
-        // 渲染 ImGui
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
       
         // 交换缓冲区
         glfwSwapBuffers(window);
@@ -138,13 +114,32 @@ void Mrk::Application::Run()
 {
     auto& context = Instance().context;
     auto window = Instance().window;
-    window = new Window(context.mainwndBox.x, context.mainwndBox.y, context.mainwndTitle);
-    window->Run([context]() {
-        for (auto& callback : context.loopCallBacks)
+    window = new Window(context.windowSize.x, context.windowSize.y, context.windowTitle);
+
+    context.appInitedCallBack();
+
+    window->Run([context]()
         {
-            callback();
-        }
+            //启动 ImGui 帧
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            Mrk::ComponentHouse::Invoke("PreUpdate");
+            Mrk::ComponentHouse::Invoke("Update");
+            Mrk::ComponentHouse::Invoke("LateUpdate");
+            Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : 改定时
+            context.updateCallBack();
+            Mrk::ComponentHouse::Invoke("PreDraw");
+            Mrk::ComponentHouse::Invoke("Draw");
+            Mrk::ComponentHouse::Invoke("LateDraw");
+            context.drawCallBack();
+
+            // 渲染 ImGui
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         });
+
     delete window;
 }
 
