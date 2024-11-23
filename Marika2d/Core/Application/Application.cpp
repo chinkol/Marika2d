@@ -21,6 +21,9 @@ void Mrk::Window::Run(const std::function<void()>& externCallBack)
 {
     while (!ShouldClose())
     {
+        glClearColor(0.1f, 0.2f, 0.3f, 0.4f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         externCallBack();
       
         // 交换缓冲区
@@ -116,7 +119,7 @@ void Mrk::Application::Run()
     auto window = Instance().window;
     window = new Window(context.windowSize.x, context.windowSize.y, context.windowTitle);
 
-    context.appInitedCallBack();
+    if (context.appInitedCallBack) context.appInitedCallBack();
 
     window->Run([context]()
         {
@@ -129,11 +132,11 @@ void Mrk::Application::Run()
             Mrk::ComponentHouse::Invoke("Update");
             Mrk::ComponentHouse::Invoke("LateUpdate");
             Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : 改定时
-            context.updateCallBack();
+            if (context.updateCallBack) context.updateCallBack();
             Mrk::ComponentHouse::Invoke("PreDraw");
             Mrk::ComponentHouse::Invoke("Draw");
             Mrk::ComponentHouse::Invoke("LateDraw");
-            context.drawCallBack();
+            if (context.drawCallBack) context.drawCallBack();
 
             // 渲染 ImGui
             ImGui::Render();

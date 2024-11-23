@@ -63,11 +63,9 @@ int main()
 	auto com1 = Mrk::ComponentFactory::CreateNew("TestComponent");
 
 	auto context = Mrk::Application::GetAppContext();
-	context.mainwndTitle = "Marika Engine Runtime";
-	context.mainwndBox = { 1280, 800 };
-	context.loopCallBacks.push_back([]() {
+	context.updateCallBack = []() {
 		ImGui::ShowDebugLogWindow();
-		});
+		};
 	Mrk::Application::SetAppContext(context);
 	Mrk::Application::Run();
 
