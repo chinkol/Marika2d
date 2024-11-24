@@ -33,10 +33,10 @@ void Mrk::GameObjectOperate::AttachChild(const std::shared_ptr<GameObject>& chil
 	assert(child && parent);
 	if (!child->parent.expired())
 	{
-		auto aParent = child->parent.lock();
-		if (aParent == parent)
+		auto oriParent = child->parent.lock();
+		if (oriParent == parent)
 			return;
-		aParent->children.erase(std::remove(aParent->children.begin(), aParent->children.end(), child), aParent->children.end());
+		oriParent->children.erase(std::remove(oriParent->children.begin(), oriParent->children.end(), child), oriParent->children.end());
 	}
 	child->parent = parent;
 	parent->children.push_back(child);

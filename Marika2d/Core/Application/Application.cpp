@@ -86,7 +86,7 @@ void Mrk::Window::InitImGui()
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
+    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 19.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);

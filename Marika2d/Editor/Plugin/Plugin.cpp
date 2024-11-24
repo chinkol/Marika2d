@@ -63,14 +63,10 @@ void Mrk::PluginAssetImport::Update()
 
 	if (!fromPathes.empty() && !toPath.empty())
 	{
-		std::cout << "From :\n";
 		for (auto& fromPath : fromPathes)
 		{
-			std::cout << fromPath << "\n";
-			//TODO : import logic
+			AssetSystem::Import(fromPath, toPath);
 		}
-		std::cout << "To : \n";
-		std::cout << toPath << "\n";
 		fromPathes.clear();
 		toPath.clear();
 	}

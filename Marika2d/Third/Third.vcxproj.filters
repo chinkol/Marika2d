@@ -1683,6 +1683,66 @@
     <ClInclude Include="assimp\ZipArchiveIOSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image\stb_c_lexer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_connected_components.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_divide.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_ds.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_dxt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_easy_font.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_herringbone_wang_tile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_hexwave.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_image.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_image_resize2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_image_write.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_include.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_leakcheck.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_perlin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_rect_pack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_sprintf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_textedit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_tilemap_editor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_truetype.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\stb_voxel_render.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\src\glad.c">
@@ -1725,6 +1785,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SOIL2\wfETC.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image\stb_vorbis.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

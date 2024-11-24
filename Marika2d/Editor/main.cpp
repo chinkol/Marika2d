@@ -7,9 +7,25 @@
 #include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
+#include "Third/imgui/imgui.h"
 #include "Third/imgui/imgui_browser.h"
 
-void EditorLoop()
+void Test()
+{
+	if (ImGui::Button("Modal"))
+		ImGui::OpenPopup("Modal window");
+
+	bool open = true;
+	if (ImGui::BeginPopupModal("Modal window", &open))
+	{
+		ImGui::Text("Hello dsjfhds fhjs hfj dshfj hds");
+		if (ImGui::Button("Close"))
+			ImGui::CloseCurrentPopup();
+		ImGui::EndPopup();
+	}
+}
+
+void EditorLoopTest()
 {
 	static auto tex1 = SOIL_load_OGL_single_cubemap("OpenGL-DDS/Textures/desertcube1024.cbdds", SOIL_DDS_CUBEMAP_FACE_ORDER, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
 	static auto tex2 = SOIL_load_OGL_texture("OpenGL-DDS/Textures/grass.dds", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
@@ -76,10 +92,6 @@ void EditorLoop()
 		ImGui::EndMainMenuBar();
 	}
 }
-void ImguiFileDialogTest()
-{
-
-}
 void ModelImprotTest()
 {
 	
@@ -97,7 +109,8 @@ int main()
 		};
 
 	context.updateCallBack = []() {
-		EditorLoop();
+		EditorLoopTest();
+		Test();
 		Mrk::PluginSystem::Update();
 		};
 
