@@ -71,3 +71,44 @@ void Mrk::PluginAssetImport::Update()
 		toPath.clear();
 	}
 }
+
+void Mrk::PluginCreateProject::SelectFile()
+{
+	pathSelectDlg.Open();
+}
+
+void Mrk::PluginCreateProject::CreateNewProj(const std::filesystem::path& path)
+{
+	std::filesystem::create_directory(path);
+	//TODO
+}
+
+void Mrk::PluginCreateProject::Init()
+{
+	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory);
+	pathSelectDlg.SetTitle("Create Project");
+}
+
+void Mrk::PluginCreateProject::Update()
+{
+	pathSelectDlg.Display();
+	if (pathSelectDlg.HasSelected())
+	{
+		projectPath = pathSelectDlg.GetSelected();
+		pathSelectDlg.ClearSelected();
+
+		ImGui::OpenPopup((char*)u8"工程名称");
+	}
+
+	if (ImGui::BeginPopupModal((char*)u8"工程名称"))
+	{
+		ImGui::InputText((char*)u8"工程名称", projectName.data(), projectName.size());
+		if (ImGui::Button("OK") && projectName != empty)
+		{
+			CreateNewProj(projectPath / projectName);
+			projectName = empty;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}

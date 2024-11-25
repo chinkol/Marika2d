@@ -57,6 +57,10 @@ void EditorLoopTest()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Create"))
+			{
+				Mrk::PluginCreateProject::GetInstance()->SelectFile();
+			}
 			if (ImGui::MenuItem("Open"))
 			{
 			}

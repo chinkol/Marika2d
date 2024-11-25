@@ -48,6 +48,9 @@
     <ClCompile Include="Mesh\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SysConfig\SysConfig.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -81,6 +84,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Mesh\MeshRenderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SysConfig\SysConfig.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

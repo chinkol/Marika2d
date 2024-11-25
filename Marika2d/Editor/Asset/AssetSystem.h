@@ -10,6 +10,7 @@
 #include "Third/assimp/scene.h"
 #include "Third/assimp/postprocess.h"
 
+#include <span>
 #include <fstream>
 #include <vector>
 #include <ranges>
@@ -123,6 +124,7 @@ namespace Mrk
 		{
 			if (aiNode->mNumMeshes > 0)
 			{
+				//std::span<aiMesh*>(aiScene->mMeshes, aiNode->mNumMeshes);
 				for (unsigned int i = 0; i < aiNode->mNumMeshes; i++)
 				{
 					auto aiMesh = aiScene->mMeshes[aiNode->mMeshes[i]];
@@ -149,9 +151,9 @@ namespace Mrk
 			vertices.reserve(aiMesh->mNumVertices);
 			for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 			{
-				auto aiPosition = aiMesh->mVertices[i];
-				auto aiNormal = aiMesh->mNormals[i];
-				auto aiTexCoord = aiMesh->mTextureCoords[0][i];
+				auto& aiPosition = aiMesh->mVertices[i];
+				auto& aiNormal = aiMesh->mNormals[i];
+				auto& aiTexCoord = aiMesh->mTextureCoords[0][i];
 
 				auto position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
 				auto normal = glm::vec3(aiNormal.x, aiNormal.y, aiNormal.z);
@@ -167,7 +169,6 @@ namespace Mrk
 			for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
 			{
 				auto& face = aiMesh->mFaces[i];
-				assert(face.mNumIndices == 3, "assimp face error");
 				indices.push_back(face.mIndices[0]);
 				indices.push_back(face.mIndices[1]);
 				indices.push_back(face.mIndices[2]);

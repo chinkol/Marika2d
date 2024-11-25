@@ -30,6 +30,7 @@
     <ClCompile Include="OpenGL\OpenGL.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="SysConfig\SysConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="OpenGL\OpenGL.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="SysConfig\SysConfig.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

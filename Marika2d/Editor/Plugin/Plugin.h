@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/Singleton/Singleton.h"
+#include "Common/Def/UtilityDef.h"
 
 #include "Third/imgui/imgui_browser.h"
 
@@ -73,6 +74,22 @@ namespace Mrk
 		ImGui::FileBrowser saveDlg;
 		std::vector<std::filesystem::path> fromPathes;
 		std::filesystem::path toPath;
+	};
+
+	class PluginCreateProject : public IPlugin
+	{
+		MRK_PLUGIN(PluginCreateProject)
+	public:
+		void SelectFile();
+	private:
+		void CreateNewProj(const std::filesystem::path& path);
+		virtual void Init() override;
+		virtual void Update() override;
+	private:
+		ImGui::FileBrowser pathSelectDlg;
+		std::filesystem::path projectPath;
+		std::string empty = std::string("", 64);
+		std::string projectName = empty;
 	};
 }
 
