@@ -24,6 +24,7 @@
     <ClCompile Include="Memory\MemCtrlSystem.cpp" />
     <ClCompile Include="Serialize\SerializeSystem.cpp" />
     <ClCompile Include="Singleton\Singleton.cpp" />
+    <ClCompile Include="TemplateUtility.cpp" />
     <ClCompile Include="Utility\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +35,7 @@
     <ClInclude Include="Memory\MemCtrlSystem.h" />
     <ClInclude Include="Serialize\SerializeSystem.h" />
     <ClInclude Include="Singleton\Singleton.h" />
+    <ClInclude Include="TemplateUtility.h" />
     <ClInclude Include="Utility\Utility.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

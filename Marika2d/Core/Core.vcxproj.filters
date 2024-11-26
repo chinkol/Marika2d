@@ -51,6 +51,9 @@
     <ClCompile Include="SysConfig\SysConfig.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Reflect\ReflectSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -87,6 +90,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SysConfig\SysConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflect\ReflectSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

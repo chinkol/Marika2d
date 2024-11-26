@@ -25,7 +25,7 @@ inline x() {														\
 virtual inline std::string_view GetPluginName() override {			\
 	return #x;														\
 }																	\
-static inline bool _mrk_##x##_editor_plugin_register_ = [](){		\
+static inline bool _mrk_macro_##x##_editor_plugin_register_ = [](){	\
 	Mrk::PluginSystem::RegisterPlugin<x>();							\
 	return true;													\
 }();																\
