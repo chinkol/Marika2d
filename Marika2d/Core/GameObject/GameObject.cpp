@@ -28,6 +28,11 @@ const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& 
 	return Instance().creators;
 }
 
+const std::vector<std::string>& Mrk::GameObjectFactory::GetManifest()
+{
+	return Instance().manifest;
+}
+
 void Mrk::GameObjectOperate::AttachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent)
 {
 	assert(child && parent);

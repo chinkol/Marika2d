@@ -48,6 +48,10 @@
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="SysConfig\SysConfig.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenGL\Shader\Base.Frag" />
+    <None Include="OpenGL\Shader\Base.Vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

@@ -2,6 +2,7 @@
 
 #include "Core/Application/Application.h"
 #include "Core/OpenGL/OpenGL.h"
+#include "Core/Mesh/Mesh.h"
 
 #include "Editor/Asset/AssetSystem.h"
 #include "Editor/Plugin/Plugin.h"
@@ -10,19 +11,11 @@
 #include "Third/imgui/imgui.h"
 #include "Third/imgui/imgui_browser.h"
 
+#include <string>
+
 void Test()
 {
-	if (ImGui::Button("Modal"))
-		ImGui::OpenPopup("Modal window");
-
-	bool open = true;
-	if (ImGui::BeginPopupModal("Modal window", &open))
-	{
-		ImGui::Text("Hello dsjfhds fhjs hfj dshfj hds");
-		if (ImGui::Button("Close"))
-			ImGui::CloseCurrentPopup();
-		ImGui::EndPopup();
-	}
+	auto mesh = Mrk::MeshHouse::GetMesh("D:/SourceCode/Marika2d/Marika2d/TestProject/test.mem");
 }
 
 void EditorLoopTest()
@@ -93,6 +86,24 @@ void EditorLoopTest()
 			}
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu("New"))
+		{
+			if (ImGui::BeginMenu("GameObject"))
+			{
+				auto& manifest = Mrk::GameObjectFactory::GetManifest();
+				for (auto& item : manifest)
+				{
+					if (ImGui::MenuItem(item.c_str()))
+					{
+						auto obj = Mrk::GameObjectFactory::CreateNew(item);
+					}
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 }

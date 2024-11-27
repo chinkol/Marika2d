@@ -96,4 +96,8 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenGL\Shader\Base.Frag" />
+    <None Include="OpenGL\Shader\Base.Vert" />
+  </ItemGroup>
 </Project>

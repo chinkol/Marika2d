@@ -6,6 +6,8 @@
 #include "Third/glad/include/glad.h"
 #include "Third/glm/glm.hpp"
 
+#include <fstream>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,8 +34,8 @@ namespace Mrk
 
 	class Mesh
 	{
+		friend class MeshHouse;
 	public:
-		Mesh();
 		~Mesh();
 		void Bind();
 
@@ -42,7 +44,9 @@ namespace Mrk
 		const std::vector<SubMesh>& GetSubMeshes();
 
 	private:
-		std::string path;
+		Mesh();
+
+	private:
 		std::vector<SubMesh> subMeshes;
 		glm::vec3 boundingMax;
 		glm::vec3 boundingMin;
@@ -51,31 +55,17 @@ namespace Mrk
 		GLuint ebo = 0;
 	};
 
-	class MeshLoader : public Singleton<MeshLoader>
-	{
-		MRK_SINGLETON(MeshLoader)
-	public:
-		static std::shared_ptr<Mesh> LoadMesh(std::string_view meshPath)
-		{
-			return nullptr;
-		}
-	};
-
 	class MeshHouse : public Singleton<MeshHouse>
 	{
 		MRK_SINGLETON(MeshHouse)
 	public:
-		std::shared_ptr<Mesh> GetMesh(std::string_view meshPath)
-		{
-			auto ret = meshs.try_emplace(meshPath.data(), nullptr);
-			if (ret.second)
-			{
-				ret.first->second = MeshLoader::LoadMesh(meshPath);
-			}
-			return ret.first->second;
-		}
+		static std::shared_ptr<Mesh> GetMesh(std::string_view meshPath);
+
 	private:
 		MeshHouse() = default;
+		static std::shared_ptr<Mesh> LoadMesh(std::string_view path);
+
+	private:
 		std::map<std::string, std::shared_ptr<Mesh>> meshs;
 	};
 }

@@ -26,9 +26,11 @@ namespace Mrk
 		template<typename T> 
 		static std::shared_ptr<GameObject> CreateNew();
 		static const std::map<std::string, std::function<std::shared_ptr<GameObject>()>>& GetCreators();
+		static const std::vector<std::string>& GetManifest();
 	private:
 		GameObjectFactory() = default;
 		std::map<std::string, std::function<std::shared_ptr<GameObject>()>> creators;
+		std::vector<std::string> manifest;
 	};
 
 	class GameObject : public Object, public ISerializable, public std::enable_shared_from_this<GameObject>
@@ -72,12 +74,15 @@ namespace Mrk
 	inline void GameObjectFactory::RegisterGameObject(std::string_view classname)
 	{
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
-		auto ret = Instance().creators.try_emplace(classname.data(), []() {
+		if (Instance().creators.try_emplace(classname.data(), []() {
 			return Mrk::MemCtrlSystem::CreateNew<T>();
-			});
-		if (!ret.second)
+			}).second)
 		{
-			//log
+			Instance().manifest.push_back(classname.data());
+		}
+		else
+		{
+			throw; // repeat?
 		}
 	}
 

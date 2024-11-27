@@ -33,7 +33,7 @@
     <ClCompile Include="Utility\Utility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TemplateUtility.cpp">
+    <ClCompile Include="Utility\TemplateUtility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClInclude Include="Utility\Utility.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="TemplateUtility.h">
+    <ClInclude Include="Utility\TemplateUtility.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

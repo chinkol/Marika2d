@@ -75,7 +75,7 @@ namespace Mrk
 			file.write(header, 80);
 
 			//写入顶点数量
-			auto vertexCount = vertices.size();
+			auto vertexCount = (uint32_t)vertices.size();
 			file.write(reinterpret_cast<const char*>(&vertexCount), sizeof(uint32_t));
 
 			//写入顶点
