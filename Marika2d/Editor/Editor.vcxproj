@@ -115,7 +115,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Third.lib;Common.lib;Core.lib;box2dd.lib;glfw3.lib;assimp-vc143-mtd.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Third.lib;Common.lib;Core.lib;box2dd.lib;glfw3.lib;assimp-vc143-mtd.lib;OpenGL32.lib;rttr_core_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
