@@ -28,10 +28,10 @@
 #ifndef RTTR_INVOKE_WITH_DEFAULTS_H_
 #define RTTR_INVOKE_WITH_DEFAULTS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/argument_extractor.h"
-#include "rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/argument_extractor.h"
+#include "../../../rttr/detail/misc/function_traits.h"
 
 #include <type_traits>
 

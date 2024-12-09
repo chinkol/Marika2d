@@ -28,8 +28,8 @@
 #ifndef RTTR_REGISTRATION_STATE_SAVER_H_
 #define RTTR_REGISTRATION_STATE_SAVER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/array_range.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/array_range.h"
 
 #include <vector>
 

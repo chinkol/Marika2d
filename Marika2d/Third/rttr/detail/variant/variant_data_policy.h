@@ -28,14 +28,14 @@
 #ifndef RTTR_VARIANT_DATA_POLICY_H_
 #define RTTR_VARIANT_DATA_POLICY_H_
 
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/variant/variant_data.h"
-#include "rttr/detail/misc/argument_wrapper.h"
-#include "rttr/detail/variant_associative_view/variant_associative_view_creator.h"
-#include "rttr/detail/variant_sequential_view/variant_sequential_view_creator.h"
-#include "rttr/detail/variant/variant_data_converter.h"
-#include "rttr/detail/comparison/compare_equal.h"
-#include "rttr/detail/comparison/compare_less.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/variant/variant_data.h"
+#include "../../../rttr/detail/misc/argument_wrapper.h"
+#include "../../../rttr/detail/variant_associative_view/variant_associative_view_creator.h"
+#include "../../../rttr/detail/variant_sequential_view/variant_sequential_view_creator.h"
+#include "../../../rttr/detail/variant/variant_data_converter.h"
+#include "../../../rttr/detail/comparison/compare_equal.h"
+#include "../../../rttr/detail/comparison/compare_less.h"
 
 #include <cstdint>
 

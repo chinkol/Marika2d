@@ -26,10 +26,10 @@
 *************************************************************************************/
 
 
-#include "rttr/variant_associative_view.h"
+#include "../rttr/variant_associative_view.h"
 
-#include "rttr/argument.h"
-#include "rttr/instance.h"
+#include "../rttr/argument.h"
+#include "../rttr/instance.h"
 
 using namespace std;
 

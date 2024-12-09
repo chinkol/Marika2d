@@ -28,14 +28,14 @@
 #ifndef RTTR_TYPE_REGISTER_P_H_
 #define RTTR_TYPE_REGISTER_P_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/flat_multimap.h"
-#include "rttr/detail/misc/flat_map.h"
-#include "rttr/enumeration.h"
-#include "rttr/variant.h"
-#include "rttr/detail/metadata/metadata.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/flat_multimap.h"
+#include "../../../rttr/detail/misc/flat_map.h"
+#include "../../../rttr/enumeration.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/detail/metadata/metadata.h"
 
-#include "rttr/string_view.h"
+#include "../../../rttr/string_view.h"
 
 #include <memory>
 #include <string>

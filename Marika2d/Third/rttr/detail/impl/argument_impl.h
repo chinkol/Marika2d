@@ -28,8 +28,8 @@
 #ifndef RTTR_ARGUMENT_IMPL_H_
 #define RTTR_ARGUMENT_IMPL_H_
 
-#include "rttr/type.h"
-#include "rttr/variant.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/variant.h"
 
 namespace rttr
 {

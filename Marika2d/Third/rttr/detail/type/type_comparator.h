@@ -28,8 +28,8 @@
 #ifndef RTTR_TYPE_COMPARATOR_H_
 #define RTTR_TYPE_COMPARATOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/type/type_register.h"
 
 namespace rttr
 {

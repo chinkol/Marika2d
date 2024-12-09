@@ -28,8 +28,8 @@
 #ifndef RTTR_DESTRUCTOR_H_
 #define RTTR_DESTRUCTOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/class_item_mapper.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/class_item_mapper.h"
 
 namespace rttr
 {

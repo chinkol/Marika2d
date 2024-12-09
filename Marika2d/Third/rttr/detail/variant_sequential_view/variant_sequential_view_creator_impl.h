@@ -28,7 +28,7 @@
 #ifndef RTTR_VARIANT_SEQUENTIAL_CREATOR_IMPL_H_
 #define RTTR_VARIANT_SEQUENTIAL_CREATOR_IMPL_H_
 
-#include "rttr/detail/variant_sequential_view/variant_sequential_view_private.h"
+#include "../../../rttr/detail/variant_sequential_view/variant_sequential_view_private.h"
 
 namespace rttr
 {

@@ -28,8 +28,8 @@
 #ifndef RTTR_CONSTRUCTOR_VISITOR_INVOKER_H_
 #define RTTR_CONSTRUCTOR_VISITOR_INVOKER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/visitor.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/visitor.h"
 
 namespace rttr
 {

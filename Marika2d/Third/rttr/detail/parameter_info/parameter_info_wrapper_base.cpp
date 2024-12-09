@@ -25,8 +25,8 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/parameter_info/parameter_info_wrapper_base.h"
-#include "rttr/type.h"
+#include "../../../rttr/detail/parameter_info/parameter_info_wrapper_base.h"
+#include "../../../rttr/type.h"
 
 namespace rttr
 {

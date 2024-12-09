@@ -25,9 +25,9 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/conversion/std_conversion_functions.h"
+#include "../../../rttr/detail/conversion/std_conversion_functions.h"
 
-#include "rttr/detail/conversion/number_conversion.h"
+#include "../../../rttr/detail/conversion/number_conversion.h"
 
 #include <sstream>
 #include <locale>

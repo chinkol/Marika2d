@@ -28,11 +28,11 @@
 #ifndef RTTR_PROPERTY_H_
 #define RTTR_PROPERTY_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/class_item_mapper.h"
-#include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
-#include "rttr/string_view.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/class_item_mapper.h"
+#include "../rttr/parameter_info.h"
+#include "../rttr/access_levels.h"
+#include "../rttr/string_view.h"
 
 #include <string>
 

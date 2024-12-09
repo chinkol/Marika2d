@@ -25,11 +25,10 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/comparison/compare_less.h"
-
-#include "rttr/detail/type/type_register_p.h"
-#include "rttr/type.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/comparison/compare_less.h"
+#include "../../../rttr/detail/type/type_register_p.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/variant.h"
 
 #include <type_traits>
 

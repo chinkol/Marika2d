@@ -25,8 +25,8 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/type.h"
-#include "rttr/detail/type/type_data.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/detail/type/type_data.h"
 
 namespace rttr
 {

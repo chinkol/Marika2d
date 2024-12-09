@@ -25,8 +25,8 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/destructor.h"
-#include "rttr/detail/destructor/destructor_wrapper_base.h"
+#include "../rttr/destructor.h"
+#include "../rttr/detail/destructor/destructor_wrapper_base.h"
 
 using namespace std;
 

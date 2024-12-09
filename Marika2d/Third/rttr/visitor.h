@@ -28,10 +28,10 @@
 #ifndef RTTR_VISITOR_H_
 #define RTTR_VISITOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/rttr_enable.h"
-#include "rttr/type_list.h"
-#include "rttr/detail/visitor/visitor_registration.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/rttr_enable.h"
+#include "../rttr/type_list.h"
+#include "../rttr/detail/visitor/visitor_registration.h"
 
 #include <type_traits>
 #include <functional>
@@ -70,8 +70,8 @@ class constructor;
  * ---------------
  * \code{.cpp}
  *
- * #include "print_visitor.h"  // IMPORTANT: You have to include your visitor always before the include of the `<rttr/registration>`
- * #include <rttr/registration>
+ * #include "print_visitor.h"  // IMPORTANT: You have to include your visitor always before the include of the `<../rttr/registration>`
+ * #include <../rttr/registration>
  *
  * RTTR_REGISTRATION
  * {
@@ -88,10 +88,10 @@ class constructor;
  * }
  * \endcode
  *
- * It is very important that the include of the visitor is done before the include of `<rttr/registration>`,
+ * It is very important that the include of the visitor is done before the include of `<../rttr/registration>`,
  * otherwise the visitor will not be found by rttr. The reason for that is, the visit functions will be created at compile
  * time, so the declaration has to be before the instantiation.
- * Because of limitations of the c++ preprocessor, it is not possible to include the visitor or the `<rttr/registration>` header in
+ * Because of limitations of the c++ preprocessor, it is not possible to include the visitor or the `<../rttr/registration>` header in
  * a precompiled header and use the \ref visitor functionality. All custom visitors will not be found.
  *
  */
@@ -500,6 +500,6 @@ private:
 
 } // end namespace rttr
 
-#include "rttr/detail/visitor/visitor_impl.h"
+#include "../rttr/detail/visitor/visitor_impl.h"
 
 #endif  // RTTR_VISITOR_H_

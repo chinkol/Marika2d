@@ -29,7 +29,7 @@
 #ifndef RTTR_ARRAY_RANGE_H_
 #define RTTR_ARRAY_RANGE_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 #include <vector>
 #include <cstddef>
 
@@ -335,6 +335,6 @@ private:
 
 } // end namespace rttr
 
-#include "rttr/detail/impl/array_range_impl.h"
+#include "../rttr/detail/impl/array_range_impl.h"
 
 #endif // RTTR_ARRAY_RANGE_H_

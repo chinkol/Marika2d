@@ -28,9 +28,9 @@
 #ifndef RTTR_DESTRUCTOR_WRAPPER_H_
 #define RTTR_DESTRUCTOR_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/destructor/destructor_wrapper_base.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/destructor/destructor_wrapper_base.h"
+#include "../../../rttr/variant.h"
 
 namespace rttr
 {

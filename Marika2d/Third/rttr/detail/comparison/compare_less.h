@@ -28,10 +28,10 @@
 #ifndef RTTR_COMPARE_LESS_H_
 #define RTTR_COMPARE_LESS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/comparison/comparable_types.h"
-#include "rttr/detail/misc/template_type_trait.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/comparison/comparable_types.h"
+#include "../../../rttr/detail/misc/template_type_trait.h"
 
 #include <type_traits>
 
@@ -78,9 +78,9 @@ compare_less_than(const T& lhs, const T& rhs, int& result);
 } // end namespace detail
 } // end namespace rttr
 
-#include "rttr/detail/comparison/compare_less_impl.h"
+#include "../../../rttr/detail/comparison/compare_less_impl.h"
 // the include in this place is necessary, otherwise we get an error during compilation:
 // "'compare_equal': identifier not found"
-#include "rttr/detail/misc/template_type_trait_impl.h"
+#include "../../../rttr/detail/misc/template_type_trait_impl.h"
 
 #endif // RTTR_COMPARE_LESS_H_

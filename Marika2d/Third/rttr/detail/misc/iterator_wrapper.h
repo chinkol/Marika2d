@@ -28,9 +28,9 @@
 #ifndef RTTR_ITERATOR_WRAPPER_H_
 #define RTTR_ITERATOR_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/variant.h"
+#include "../../../rttr/variant.h"
 
 #include <memory>
 #include <type_traits>

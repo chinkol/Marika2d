@@ -28,8 +28,8 @@
 #ifndef RTTR_COMPARABLE_TYPES_H_
 #define RTTR_COMPARABLE_TYPES_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/string_view.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/string_view.h"
 
 #include <type_traits>
 

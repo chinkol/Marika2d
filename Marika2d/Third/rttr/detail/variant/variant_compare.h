@@ -28,7 +28,7 @@
 #ifndef RTTR_VARIANT_COMPARE_LESS_H_
 #define RTTR_VARIANT_COMPARE_LESS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 namespace rttr
 {

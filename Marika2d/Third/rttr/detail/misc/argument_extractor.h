@@ -28,8 +28,8 @@
 #ifndef RTTR_ARGUMENT_EXTRACTOR_H_
 #define RTTR_ARGUMENT_EXTRACTOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 #include <memory>
 #include <type_traits>

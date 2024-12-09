@@ -2750,5 +2750,8 @@
     <None Include="assimp\config.h.in" />
     <None Include="assimp\revision.h.in" />
     <None Include="assimp\module.modulemap" />
+    <None Include="rttr\type" />
+    <None Include="rttr\registration" />
+    <None Include="rttr\registration_friend" />
   </ItemGroup>
 </Project>

@@ -25,13 +25,13 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 #if RTTR_PLATFORM != RTTR_PLATFORM_WINDOWS
 
-#include "rttr/detail/library/library_p.h"
+#include "../../../rttr/detail/library/library_p.h"
 
-#include "rttr/detail/misc/utility.h"
+#include "../../../rttr/detail/misc/utility.h"
 
 #include <vector>
 #include <dlfcn.h>

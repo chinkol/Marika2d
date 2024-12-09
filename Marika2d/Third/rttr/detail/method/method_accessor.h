@@ -28,9 +28,9 @@
 #ifndef RTTR_METHOD_ACCESSOR_H_
 #define RTTR_METHOD_ACCESSOR_H_
 
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/misc/utility.h"
-#include "rttr/detail/method/method_invoker.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/misc/utility.h"
+#include "../../../rttr/detail/method/method_invoker.h"
 
 namespace rttr
 {

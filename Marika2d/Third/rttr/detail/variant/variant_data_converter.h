@@ -28,9 +28,9 @@
 #ifndef RTTR_VARIANT_DATA_CONVERTER_H_
 #define RTTR_VARIANT_DATA_CONVERTER_H_
 
-#include "rttr/detail/conversion/std_conversion_functions.h"
-#include "rttr/detail/conversion/number_conversion.h"
-#include "rttr/detail/enumeration/enumeration_helper.h"
+#include "../../../rttr/detail/conversion/std_conversion_functions.h"
+#include "../../../rttr/detail/conversion/number_conversion.h"
+#include "../../../rttr/detail/enumeration/enumeration_helper.h"
 
 namespace rttr
 {
@@ -1168,8 +1168,8 @@ struct RTTR_API convert_from<double>
 
     static RTTR_INLINE bool to(const double& from, float& to)
     {
-        RTTR_CONSTEXPR_OR_CONST double float_min = -1 * std::numeric_limits<float>::max();
-        RTTR_CONSTEXPR_OR_CONST double float_max = std::numeric_limits<float>::max();
+        RTTR_CONSTEXPR_OR_CONST double float_min = -1 * (std::numeric_limits<float>::max)();
+        RTTR_CONSTEXPR_OR_CONST double float_max = (std::numeric_limits<float>::max)();
         if (from < float_min || from > float_max)
             return false;
 

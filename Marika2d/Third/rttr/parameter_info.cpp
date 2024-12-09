@@ -25,10 +25,10 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/parameter_info.h"
+#include "../rttr/parameter_info.h"
 
-#include "rttr/detail/parameter_info/parameter_info_wrapper_base.h"
-#include "rttr/variant.h"
+#include "../rttr/detail/parameter_info/parameter_info_wrapper_base.h"
+#include "../rttr/variant.h"
 
 namespace rttr
 {

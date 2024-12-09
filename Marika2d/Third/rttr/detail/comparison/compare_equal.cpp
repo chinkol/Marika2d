@@ -25,10 +25,10 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/comparison/compare_equal.h"
+#include "../../../rttr/detail/comparison/compare_equal.h"
 
-#include "rttr/detail/type/type_register_p.h"
-#include "rttr/type.h"
+#include "../../../rttr/detail/type/type_register_p.h"
+#include "../../../rttr/type.h"
 
 #include <cstring>
 

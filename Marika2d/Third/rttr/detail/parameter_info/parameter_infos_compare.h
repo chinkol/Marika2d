@@ -28,11 +28,11 @@
 #ifndef RTTR_PARAMETER_INFOS_COMPARE_H_
 #define RTTR_PARAMETER_INFOS_COMPARE_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/parameter_info.h"
-#include "rttr/argument.h"
-#include "rttr/type.h"
-#include "rttr/array_range.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/parameter_info.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/array_range.h"
 
 #include <vector>
 

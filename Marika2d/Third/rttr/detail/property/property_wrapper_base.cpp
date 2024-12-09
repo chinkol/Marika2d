@@ -25,7 +25,7 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/property/property_wrapper_base.h"
+#include "../../../rttr/detail/property/property_wrapper_base.h"
 
 namespace rttr
 {

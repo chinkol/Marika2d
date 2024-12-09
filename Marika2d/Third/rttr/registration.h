@@ -28,15 +28,15 @@
 #ifndef RTTR_REGISTRATION_H_
 #define RTTR_REGISTRATION_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/policy.h"
-#include "rttr/access_levels.h"
-#include "rttr/detail/registration/bind_types.h"
-#include "rttr/detail/registration/registration_executer.h"
-#include "rttr/detail/default_arguments/default_arguments.h"
-#include "rttr/detail/parameter_info/parameter_names.h"
-#include "rttr/variant.h"
-#include "rttr/detail/visitor/visitor_registration.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/policy.h"
+#include "../rttr/access_levels.h"
+#include "../rttr/detail/registration/bind_types.h"
+#include "../rttr/detail/registration/registration_executer.h"
+#include "../rttr/detail/default_arguments/default_arguments.h"
+#include "../rttr/detail/parameter_info/parameter_names.h"
+#include "../rttr/variant.h"
+#include "../rttr/detail/visitor/visitor_registration.h"
 namespace rttr
 {
 
@@ -60,7 +60,7 @@ namespace detail
  * Put the \ref RTTR_ENABLE() macro inside the class declaration, when you will inherit from this class,
  * otherwise you can omit the macro.
  * \code{.cpp}
- *  #include <rttr/type>
+ *  #include <../rttr/type>
  *  struct Mesh
  *  {
  *      Mesh();
@@ -85,7 +85,7 @@ namespace detail
  *
  * \code{.cpp}
  *  #include "Mesh.cpp"
- *  #include <rttr/registration>
+ *  #include <../rttr/registration>
  *  using namespace rttr;
  *
  *  // register the class Mesh before main is called
@@ -455,7 +455,7 @@ private:
  * Use it like following:
  * \code{.cpp}
  *
- * #include <rttr/registration>
+ * #include <../rttr/registration>
  * #include <cmath>
  * using namespace rttr;
  *
@@ -490,7 +490,7 @@ Signature* select_overload(Signature* func)
  * Use it like following:
  * \code{.cpp}
  *
- * #include <rttr/registration>
+ * #include <../rttr/registration>
  * #include <cmath>
  * using namespace rttr;
  *
@@ -534,7 +534,7 @@ auto select_overload(Signature (ClassType::*func)) -> decltype(func)
  * Use it like following:
  * \code{.cpp}
  *
- * #include <rttr/registration>
+ * #include <../rttr/registration>
  * using namespace rttr;
  * struct Foo
  * {
@@ -588,7 +588,7 @@ auto select_const(ReturnType (ClassType::*func)(Args...) const noexcept) -> decl
  * Use it like following:
  * \code{.cpp}
  *
- * #include <rttr/registration>
+ * #include <../rttr/registration>
  * using namespace rttr;
  * struct Foo
  * {
@@ -818,6 +818,6 @@ class registration::bind : public detail::base_class
 
 } // end namespace rttr
 
-#include "rttr/detail/registration/registration_impl.h"
+#include "../rttr/detail/registration/registration_impl.h"
 
 #endif // RTTR_REGISTRATION_H_

@@ -28,9 +28,9 @@
 #ifndef RTTR_COMPARE_ARRAY_EQUAL_IMPL_H_
 #define RTTR_COMPARE_ARRAY_EQUAL_IMPL_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/comparison/compare_equal.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/comparison/compare_equal.h"
 
 #include <type_traits>
 #include <cstring>

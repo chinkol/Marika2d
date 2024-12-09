@@ -28,8 +28,8 @@
 #ifndef RTTR_METADATA_H_
 #define RTTR_METADATA_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/variant.h"
 
 namespace rttr
 {

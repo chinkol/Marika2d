@@ -28,7 +28,7 @@
 #ifndef RTTR_PROPERTY_VISITOR_INVOKER_H_
 #define RTTR_PROPERTY_VISITOR_INVOKER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 
 namespace rttr

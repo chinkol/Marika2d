@@ -28,10 +28,10 @@
 #ifndef RTTR_FILTER_ITEM_FUNCS_H_
 #define RTTR_FILTER_ITEM_FUNCS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/filter_item.h"
-#include "rttr/constructor.h"
-#include "rttr/array_range.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/filter_item.h"
+#include "../../../rttr/constructor.h"
+#include "../../../rttr/array_range.h"
 
 namespace rttr
 {

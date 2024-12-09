@@ -28,12 +28,12 @@
 #ifndef RTTR_ENUMERATION_WRAPPER_H_
 #define RTTR_ENUMERATION_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/enumeration/enumeration_wrapper_base.h"
-#include "rttr/detail/enumeration/enum_data.h"
-#include "rttr/argument.h"
-#include "rttr/variant.h"
-#include "rttr/string_view.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/enumeration/enumeration_wrapper_base.h"
+#include "../../../rttr/detail/enumeration/enum_data.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/string_view.h"
 
 #include <utility>
 #include <type_traits>

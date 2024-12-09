@@ -28,7 +28,7 @@
 #ifndef RTTR_VARIANT_DATA_H_
 #define RTTR_VARIANT_DATA_H_
 
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 #include <type_traits>
 
 namespace rttr

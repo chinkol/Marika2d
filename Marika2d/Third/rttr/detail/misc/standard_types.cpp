@@ -25,7 +25,7 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include <rttr/registration>
+#include "../../../rttr/registration.h"
 
 #include <vector>
 #include <map>

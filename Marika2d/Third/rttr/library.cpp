@@ -25,8 +25,8 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/library.h"
-#include "rttr/detail/library/library_p.h"
+#include "../rttr/library.h"
+#include "../rttr/detail/library/library_p.h"
 
 #include <map>
 #include <mutex>

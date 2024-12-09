@@ -25,7 +25,7 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/registration.h"
+#include "../rttr/registration.h"
 
 namespace rttr
 {

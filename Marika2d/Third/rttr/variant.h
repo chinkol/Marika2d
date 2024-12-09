@@ -28,11 +28,11 @@
 #ifndef RTTR_VARIANT_H_
 #define RTTR_VARIANT_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/variant/variant_data.h"
-#include "rttr/detail/misc/argument_wrapper.h"
-#include "rttr/detail/variant/variant_compare.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/misc_type_traits.h"
+#include "../rttr/detail/variant/variant_data.h"
+#include "../rttr/detail/misc/argument_wrapper.h"
+#include "../rttr/detail/variant/variant_compare.h"
 
 #include <type_traits>
 #include <cstddef>
@@ -1154,6 +1154,6 @@ T* variant_cast(variant* operand) RTTR_NOEXCEPT;
 
 } // end namespace rttr
 
-#include "rttr/detail/variant/variant_impl.h"
+#include "../rttr/detail/variant/variant_impl.h"
 
 #endif // RTTR_VARIANT_H_

@@ -28,10 +28,10 @@
 #ifndef RTTR_DEFAULT_ARGUMENTS_H_
 #define RTTR_DEFAULT_ARGUMENTS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/argument_extractor.h"
-#include "rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/argument_extractor.h"
+#include "../../../rttr/detail/misc/function_traits.h"
 
 #include <tuple>
 

@@ -28,10 +28,10 @@
 #ifndef RTTR_CREATE_TYPE_VISITOR_FUNC_H_
 #define RTTR_CREATE_TYPE_VISITOR_FUNC_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/type/base_classes.h"
-#include "rttr/detail/misc/std_type_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/type/base_classes.h"
+#include "../../../rttr/detail/misc/std_type_traits.h"
 
 namespace rttr
 {
@@ -62,6 +62,6 @@ visit_type(type_of_visit visit_type, visitor& vi, const type& t);
 } // end namespace detail
 } // end namespace rttr
 
-#include "rttr/detail/visitor/create_type_visitor_func_impl.h"
+#include "../../../rttr/detail/visitor/create_type_visitor_func_impl.h"
 
 #endif // RTTR_CREATE_TYPE_VISITOR_FUNC_H_

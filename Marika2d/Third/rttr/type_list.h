@@ -28,7 +28,7 @@
 #ifndef RTTR_TYPE_LIST_H_
 #define RTTR_TYPE_LIST_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
 namespace rttr
 {

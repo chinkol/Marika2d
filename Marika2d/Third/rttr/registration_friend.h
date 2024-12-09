@@ -28,7 +28,7 @@
 #ifndef RTTR_REGISTRATION_FRIEND_H_
 #define RTTR_REGISTRATION_FRIEND_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
 namespace rttr
 {
@@ -49,7 +49,7 @@ static void rttr_auto_register_reflection_function_();
  *
  * See following example code:
  * \code{.cpp}
- * #include <rttr/registration_friend> // important!
+ * #include <../rttr/registration_friend> // important!
  * class foo
  * {
  * private:

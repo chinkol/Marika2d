@@ -29,7 +29,7 @@
 #ifndef RTTR_STRING_VIEW_H_
 #define RTTR_STRING_VIEW_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
 #include <string>
 #include <ostream>
@@ -495,6 +495,6 @@ using string_view = basic_string_view<char>;
 
 } // end namespace rttr
 
-#include "rttr/detail/impl/string_view_impl.h"
+#include "../rttr/detail/impl/string_view_impl.h"
 
 #endif // RTTR_STRING_VIEW_H_

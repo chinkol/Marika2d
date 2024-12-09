@@ -28,7 +28,7 @@
 #ifndef RTTR_ENUM_DATA_H_
 #define RTTR_ENUM_DATA_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 namespace rttr
 {

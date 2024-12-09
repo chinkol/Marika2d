@@ -28,8 +28,8 @@
 #ifndef RTTR_ENUM_FLAGS_H_
 #define RTTR_ENUM_FLAGS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/std_type_traits.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/std_type_traits.h"
 
 #include <type_traits>
 #include <cstdint>
@@ -323,6 +323,6 @@ RTTR_CONSTEXPR RTTR_INLINE rttr::detail::invalid_enum_flag operator|(Flags::type
 
 } // end namespace rttr
 
-#include "rttr/detail/impl/enum_flags_impl.h"
+#include "../rttr/detail/impl/enum_flags_impl.h"
 
 #endif // RTTR_ENUM_FLAGS_H_

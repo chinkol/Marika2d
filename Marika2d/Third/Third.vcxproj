@@ -1059,6 +1059,9 @@
     <None Include="glm\gtx\vector_angle.inl" />
     <None Include="glm\gtx\vector_query.inl" />
     <None Include="glm\gtx\wrap.inl" />
+    <None Include="rttr\registration" />
+    <None Include="rttr\registration_friend" />
+    <None Include="rttr\type" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

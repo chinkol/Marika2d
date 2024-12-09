@@ -25,9 +25,9 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/enumeration/enumeration_helper.h"
-#include "rttr/enumeration.h"
-#include "rttr/argument.h"
+#include "../../../rttr/detail/enumeration/enumeration_helper.h"
+#include "../../../rttr/enumeration.h"
+#include "../../../rttr/argument.h"
 
 namespace rttr
 {

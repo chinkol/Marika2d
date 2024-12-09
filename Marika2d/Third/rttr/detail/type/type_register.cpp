@@ -25,26 +25,26 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/type/type_register.h"
 
-#include "rttr/detail/type/type_register_p.h"
+#include "../../../rttr/detail/type/type_register_p.h"
 
-#include "rttr/detail/constructor/constructor_wrapper_base.h"
-#include "rttr/detail/destructor/destructor_wrapper_base.h"
-#include "rttr/detail/enumeration/enumeration_wrapper_base.h"
-#include "rttr/detail/parameter_info/parameter_infos_compare.h"
-#include "rttr/detail/method/method_wrapper_base.h"
-#include "rttr/detail/property/property_wrapper.h"
-#include "rttr/detail/metadata/metadata.h"
-#include "rttr/constructor.h"
-#include "rttr/destructor.h"
-#include "rttr/property.h"
-#include "rttr/method.h"
-#include "rttr/detail/type/type_data.h"
+#include "../../../rttr/detail/constructor/constructor_wrapper_base.h"
+#include "../../../rttr/detail/destructor/destructor_wrapper_base.h"
+#include "../../../rttr/detail/enumeration/enumeration_wrapper_base.h"
+#include "../../../rttr/detail/parameter_info/parameter_infos_compare.h"
+#include "../../../rttr/detail/method/method_wrapper_base.h"
+#include "../../../rttr/detail/property/property_wrapper.h"
+#include "../../../rttr/detail/metadata/metadata.h"
+#include "../../../rttr/constructor.h"
+#include "../../../rttr/destructor.h"
+#include "../../../rttr/property.h"
+#include "../../../rttr/method.h"
+#include "../../../rttr/detail/type/type_data.h"
 
-#include "rttr/detail/filter/filter_item_funcs.h"
-#include "rttr/detail/type/type_string_utils.h"
-#include "rttr/detail/registration/registration_manager.h"
+#include "../../../rttr/detail/filter/filter_item_funcs.h"
+#include "../../../rttr/detail/type/type_string_utils.h"
+#include "../../../rttr/detail/registration/registration_manager.h"
 
 #include <set>
 

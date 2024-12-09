@@ -28,7 +28,7 @@
 #ifndef RTTR_TEMPLATE_TYPE_TRAIT_IMPL_H_
 #define RTTR_TEMPLATE_TYPE_TRAIT_IMPL_H_
 
-#include "rttr/type.h"
+#include "../../../rttr/type.h"
 
 namespace rttr
 {

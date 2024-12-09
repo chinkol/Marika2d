@@ -28,8 +28,8 @@
 #ifndef RTTR_METH_POLICIES_H_
 #define RTTR_METH_POLICIES_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 namespace rttr
 {

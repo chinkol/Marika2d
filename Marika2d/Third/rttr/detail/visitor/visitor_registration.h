@@ -28,8 +28,8 @@
 #ifndef RTTR_VISITOR_REGISTRATION_H_
 #define RTTR_VISITOR_REGISTRATION_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/type_list.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/type_list.h"
 
 #include <type_traits>
 

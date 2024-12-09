@@ -28,9 +28,9 @@
 #ifndef RTTR_LIBRARY_H_
 #define RTTR_LIBRARY_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/type.h"
+#include "../rttr/type.h"
 
 #include <memory>
 
@@ -68,7 +68,7 @@ class library_private;
  * A typical usage example is the following:
  * Some cpp file in your plugin called: "MyPlugin":
  *  \code{.cpp}
- *   #include <rttr/registration>
+ *   #include <../rttr/registration>
  *   struct Foo
  *   {
  *      void set_value(int v) { value = v; }

@@ -28,11 +28,11 @@
 #ifndef RTTR_TYPE_STRING_UTILS_H_
 #define RTTR_TYPE_STRING_UTILS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 #include <string>
 #include <cctype>
-#include "rttr/string_view.h"
+#include "../../../rttr/string_view.h"
 
 
 /////////////////////////////////////////////////////////////////////////////////

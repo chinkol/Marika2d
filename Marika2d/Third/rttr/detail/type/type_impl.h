@@ -29,19 +29,19 @@
 #define RTTR_TYPE_IMPL_H_
 
 #include <type_traits>
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/type/base_classes.h"
-#include "rttr/detail/type/get_derived_info_func.h"
-#include "rttr/detail/type/get_create_variant_func.h"
-#include "rttr/detail/type/type_register.h"
-#include "rttr/detail/misc/utility.h"
-#include "rttr/wrapper_mapper.h"
-#include "rttr/detail/type/type_comparator.h"
-#include "rttr/detail/type/type_data.h"
-#include "rttr/detail/type/type_name.h"
-#include "rttr/detail/registration/registration_manager.h"
-#include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/type/base_classes.h"
+#include "../../../rttr/detail/type/get_derived_info_func.h"
+#include "../../../rttr/detail/type/get_create_variant_func.h"
+#include "../../../rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/misc/utility.h"
+#include "../../../rttr/wrapper_mapper.h"
+#include "../../../rttr/detail/type/type_comparator.h"
+#include "../../../rttr/detail/type/type_data.h"
+#include "../../../rttr/detail/type/type_name.h"
+#include "../../../rttr/detail/registration/registration_manager.h"
+#include "../../../rttr/detail/misc/register_wrapper_mapper_conversion.h"
 
 
 namespace rttr

@@ -28,10 +28,10 @@
 #ifndef RTTR_PARAMETER_INFO_WRAPPER_H_
 #define RTTR_PARAMETER_INFO_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/detail/parameter_info/parameter_info_wrapper_base.h"
-#include "rttr/parameter_info.h"
+#include "../../../rttr/detail/parameter_info/parameter_info_wrapper_base.h"
+#include "../../../rttr/parameter_info.h"
 
 namespace rttr
 {

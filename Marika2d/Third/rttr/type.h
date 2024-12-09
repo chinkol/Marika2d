@@ -28,10 +28,10 @@
 #ifndef RTTR_TYPE_H_
 #define RTTR_TYPE_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/string_view.h"
-#include "rttr/array_range.h"
-#include "rttr/filter_item.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/string_view.h"
+#include "../rttr/array_range.h"
+#include "../rttr/filter_item.h"
 
 #include <type_traits>
 #include <vector>
@@ -628,7 +628,7 @@ class RTTR_API type
          *
          * See following example code:
          * \code{.cpp}
-         * #include <rttr/registration>
+         * #include <../rttr/registration>
          *
          * struct my_struct { my_struct() {} my_struct(int) {} my_struct(bool) {} RTTR_ENABLE() };
          *
@@ -731,7 +731,7 @@ class RTTR_API type
          *
          * See following example code:
          * \code{.cpp}
-         * #include <rttr/registration>
+         * #include <../rttr/registration>
          *
          * struct base { int p1, p2; RTTR_ENABLE() };
          * struct derived : base { int p3; static const int p4 = 23; RTTR_ENABLE(base) };
@@ -871,7 +871,7 @@ class RTTR_API type
          *
          * See following example code:
          * \code{.cpp}
-         * #include <rttr/registration>
+         * #include <../rttr/registration>
          *
          * struct base { void func_1() {} void func_2() {} RTTR_ENABLE() };
          * struct derived : base { void func_3() {} static void func_4() {} RTTR_ENABLE(base) };
@@ -1231,6 +1231,6 @@ class RTTR_API type
 
 } // end namespace rttr
 
-#include "rttr/detail/type/type_impl.h"
+#include "../rttr/detail/type/type_impl.h"
 
 #endif // RTTR_TYPE_H_

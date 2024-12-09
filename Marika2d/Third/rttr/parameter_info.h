@@ -27,9 +27,9 @@
 #ifndef RTTR_PARAMETER_INFO_H_
 #define RTTR_PARAMETER_INFO_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/string_view.h"
+#include "../rttr/string_view.h"
 
 #include <string>
 #include <vector>

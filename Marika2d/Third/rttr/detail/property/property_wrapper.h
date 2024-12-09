@@ -28,17 +28,17 @@
 #ifndef RTTR_PROPERTY_WRAPPER_H_
 #define RTTR_PROPERTY_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/property/property_wrapper_base.h"
-#include "rttr/instance.h"
-#include "rttr/argument.h"
-#include "rttr/detail/type/accessor_type.h"
-#include "rttr/policy.h"
-#include "rttr/detail/misc/utility.h"
-#include "rttr/detail/property/property_accessor.h"
-#include "rttr/detail/visitor/visitor_iterator.h"
-#include "rttr/detail/visitor/property_visitor_invoker.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/property/property_wrapper_base.h"
+#include "../../../rttr/instance.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/detail/type/accessor_type.h"
+#include "../../../rttr/policy.h"
+#include "../../../rttr/detail/misc/utility.h"
+#include "../../../rttr/detail/property/property_accessor.h"
+#include "../../../rttr/detail/visitor/visitor_iterator.h"
+#include "../../../rttr/detail/visitor/property_visitor_invoker.h"
 
 #include <functional>
 
@@ -59,10 +59,10 @@ template<typename Accessor_Type,
          >
 class property_wrapper;
 
-#include "rttr/detail/property/property_wrapper_member_func.h"
-#include "rttr/detail/property/property_wrapper_func.h"
-#include "rttr/detail/property/property_wrapper_member_object.h"
-#include "rttr/detail/property/property_wrapper_object.h"
+#include "../../../rttr/detail/property/property_wrapper_member_func.h"
+#include "../../../rttr/detail/property/property_wrapper_func.h"
+#include "../../../rttr/detail/property/property_wrapper_member_object.h"
+#include "../../../rttr/detail/property/property_wrapper_object.h"
 
 } // end namespace detail
 } // end namespace rttr

@@ -28,9 +28,9 @@
 #ifndef RTTR_TYPE_CONVERTER_H_
 #define RTTR_TYPE_CONVERTER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/variant.h"
-#include "rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/detail/type/type_register.h"
 
 namespace rttr
 {

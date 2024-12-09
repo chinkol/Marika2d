@@ -28,7 +28,7 @@
 #ifndef RTTR_REGISTRATION_EXECUTER_H_
 #define RTTR_REGISTRATION_EXECUTER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 #include <functional>
 #include <vector>

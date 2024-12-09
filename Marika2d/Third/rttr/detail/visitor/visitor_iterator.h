@@ -28,7 +28,7 @@
 #ifndef RTTR_VISITOR_ITAERATOR_H_
 #define RTTR_VISITOR_ITAERATOR_H_
 
-#include "rttr/visitor.h"
+#include "../../../rttr/visitor.h"
 
 namespace rttr
 {

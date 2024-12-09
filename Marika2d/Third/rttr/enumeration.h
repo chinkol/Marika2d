@@ -28,10 +28,10 @@
 #ifndef RTTR_ENUMERATION_H_
 #define RTTR_ENUMERATION_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/type.h"
-#include "rttr/string_view.h"
-#include "rttr/detail/misc/class_item_mapper.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/type.h"
+#include "../rttr/string_view.h"
+#include "../rttr/detail/misc/class_item_mapper.h"
 
 #include <memory>
 #include <string>

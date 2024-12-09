@@ -25,24 +25,24 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/type.h"
+#include "../rttr/type.h"
 
-#include "rttr/constructor.h"
-#include "rttr/property.h"
-#include "rttr/destructor.h"
-#include "rttr/enumeration.h"
-#include "rttr/method.h"
+#include "../rttr/constructor.h"
+#include "../rttr/property.h"
+#include "../rttr/destructor.h"
+#include "../rttr/enumeration.h"
+#include "../rttr/method.h"
 
-#include "rttr/detail/constructor/constructor_wrapper_base.h"
-#include "rttr/detail/destructor/destructor_wrapper_base.h"
-#include "rttr/detail/enumeration/enumeration_wrapper_base.h"
-#include "rttr/detail/method/method_wrapper_base.h"
-#include "rttr/detail/property/property_wrapper.h"
-#include "rttr/rttr_enable.h"
+#include "../rttr/detail/constructor/constructor_wrapper_base.h"
+#include "../rttr/detail/destructor/destructor_wrapper_base.h"
+#include "../rttr/detail/enumeration/enumeration_wrapper_base.h"
+#include "../rttr/detail/method/method_wrapper_base.h"
+#include "../rttr/detail/property/property_wrapper.h"
+#include "../rttr/rttr_enable.h"
 
-#include "rttr/detail/parameter_info/parameter_infos_compare.h"
-#include "rttr/detail/filter/filter_item_funcs.h"
-#include "rttr/detail/type/type_register_p.h"
+#include "../rttr/detail/parameter_info/parameter_infos_compare.h"
+#include "../rttr/detail/filter/filter_item_funcs.h"
+#include "../rttr/detail/type/type_register_p.h"
 
 #include <algorithm>
 #include <unordered_map>

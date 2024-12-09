@@ -28,9 +28,9 @@
 #ifndef RTTR_REGISTER_WRAPPER_MAPPER_CONVERSION_H_
 #define RTTR_REGISTER_WRAPPER_MAPPER_CONVERSION_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 #include <type_traits>
 

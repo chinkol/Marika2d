@@ -30,8 +30,8 @@
 
 #include <type_traits>
 
-#include "rttr/type.h"
-#include "rttr/type_list.h"
+#include "../rttr/type.h"
+#include "../rttr/type_list.h"
 
 #ifdef DOXYGEN
 

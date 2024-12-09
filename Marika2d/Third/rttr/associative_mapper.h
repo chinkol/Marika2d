@@ -28,7 +28,7 @@
 #ifndef RTTR_ASSOCIATIVE_MAPPER_H_
 #define RTTR_ASSOCIATIVE_MAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/base/core_prerequisites.h"
 
 namespace rttr
 {
@@ -360,6 +360,6 @@ struct associative_container_mapper
 
 } // end namespace rttr
 
-#include "rttr/detail/impl/associative_mapper_impl.h"
+#include "../rttr/detail/impl/associative_mapper_impl.h"
 
 #endif // RTTR_ASSOCIATIVE_MAPPER_H_

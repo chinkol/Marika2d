@@ -28,10 +28,10 @@
 #ifndef RTTR_CREATE_TYPE_VISITOR_FUNC_IMPL_H_
 #define RTTR_CREATE_TYPE_VISITOR_FUNC_IMPL_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/visitor.h"
-#include "rttr/detail/visitor/visitor_iterator.h"
-#include "rttr/detail/visitor/type_visitor_invoker.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/visitor.h"
+#include "../../../rttr/detail/visitor/visitor_iterator.h"
+#include "../../../rttr/detail/visitor/type_visitor_invoker.h"
 
 namespace rttr
 {

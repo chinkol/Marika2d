@@ -25,13 +25,13 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/property.h"
+#include "../rttr/property.h"
 
-#include "rttr/detail/property/property_wrapper_base.h"
-#include "rttr/variant.h"
-#include "rttr/argument.h"
-#include "rttr/instance.h"
-#include "rttr/enumeration.h"
+#include "../rttr/detail/property/property_wrapper_base.h"
+#include "../rttr/variant.h"
+#include "../rttr/argument.h"
+#include "../rttr/instance.h"
+#include "../rttr/enumeration.h"
 
 using namespace std;
 

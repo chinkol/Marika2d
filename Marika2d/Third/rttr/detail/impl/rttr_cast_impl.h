@@ -28,8 +28,8 @@
 #ifndef RTTR_CAST_IMPL_H_
 #define RTTR_CAST_IMPL_H_
 
-#include "rttr/type.h"
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 #include <type_traits>
 

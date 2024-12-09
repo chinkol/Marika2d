@@ -28,11 +28,11 @@
 #ifndef RTTR_SEQUENTIAL_MAPPER_IMPL_H_
 #define RTTR_SEQUENTIAL_MAPPER_IMPL_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/iterator_wrapper.h"
-#include "rttr/detail/misc/sequential_container_type_traits.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/iterator_wrapper.h"
+#include "../../../rttr/detail/misc/sequential_container_type_traits.h"
 
-#include "rttr/variant.h"
+#include "../../../rttr/variant.h"
 #include <type_traits>
 
 #include <vector>

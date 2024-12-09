@@ -25,9 +25,9 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/detail/variant/variant_compare.h"
-#include "rttr/type.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/variant/variant_compare.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/variant.h"
 
 #include <cmath>
 #include <algorithm>

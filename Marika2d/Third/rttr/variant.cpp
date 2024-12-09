@@ -25,12 +25,12 @@
 *                                                                                   *
 *************************************************************************************/
 
-#include "rttr/variant.h"
+#include "../rttr/variant.h"
 
-#include "rttr/detail/variant/variant_data_policy.h"
-#include "rttr/variant_associative_view.h"
-#include "rttr/variant_sequential_view.h"
-#include "rttr/argument.h"
+#include "../rttr/detail/variant/variant_data_policy.h"
+#include "../rttr/variant_associative_view.h"
+#include "../rttr/variant_sequential_view.h"
+#include "../rttr/argument.h"
 
 #include <algorithm>
 #include <limits>

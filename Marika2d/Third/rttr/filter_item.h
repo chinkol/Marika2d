@@ -28,8 +28,8 @@
 #ifndef RTTR_FILTER_ITEM_H_
 #define RTTR_FILTER_ITEM_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/enum_flags.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/enum_flags.h"
 
 namespace rttr
 {

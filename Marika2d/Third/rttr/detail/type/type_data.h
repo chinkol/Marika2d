@@ -28,21 +28,21 @@
 #ifndef RTTR_TYPE_DATA_H_
 #define RTTR_TYPE_DATA_H_
 
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/misc/template_type_trait.h"
-#include "rttr/detail/type/base_classes.h"
-#include "rttr/detail/type/get_derived_info_func.h"
-#include "rttr/detail/type/get_create_variant_func.h"
-#include "rttr/detail/type/type_register.h"
-#include "rttr/detail/type/type_name.h"
-#include "rttr/detail/misc/utility.h"
-#include "rttr/destructor.h"
-#include "rttr/method.h"
-#include "rttr/property.h"
-#include "rttr/constructor.h"
-#include "rttr/destructor.h"
-#include "rttr/detail/metadata/metadata.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/misc/template_type_trait.h"
+#include "../../../rttr/detail/type/base_classes.h"
+#include "../../../rttr/detail/type/get_derived_info_func.h"
+#include "../../../rttr/detail/type/get_create_variant_func.h"
+#include "../../../rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/type/type_name.h"
+#include "../../../rttr/detail/misc/utility.h"
+#include "../../../rttr/destructor.h"
+#include "../../../rttr/method.h"
+#include "../../../rttr/property.h"
+#include "../../../rttr/constructor.h"
+#include "../../../rttr/destructor.h"
+#include "../../../rttr/detail/metadata/metadata.h"
 
 #include <type_traits>
 #include <bitset>

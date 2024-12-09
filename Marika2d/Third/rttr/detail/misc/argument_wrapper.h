@@ -28,7 +28,7 @@
 #ifndef RTTR_ARGUMENT_WRAPPER_H_
 #define RTTR_ARGUMENT_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
 #include <memory>
 #include <type_traits>

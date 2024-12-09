@@ -28,8 +28,8 @@
 #ifndef RTTR_METHOD_INVOKER_H_
 #define RTTR_METHOD_INVOKER_H_
 
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/misc/utility.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/misc/utility.h"
 
 namespace rttr
 {

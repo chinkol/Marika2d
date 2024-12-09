@@ -28,8 +28,8 @@
 #ifndef RTTR_ENUMERATION_HELPER_H_
 #define RTTR_ENUMERATION_HELPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/string_view.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/string_view.h"
 
 
 namespace rttr

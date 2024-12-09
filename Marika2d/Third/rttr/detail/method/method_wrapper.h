@@ -28,20 +28,20 @@
 #ifndef RTTR_METHOD_WRAPPER_H_
 #define RTTR_METHOD_WRAPPER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/method/method_wrapper_base.h"
-#include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/type/accessor_type.h"
-#include "rttr/detail/method/method_accessor.h"
-#include "rttr/detail/default_arguments/default_arguments.h"
-#include "rttr/detail/default_arguments/invoke_with_defaults.h"
-#include "rttr/detail/parameter_info/parameter_infos.h"
-#include "rttr/argument.h"
-#include "rttr/instance.h"
-#include "rttr/variant.h"
-#include "rttr/array_range.h"
-#include "rttr/detail/visitor/visitor_iterator.h"
-#include "rttr/detail/visitor/method_visitor_invoker.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/method/method_wrapper_base.h"
+#include "../../../rttr/detail/misc/function_traits.h"
+#include "../../../rttr/detail/type/accessor_type.h"
+#include "../../../rttr/detail/method/method_accessor.h"
+#include "../../../rttr/detail/default_arguments/default_arguments.h"
+#include "../../../rttr/detail/default_arguments/invoke_with_defaults.h"
+#include "../../../rttr/detail/parameter_info/parameter_infos.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/instance.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/array_range.h"
+#include "../../../rttr/detail/visitor/visitor_iterator.h"
+#include "../../../rttr/detail/visitor/method_visitor_invoker.h"
 
 #include <functional>
 #include <string>

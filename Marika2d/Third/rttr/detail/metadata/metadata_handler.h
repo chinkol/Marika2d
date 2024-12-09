@@ -28,9 +28,9 @@
 #ifndef RTTR_METADATA_HANDLER_H_
 #define RTTR_METADATA_HANDLER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/metadata/metadata.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/metadata/metadata.h"
+#include "../../../rttr/variant.h"
 
 #include <array>
 

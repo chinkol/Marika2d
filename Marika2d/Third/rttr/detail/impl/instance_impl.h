@@ -28,10 +28,10 @@
 #ifndef RTTR_INSTANCE_IMPL_H_
 #define RTTR_INSTANCE_IMPL_H_
 
-#include "rttr/variant.h"
-#include "rttr/type.h"
-#include "rttr/wrapper_mapper.h"
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/wrapper_mapper.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 namespace rttr
 {

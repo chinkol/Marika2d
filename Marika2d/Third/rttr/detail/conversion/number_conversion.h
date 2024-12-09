@@ -28,7 +28,7 @@
 #ifndef RTTR_NUMBER_CONVERSION_H_
 #define RTTR_NUMBER_CONVERSION_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 #include <limits>
 
 namespace rttr
@@ -66,7 +66,7 @@ convert_to(const F& from, T& to)
     if (from < 0)
         return false; // value too small
 
-    if (static_cast<typename std::make_unsigned<F>::type>(from) > std::numeric_limits<T>::max())
+    if (static_cast<typename std::make_unsigned<F>::type>(from) > (std::numeric_limits<T>::max)())
         return false; // value too large
 
     to = static_cast<T>(from);
@@ -82,7 +82,7 @@ typename std::enable_if<is_integer<F, T>::value &&
                         bool>::type
 convert_to(const F& from, T& to)
 {
-    if (from > static_cast<typename std::make_unsigned<T>::type>(std::numeric_limits<T>::max()))
+    if (from > static_cast<typename std::make_unsigned<T>::type>((std::numeric_limits<T>::max)()))
         return false; // value too large
 
     to = static_cast<T>(from);
@@ -98,7 +98,7 @@ typename std::enable_if<is_integer<F, T>::value &&
                         bool>::type
 convert_to(const F& from, T& to)
 {
-    if (from > std::numeric_limits<T>::max())
+    if (from > (std::numeric_limits<T>::max)())
         return false; // value too large
     else if (from < std::numeric_limits<T>::min())
         return false; // value too small
@@ -116,7 +116,7 @@ typename std::enable_if<is_integer<F, T>::value &&
                         bool>::type
 convert_to(const F& from, T& to)
 {
-    if (from > std::numeric_limits<T>::max())
+    if (from > (std::numeric_limits<T>::max)())
         return false; // value too large
 
     to = static_cast<T>(from);
@@ -134,9 +134,9 @@ typename std::enable_if<std::is_floating_point<F>::value &&
                         bool>::type
 convert_to(const F& from, T& to)
 {
-    if (from > std::numeric_limits<T>::max())
+    if (from > (std::numeric_limits<T>::max)())
         return false; // value too large
-    else if (from < -std::numeric_limits<T>::max())
+    else if (from < -(std::numeric_limits<T>::max)())
         return false; // value to small
 
     to = static_cast<T>(from);
@@ -151,7 +151,7 @@ typename std::enable_if<std::is_floating_point<F>::value &&
                         bool>::type
 convert_to(const F& from, T& to)
 {
-    if (from < 0 || from > std::numeric_limits<T>::max())
+    if (from < 0 || from > (std::numeric_limits<T>::max)())
         return false; // value too large
 
     to = static_cast<T>(from);

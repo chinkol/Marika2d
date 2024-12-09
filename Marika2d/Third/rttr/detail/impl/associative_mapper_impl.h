@@ -28,10 +28,10 @@
 #ifndef RTTR_ASSOCIATIVE_MAPPER_IMPL_H_
 #define RTTR_ASSOCIATIVE_MAPPER_IMPL_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/iterator_wrapper.h"
-#include "rttr/argument.h"
-#include "rttr/variant.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/iterator_wrapper.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/variant.h"
 
 #include <type_traits>
 #include <set>

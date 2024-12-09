@@ -28,9 +28,9 @@
 #ifndef RTTR_INSTANCE_H_
 #define RTTR_INSTANCE_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/data_address_container.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/misc_type_traits.h"
+#include "../rttr/detail/misc/data_address_container.h"
 
 namespace rttr
 {
@@ -154,6 +154,6 @@ private:
 
 } // end namespace rttr
 
-#include "rttr/detail/impl/instance_impl.h"
+#include "../rttr/detail/impl/instance_impl.h"
 
 #endif // RTTR_INSTANCE_H_

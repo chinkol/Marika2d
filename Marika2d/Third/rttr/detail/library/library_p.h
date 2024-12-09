@@ -28,13 +28,13 @@
 #ifndef RTTR_LIBRARY_P_H_
 #define RTTR_LIBRARY_P_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/string_view.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/string_view.h"
 
-#include "rttr/type.h"
-#include "rttr/property.h"
-#include "rttr/method.h"
-#include "rttr/detail/registration/registration_state_saver.h"
+#include "../../../rttr/type.h"
+#include "../../../rttr/property.h"
+#include "../../../rttr/method.h"
+#include "../../../rttr/detail/registration/registration_state_saver.h"
 
 #if RTTR_PLATFORM == RTTR_PLATFORM_WINDOWS
     #include <windows.h>

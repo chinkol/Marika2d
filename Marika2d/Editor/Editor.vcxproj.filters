@@ -24,12 +24,18 @@
     <ClCompile Include="Plugin\Plugin.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RttrTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset\AssetSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Plugin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RttrTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

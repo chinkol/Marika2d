@@ -28,11 +28,11 @@
 #ifndef RTTR_POLICY_H_
 #define RTTR_POLICY_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/policies/ctor_policies.h"
-#include "rttr/detail/policies/meth_policies.h"
-#include "rttr/detail/policies/prop_policies.h"
+#include "../rttr/detail/base/core_prerequisites.h"
+#include "../rttr/detail/misc/misc_type_traits.h"
+#include "../rttr/detail/policies/ctor_policies.h"
+#include "../rttr/detail/policies/meth_policies.h"
+#include "../rttr/detail/policies/prop_policies.h"
 
 namespace rttr
 {

@@ -28,10 +28,10 @@
 #ifndef RTTR_VARIANT_ASSOCIATIVE_VIEW_PRIVATE_H_
 #define RTTR_VARIANT_ASSOCIATIVE_VIEW_PRIVATE_H_
 
-#include "rttr/variant.h"
-#include "rttr/argument.h"
-#include "rttr/instance.h"
-#include "rttr/associative_mapper.h"
+#include "../../../rttr/variant.h"
+#include "../../../rttr/argument.h"
+#include "../../../rttr/instance.h"
+#include "../../../rttr/associative_mapper.h"
 
 namespace rttr
 {

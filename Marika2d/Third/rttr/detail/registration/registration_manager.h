@@ -28,14 +28,14 @@
 #ifndef RTTR_REGISTRATION_MANAGER_H_
 #define RTTR_REGISTRATION_MANAGER_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/detail/type/type_register.h"
-#include "rttr/detail/property/property_wrapper_base.h"
-#include "rttr/detail/method/method_wrapper_base.h"
-#include "rttr/detail/constructor/constructor_wrapper_base.h"
-#include "rttr/detail/destructor/destructor_wrapper_base.h"
-#include "rttr/detail/enumeration/enumeration_wrapper_base.h"
+#include "../../../rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/property/property_wrapper_base.h"
+#include "../../../rttr/detail/method/method_wrapper_base.h"
+#include "../../../rttr/detail/constructor/constructor_wrapper_base.h"
+#include "../../../rttr/detail/destructor/destructor_wrapper_base.h"
+#include "../../../rttr/detail/enumeration/enumeration_wrapper_base.h"
 
 #include <vector>
 #include <memory>

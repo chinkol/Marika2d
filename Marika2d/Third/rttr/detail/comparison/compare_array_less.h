@@ -28,9 +28,9 @@
 #ifndef RTTR_COMPARE_ARRAY_LESS_H_
 #define RTTR_COMPARE_ARRAY_LESS_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/string_view.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/string_view.h"
 
 #include <type_traits>
 #include <cstring>
@@ -53,6 +53,6 @@ RTTR_INLINE bool compare_array_less(const ElementType(&lhs)[Count], const Elemen
 } // end namespace detail
 } // end namespace rttr
 
-#include "rttr/detail/comparison/compare_array_less_impl.h"
+#include "../../../rttr/detail/comparison/compare_array_less_impl.h"
 
 #endif // RTTR_COMPARE_ARRAY_LESS_H_

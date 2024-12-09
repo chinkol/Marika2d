@@ -28,11 +28,11 @@
 #ifndef RTTR_REGISTER_BASE_CLASS_FROM_ACCESSOR_H_
 #define RTTR_REGISTER_BASE_CLASS_FROM_ACCESSOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/detail/type/base_classes.h"
-#include "rttr/detail/type/type_register.h"
-#include "rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/type/base_classes.h"
+#include "../../../rttr/detail/type/type_register.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
 
 #include <type_traits>
 

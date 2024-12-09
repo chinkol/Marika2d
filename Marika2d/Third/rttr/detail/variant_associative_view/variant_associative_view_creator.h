@@ -28,11 +28,11 @@
 #ifndef RTTR_VARIANT_ASSOCIATIVE_CREATOR_H_
 #define RTTR_VARIANT_ASSOCIATIVE_CREATOR_H_
 
-#include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/std_type_traits.h"
-#include "rttr/associative_mapper.h"
-#include "rttr/wrapper_mapper.h"
+#include "../../../rttr/detail/base/core_prerequisites.h"
+#include "../../../rttr/detail/misc/misc_type_traits.h"
+#include "../../../rttr/detail/misc/std_type_traits.h"
+#include "../../../rttr/associative_mapper.h"
+#include "../../../rttr/wrapper_mapper.h"
 
 #include <memory>
 
@@ -61,6 +61,6 @@ create_variant_associative_view(T&& value);
 } // end namespace detail
 } // end namespace rttr
 
-#include "rttr/detail/variant_associative_view/variant_associative_view_creator_impl.h"
+#include "../../../rttr/detail/variant_associative_view/variant_associative_view_creator_impl.h"
 
 #endif // RTTR_VARIANT_ASSOCIATIVE_CREATOR_H_

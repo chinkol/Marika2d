@@ -48,6 +48,6 @@ Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
 
 }
 
-#include "rttr/detail/impl/rttr_cast_impl.h"
+#include "../rttr/detail/impl/rttr_cast_impl.h"
 
 #endif // RTTR_RTTR_CAST_H_
