@@ -127,5 +127,5 @@ public:
 
 void ReflectTest()
 {
-	auto fieldInfo = Mrk::FieldInfo<ReflectTestClass, int, ReflectTestClass::SetField1, >(&, ;
+	//auto fieldInfo = Mrk::FieldInfo<ReflectTestClass, int, ReflectTestClass::SetField1, >(&, ;
 }

@@ -38,7 +38,11 @@ void RttrTestFunc()
 		c_1.dictionary = { { {color::green, {1, 2} }, {color::blue, {3, 4} }, {color::red, {5, 6} } } };
 
 		c_1.no_serialize = 12345;
+
+		MrkNew::ReflectSystem::ToJson(c_1);
 	}
+
+	
 }
 
 void Test()
@@ -154,6 +158,7 @@ int main()
 	context.updateCallBack = []() {
 		EditorLoopTest();
 		Test();
+		RttrTestFunc();
 		Mrk::PluginSystem::Update();
 		};
 

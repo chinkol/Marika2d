@@ -57,6 +57,9 @@
     <ClCompile Include="Reflection\ReflectSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Reflect\Reflect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -99,6 +102,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Reflection\ReflectSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflect\Reflect.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

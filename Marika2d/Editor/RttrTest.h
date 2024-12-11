@@ -3,6 +3,10 @@
 #include "Third/rttr/registration.h"
 #include "Third/rttr/type.h"
 
+#include "Core/Reflect/Reflect.h"
+
+#include <iostream>
+
 enum class color
 {
     red,
@@ -22,6 +26,7 @@ struct shape
 {
     shape(std::string n) : name(n) {}
 
+    void hello() { std::cout << "hello world"; }
     void set_visible(bool v) { visible = v; }
     bool get_visible() const { return visible; }
 
@@ -44,40 +49,12 @@ struct circle : shape
 
     int no_serialize = 100;
 
-    static inline bool re = []()
-        {
-            rttr::registration::class_<shape>("shape")
-                .property("visible", &shape::get_visible, &shape::set_visible)
-                .property("color", &shape::color_)
-                .property("name", &shape::name)
-                .property("position", &shape::position)
-                .property("dictionary", &shape::dictionary)
-                ;
-
-            rttr::registration::class_<circle>("circle")
-                .property("radius", &circle::radius)
-                .property("points", &circle::points)
-                .property("no_serialize", &circle::no_serialize)
-                (
-                    rttr::metadata("NO_SERIALIZE", true)
-                    )
-                ;
-
-            rttr::registration::class_<point2d>("point2d")
-                .constructor()(rttr::policy::ctor::as_object)
-                .property("x", &point2d::x)
-                .property("y", &point2d::y)
-                ;
-
-
-            rttr::registration::enumeration<color>("color")
-                (
-                    rttr::value("red", color::red),
-                    rttr::value("blue", color::blue),
-                    rttr::value("green", color::green)
-                    );
-
-            return true;
-        }();
-    RTTR_ENABLE(shape)
+    MRK_REFL_BASE(shape)
+    MRK_REFL_TYPE(circle)
+    MRK_REFL_FUNC("hello", &shape::hello)
+    MRK_REFL_PROP("visible", &shape::get_visible, &shape::set_visible)
+    MRK_REFL_PROP("name", &shape::name)
+    MRK_REFL_META("flag1", true)
+    MRK_REFL_META("flag2", false)
+    MRK_REFL_REND
 };
