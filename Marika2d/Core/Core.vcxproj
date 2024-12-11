@@ -29,8 +29,6 @@
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="OpenGL\OpenGL.cpp" />
     <ClCompile Include="Reflect\Reflect.cpp" />
-    <ClCompile Include="Reflection\ReflectSystem.cpp" />
-    <ClCompile Include="Reflect\ReflectSystem.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="SysConfig\SysConfig.cpp" />
@@ -46,8 +44,6 @@
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="OpenGL\OpenGL.h" />
     <ClInclude Include="Reflect\Reflect.h" />
-    <ClInclude Include="Reflection\ReflectSystem.h" />
-    <ClInclude Include="Reflect\ReflectSystem.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="SysConfig\SysConfig.h" />

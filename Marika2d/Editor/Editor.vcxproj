@@ -111,6 +111,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:char8_t %(AdditionalOptions)</AdditionalOptions>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <GuardSignedReturns>
+      </GuardSignedReturns>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

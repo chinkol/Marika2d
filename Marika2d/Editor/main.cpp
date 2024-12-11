@@ -146,6 +146,8 @@ void ModelImprotTest()
 
 int main()
 {
+	RttrTestFunc();
+
 	auto context = Mrk::Application::GetAppContext();
 
 	context.windowTitle = "Marika Engine Editor";
@@ -158,7 +160,6 @@ int main()
 	context.updateCallBack = []() {
 		EditorLoopTest();
 		Test();
-		RttrTestFunc();
 		Mrk::PluginSystem::Update();
 		};
 
