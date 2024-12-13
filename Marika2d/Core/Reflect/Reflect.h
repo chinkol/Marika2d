@@ -12,7 +12,7 @@
 #endif // !MRK_REFL_BASE
 
 #ifndef MRK_REFL_TYPE
-#define MRK_REFL_TYPE(x) bool _mrk_macro_type_reflect_rigester_ = [](){ rttr::registration::class_<shape>(#x)
+#define MRK_REFL_TYPE(x) static inline bool _mrk_macro_type_reflect_rigester_ = [](){ rttr::registration::class_<x>(#x)
 #endif // !MRK_REFL_TYPE
 
 #ifndef MRK_REFL_CONS

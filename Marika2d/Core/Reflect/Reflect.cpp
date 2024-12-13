@@ -16,11 +16,12 @@ std::string MrkNew::ReflectSystem::ToJson(rttr::instance obj)
 	{
 		auto name = prop.get_name();
 		writer.String(name.data(), static_cast<Json::SizeType>(name.length()), false);
+		writer.String("field");
 		/*rttr::variant value = prop.get_value(ins);
 		if (value)
 		{
-		auto name = prop.get_name();
-		writer.String(name.data(), static_cast<Json::SizeType>(name.length()), false);
+			auto name = prop.get_name();
+			writer.String(name.data(), static_cast<Json::SizeType>(name.length()), false);
 		}*/
 	}
 
