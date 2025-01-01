@@ -6,58 +6,8 @@
 #include "Core/Reflect/Reflect.h"
 
 #include <iostream>
+#include <map>
 
-enum class color
-{
-    red,
-    green,
-    blue
-};
-
-struct point2d
-{
-    point2d() {}
-    point2d(int x_, int y_) : x(x_), y(y_) {}
-    int x = 0;
-    int y = 0;
-};
-
-struct shape
-{
-    shape(std::string n) : name(n) {}
-
-    void hello() { std::cout << "hello world"; }
-    void set_visible(bool v) { visible = v; }
-    bool get_visible() const { return visible; }
-
-    color color_ = color::blue;
-    std::string name = "";
-    point2d position;
-    std::map<color, point2d> dictionary;
-
-    RTTR_ENABLE()
-private:
-    bool visible = false;
-};
-
-struct circle : shape
-{
-    circle(std::string n) : shape(n) {}
-
-    double radius = 5.2;
-    std::vector<point2d> points;
-
-    int no_serialize = 100;
-
-    MRK_REFL_BASE(shape)
-    MRK_REFL_TYPE(circle)
-    MRK_REFL_FUNC("hello", &shape::hello)
-    MRK_REFL_PROP("visible", &shape::get_visible, &shape::set_visible)
-    MRK_REFL_PROP("name", &shape::name)
-    MRK_REFL_META("flag1", true)
-    MRK_REFL_META("flag2", false)
-    MRK_REFL_REND
-};
 
 class TestBase
 {
@@ -66,66 +16,97 @@ public:
     int field1 = 123;
     float field2 = 123.456f;
     std::string field3 = "Hello World";
-    std::vector<std::shared_ptr<TestBase>> field4;
+    std::vector<TestBase*> field4;
+    std::map<std::string, TestBase*> fieldtest;
 
-    MRK_REFL_BASE()
-    MRK_REFL_TYPE(TestBase)
-    MRK_REFL_PROP("field1", &TestBase::field1)
-    MRK_REFL_PROP("field2", &TestBase::field2)
-    MRK_REFL_PROP("field3", &TestBase::field3)
-    MRK_REFL_PROP("field4", &TestBase::field4)
-    MRK_REFL_REND
+    MRK_RTTR_BASE()
 };
+
+MRK_RTTR_TYPE(TestBase)
+(
+    rttr::registration::class_<TestBase>("TestBase")
+    .constructor<>()
+    .property("field1", &TestBase::field1)
+    .property("field2", &TestBase::field2)
+    .property("field3", &TestBase::field3)
+    .property("field4", &TestBase::field4)
+    .property("fieldtest", &TestBase::fieldtest);
+)
 
 class TestDerived1 : public TestBase
 {
 public:
     double field5 = 123.456789;
 
-    MRK_REFL_BASE(TestBase)
-    MRK_REFL_TYPE(TestDerived1)
-    MRK_REFL_PROP("field5", &TestDerived1::field5)
-    MRK_REFL_REND
+    MRK_RTTR_BASE(TestBase)
 };
+
+MRK_RTTR_TYPE(TestDerived1)
+(
+    rttr::registration::class_<TestDerived1>("TestDerived1")
+    .constructor<>()
+    .property("field5", &TestDerived1::field5);
+)
 
 class TestDerived2 : public TestBase
 {
 public:
-    short field5 = 123;
+    short field5 = 321;
 
-    MRK_REFL_BASE(TestBase)
-    MRK_REFL_TYPE(TestDerived2)
-    MRK_REFL_PROP("field5", &TestDerived2::field5)
-    MRK_REFL_REND
+    MRK_RTTR_BASE(TestBase)
 };
 
-inline void RttrTestFunc()
+MRK_RTTR_TYPE(TestDerived2)
+(
+    rttr::registration::class_<TestDerived2>("TestDerived2")
+    .constructor<>()
+    .property("field5", &TestDerived2::field5);
+)
+
+class TestDerived3 : public TestBase
 {
-    circle c_1("Circle #1");
-    shape& my_shape = c_1;
+public:
+    std::string field5 = "World Hello";
 
-    c_1.set_visible(true);
-    c_1.points = std::vector<point2d>(2, point2d(1, 1));
-    c_1.points[1].x = 23;
-    c_1.points[1].y = 42;
+    MRK_RTTR_BASE(TestBase) 
+};
 
-    c_1.position.x = 12;
-    c_1.position.y = 66;
+MRK_RTTR_TYPE(TestDerived3)
+(
+    rttr::registration::class_<TestDerived3>("TestDerived3")
+    .constructor<>()
+    .property("field5", &TestDerived3::field5);
+)
 
-    c_1.radius = 5.123;
-    c_1.color_ = color::red;
+static inline bool k = true;
 
-    // additional braces are needed for a VS 2013 bug
-    c_1.dictionary = { { {color::green, {1, 2} }, {color::blue, {3, 4} }, {color::red, {5, 6} } } };
-
-    c_1.no_serialize = 12345;
-
-    MrkNew::ReflectSystem::ToJson(my_shape);
-
-
+inline void RttrTestFunc()
+{ 
     TestBase base;
     base.field4.emplace_back(new TestDerived1());
     base.field4.emplace_back(new TestDerived2());
+    base.field4.emplace_back(new TestDerived3());
+    base.fieldtest.emplace("1", new TestDerived1());
+    base.fieldtest.emplace("2", new TestDerived2());
+    base.fieldtest.emplace("3", new TestDerived3());
+    base.fieldtest.emplace("4", new TestBase());
 
-    MrkNew::ReflectSystem::ToJson(base);
+    base.field1 = 0;
+    base.field2 = 0;
+    base.field3 = "NULL";
+    base.field4.clear();
+    base.fieldtest.clear();
+
+    auto n = rttr::type::get_by_name("TestBase").get_constructor().invoke().get_type().get_name();
+
+    auto json = MrkNew::ReflectSystem::ToJson(base);
+    auto rttrobj = MrkNew::ReflectSystem::FromJson(json);
+
+    std::shared_ptr<TestBase> test;
+    if (rttrobj.convert<decltype(test)>(test))
+    {
+        std::cout << "Yes" << std::endl;
+    }
+
+    std::cout << MrkNew::ReflectSystem::ToJson(base);
 }

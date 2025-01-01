@@ -156,9 +156,20 @@ int main()
 		};
 
 	context.updateCallBack = []() {
-		EditorLoopTest();
-		Test();
+
+		{
+
+			EditorLoopTest();
+			Test();
+
+		}
+		
 		Mrk::PluginSystem::Update();
+
+		{
+
+		}
+
 		};
 
 	context.drawCallBack = []() {
