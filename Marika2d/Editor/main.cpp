@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "Core/Config/ConfigSys.h"
 #include "Core/Application/Application.h"
 #include "Core/OpenGL/OpenGL.h"
 #include "Core/Mesh/Mesh.h"
@@ -141,14 +142,18 @@ void ModelImprotTest()
 {
 	
 }
-
+void ConfigSysTest()
+{
+	
+}
 int main()
 {
-	RttrTestFunc();
+	ConfigSysTest();
+	//RttrTestFunc();
 
 	auto context = Mrk::Application::GetAppContext();
 
-	context.windowTitle = "Marika Engine Editor";
+	context.windowTitle = Mrk::ConfigSys::GetOrSet<std::string>("Setting", "Tital", "Hello Marika Engine Editor");
 	context.windowSize = { 1280, 800 };
 
 	context.appInitedCallBack = []() {

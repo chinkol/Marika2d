@@ -3,6 +3,8 @@
 #include "Common/Singleton/Singleton.h"
 #include "Common/Def/UtilityDef.h"
 
+#include "Core/Config/ConfigSys.h"
+
 #include "Third/imgui/imgui_browser.h"
 
 #include <iostream>
@@ -90,6 +92,45 @@ namespace Mrk
 		std::filesystem::path projectPath;
 		std::string empty = std::string("", 64);
 		std::string projectName = empty;
+	};
+
+	// ±à¼­Æ÷ÅäÖÃ
+	class PluginEdtorConfig : public IPlugin
+	{
+		MRK_PLUGIN(PluginEdtorConfig)
+	public:
+		void Show()
+		{
+			needShow = true;
+		}
+
+		virtual inline void Draw() override
+		{
+			if (needShow)
+			{
+				ImGui::Begin("Editor Setting");
+
+				auto groups = ConfigSys::GetConfigGroups();
+				for (auto& [name, group] : groups)
+				{
+					for (auto iter = group.romote.MemberBegin(); iter != group.romote.MemberEnd(); iter++)
+					{
+						auto key = iter->name.GetString();
+						auto& val = iter->value;
+
+						if (val.IsBool())
+						{
+							bool res;
+							ImGui::Checkbox(key, &res);
+						}
+					}
+				}
+
+				ImGui::End();
+			}
+		}
+	private:
+		bool needShow = false;
 	};
 }
 

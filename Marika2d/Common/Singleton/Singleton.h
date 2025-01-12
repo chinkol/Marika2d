@@ -18,7 +18,7 @@ namespace Mrk
 
     protected:
         Singleton() = default;
-        static T& Instance()
+        static inline T& Instance()
         {
             static T instance;
             return instance;

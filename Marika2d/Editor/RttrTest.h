@@ -109,4 +109,4 @@ inline void RttrTestFunc()
     }
 
     std::cout << MrkNew::ReflectSystem::ToJson(base);
-}
+}  

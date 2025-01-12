@@ -132,11 +132,16 @@ void Mrk::Application::Run()
             Mrk::ComponentHouse::Invoke("Update");
             Mrk::ComponentHouse::Invoke("LateUpdate");
             Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : ¸Ä¶¨Ê±
-            if (context.updateCallBack) context.updateCallBack();
+
+            if (context.updateCallBack) 
+                context.updateCallBack();
+
             Mrk::ComponentHouse::Invoke("PreDraw");
             Mrk::ComponentHouse::Invoke("Draw");
             Mrk::ComponentHouse::Invoke("LateDraw");
-            if (context.drawCallBack) context.drawCallBack();
+
+            if (context.drawCallBack) 
+                context.drawCallBack();
 
             // äÖÈ¾ ImGui
             ImGui::Render();

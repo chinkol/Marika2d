@@ -22,7 +22,9 @@
     <ClCompile Include="Application\Application.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Component\Component.cpp" />
+    <ClCompile Include="Config\ConfigSys.cpp" />
     <ClCompile Include="GameObject\GameObject.cpp" />
+    <ClCompile Include="Global\Global.cpp" />
     <ClCompile Include="ID\IDCreater.cpp" />
     <ClCompile Include="Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
@@ -31,13 +33,14 @@
     <ClCompile Include="Reflect\Reflect.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
-    <ClCompile Include="SysConfig\SysConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Component\Component.h" />
+    <ClInclude Include="Config\ConfigSys.h" />
     <ClInclude Include="GameObject\GameObject.h" />
+    <ClInclude Include="Global\Global.h" />
     <ClInclude Include="ID\IDCreater.h" />
     <ClInclude Include="Mesh\MeshRenderer.h" />
     <ClInclude Include="Mesh\Mesh.h" />
@@ -46,7 +49,6 @@
     <ClInclude Include="Reflect\Reflect.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Scene\Scene.h" />
-    <ClInclude Include="SysConfig\SysConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\Shader\Base.Frag" />

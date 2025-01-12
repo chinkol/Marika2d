@@ -48,10 +48,13 @@
     <ClCompile Include="Mesh\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SysConfig\SysConfig.cpp">
+    <ClCompile Include="Reflect\Reflect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Reflect\Reflect.cpp">
+    <ClCompile Include="Config\ConfigSys.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Global\Global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,10 +92,13 @@
     <ClInclude Include="Mesh\MeshRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SysConfig\SysConfig.h">
+    <ClInclude Include="Reflect\Reflect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Reflect\Reflect.h">
+    <ClInclude Include="Config\ConfigSys.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Global\Global.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
