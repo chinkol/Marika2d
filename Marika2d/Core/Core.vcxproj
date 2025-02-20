@@ -24,8 +24,10 @@
     <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="Config\ConfigSys.cpp" />
     <ClCompile Include="GameObject\GameObject.cpp" />
+    <ClCompile Include="GenCoreReflectInfo\GenCoreReflectInfo.cpp" />
     <ClCompile Include="Global\Global.cpp" />
     <ClCompile Include="ID\IDCreater.cpp" />
+    <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
@@ -40,8 +42,10 @@
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="Config\ConfigSys.h" />
     <ClInclude Include="GameObject\GameObject.h" />
+    <ClInclude Include="GenCoreReflectInfo\GenCoreReflectInfo.h" />
     <ClInclude Include="Global\Global.h" />
     <ClInclude Include="ID\IDCreater.h" />
+    <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Mesh\MeshRenderer.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Object\Object.h" />
@@ -153,6 +157,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>

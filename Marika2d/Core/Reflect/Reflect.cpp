@@ -1,319 +1,340 @@
-#include "Reflect.h"
+#include "Reflect.h" =================================================================
 
-#include <string_view>
+#include <type_traits>
+
+// to json
 
 namespace
 {
-	void WriteVariant(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant);
-	void WriteSeqContainer(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant);
-	void WriteAssContainer(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant);
-	void WriteArithmetic(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant, const rttr::type& type);
-	void WriteEnumeration(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant);
-	void WriteObject(Json::PrettyWriter<Json::StringBuffer>& writer, rttr::instance obj);
+	Json::Value RecurVariantToJson(const rttr::variant& variant, Mrk::JsonAllocator& allocator);
+	Json::Value RecurObjectToJson(rttr::instance obj, Mrk::JsonAllocator& allocator);
+	Json::Value RecurArithmeticToJson(const rttr::variant& atomic, Mrk::JsonAllocator& allocator);
+	Json::Value RecurEnumToJson(const rttr::variant& enumeration, Mrk::JsonAllocator& allocator);
+	Json::Value RecurStringToJson(const rttr::variant& str, Mrk::JsonAllocator& allocator);
+	Json::Value RecurSeqToJson(const rttr::variant& seq, Mrk::JsonAllocator& allocator);
+	Json::Value RecurAssToJson(const rttr::variant& ass, Mrk::JsonAllocator& allocator);
 
-	void WriteSeqContainer(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant)
+	Json::Value RecurSeqToJson(const rttr::variant& seq, Mrk::JsonAllocator& allocator)
 	{
-		writer.StartArray();
+		Json::Value jseq(Json::ArrayType);
 
-		auto seqView = variant.create_sequential_view();
+		auto seqView = seq.create_sequential_view();
 		for (auto& item : seqView)
 		{
-			WriteVariant(writer, item);
+			jseq.PushBack(RecurVariantToJson(item, allocator), allocator);
 		}
 
-		writer.EndArray();
+		return jseq;
 	}
 
-	void WriteAssContainer(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant)
+	Json::Value RecurAssToJson(const rttr::variant& ass, Mrk::JsonAllocator& allocator)
 	{
-		auto assView = variant.create_associative_view();
-		if (assView.is_key_only_type())
+		Json::Value jass(Json::ObjectType);
+
+		auto assView = ass.create_associative_view();
+		for (auto& item : assView)
 		{
-			writer.StartArray();
-			
-			for (auto& item : assView)
-			{
-				WriteVariant(writer, item.first);
-			}
-
-			writer.EndArray();
-		}
-		else
-		{
-			writer.StartObject();
-
-			for (auto& item : assView)
-			{
-				auto name = item.second.get_type().get_raw_type().get_name();
-				WriteVariant(writer, item.first);
-				WriteVariant(writer, item.second);
-			}
-
-			writer.EndObject();
+			jass.AddMember(RecurVariantToJson(item.first, allocator), RecurVariantToJson(item.second, allocator), allocator);
 		}
 
+		return jass;
 	}
 
-	void WriteArithmetic(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant, const rttr::type& type)
+	Json::Value RecurStringToJson(const rttr::variant& str, Mrk::JsonAllocator& allocator)
 	{
-		if (type == rttr::type::get<bool>())
-			writer.Bool(variant.to_bool());
-		else if (type == rttr::type::get<char>())
-			writer.Bool(variant.to_bool());
-		else if (type == rttr::type::get<int8_t>())
-			writer.Int(variant.to_int8());
-		else if (type == rttr::type::get<int16_t>())
-			writer.Int(variant.to_int16());
-		else if (type == rttr::type::get<int32_t>())
-			writer.Int(variant.to_int32());
-		else if (type == rttr::type::get<int64_t>())
-			writer.Int64(variant.to_int64());
-		else if (type == rttr::type::get<uint8_t>())
-			writer.Uint(variant.to_uint8());
-		else if (type == rttr::type::get<uint16_t>())
-			writer.Uint(variant.to_uint16());
-		else if (type == rttr::type::get<uint32_t>())
-			writer.Uint(variant.to_uint32());
-		else if (type == rttr::type::get<uint64_t>())
-			writer.Uint64(variant.to_uint64());
-		else if (type == rttr::type::get<float>())
-			writer.Double(variant.to_double());
-		else if (type == rttr::type::get<double>())
-			writer.Double(variant.to_double());
+		return Json::Value(str.to_string(), allocator);
 	}
 
-	void WriteEnumeration(Json::PrettyWriter<Json::StringBuffer> & writer, const rttr::variant& variant)
+	Json::Value RecurEnumToJson(const rttr::variant& enumeration, Mrk::JsonAllocator& allocator)
 	{
 		bool ok = false;
-		auto result = variant.to_string(&ok);
+		auto result = enumeration.to_string(&ok);
 		if (ok)
 		{
-			writer.String(variant.to_string());
+			return Json::Value(enumeration.to_string(), allocator);
 		}
 		else
 		{
-			auto value = variant.to_uint32(&ok);
+			auto value = enumeration.to_uint32(&ok);
 			if (ok)
 			{
-				writer.Uint64(value);
+				return Json::Value(value);
 			}
 			else
 			{
-				writer.Null();
+				return Json::Value((uint32_t)0);
 			}
 		}
 	}
 
-	void WriteObject(Json::PrettyWriter<Json::StringBuffer>& writer, rttr::instance obj)
+	Json::Value RecurVariantToJson(const rttr::variant& variant, Mrk::JsonAllocator& allocator)
 	{
-		static const rttr::string_view classKey("MrkClassKey");
-		static const rttr::string_view classValue("MrkClassValue");
+		auto type = variant.get_type();
+		auto wrapedType = type.is_wrapper() ? type.get_wrapped_type() : type;
 
-		writer.StartObject();
-
-		writer.String(classKey.data());
-		writer.String(obj.get_derived_type().get_raw_type().get_name().data());
-
-		writer.String(classValue.data());
+		if (type == wrapedType)	// not wrapper
 		{
-			writer.StartObject();
-
-			auto props = obj.get_derived_type().get_properties();
-			for (auto& prop : props)
+			if (type.is_arithmetic())
 			{
-				auto value = prop.get_value(obj);
-				if (value)
-				{
-					auto name = prop.get_name();
-					writer.String(name.data(), static_cast<Json::SizeType>(name.length()), false);
-					WriteVariant(writer, value);
-				}
+				return RecurArithmeticToJson(variant, allocator);
 			}
-
-			writer.EndObject();
-		}
-		
-		writer.EndObject();
-	}
-
-	void WriteVariant(Json::PrettyWriter<Json::StringBuffer>& writer, const rttr::variant& variant)
-	{
-		auto valueType = variant.get_type().get_raw_type();
-		auto wrapType = valueType.is_wrapper() ? valueType.get_wrapped_type() : valueType;
-
-		if (valueType == wrapType)	// not wrapper
-		{
-			if (valueType.is_arithmetic())
+			else if (type.is_enumeration())
 			{
-				WriteArithmetic(writer, variant, valueType);
+				return RecurEnumToJson(variant, allocator);
 			}
-			else if (valueType.is_enumeration())
+			else if (type == rttr::type::get<std::string>())
 			{
-				WriteEnumeration(writer, variant);
+				return RecurStringToJson(variant, allocator);
 			}
-			else if (valueType == rttr::type::get<std::string>())
+			else if (type.is_associative_container())
 			{
-				writer.String(variant.to_string());
+				return RecurAssToJson(variant, allocator);
 			}
-			else if (valueType.is_associative_container())
+			else if (type.is_sequential_container())
 			{
-				WriteAssContainer(writer, variant);
-			}
-			else if (valueType.is_sequential_container())
-			{
-				WriteSeqContainer(writer, variant);
+				return RecurSeqToJson(variant, allocator);
 			}
 			else // object
 			{
-				WriteObject(writer, variant);
+				return RecurObjectToJson(variant, allocator);
 			}
 		}
 		else // wrapper type
 		{
-			auto unwrappType = variant.extract_wrapped_value();
-			WriteVariant(writer, unwrappType);
+			auto unwrap = variant.extract_wrapped_value();
+			return RecurVariantToJson(unwrap, allocator);
 		}
 	}
 
-	void ReadVariant(rttr::variant variant, Json::Value& jvariant);
-
-	rttr::variant ReadBasicType(Json::Value& jvariant)
+	Json::Value RecurArithmeticToJson(const rttr::variant& arithmetic, Mrk::JsonAllocator& allocator)
 	{
-		switch (jvariant.GetType())
+		Json::Value jarithmetic(Json::NumberType);
+
+		auto type = arithmetic.get_type();
+		if (type.is_arithmetic())
 		{
-		case Json::StringType:
-		{
-			return std::string(jvariant.GetString());
-			break;
-		}
-		case Json::NullType:     
-			break;
-		case Json::FalseType:
-		case Json::TrueType:
-		{
-			return jvariant.GetBool();
-			break;
-		}
-		case Json::NumberType:
-		{
-			if (jvariant.IsInt())
-				return jvariant.GetInt();
-			else if (jvariant.IsDouble())
-				return jvariant.GetDouble();
-			else if (jvariant.IsUint())
-				return jvariant.GetUint();
-			else if (jvariant.IsInt64())
-				return jvariant.GetInt64();
-			else if (jvariant.IsUint64())
-				return jvariant.GetUint64();
-			break;
-		}
-		// we handle only the basic types here
-		case Json::ObjectType:
-		case Json::ArrayType: 
-			return rttr::variant();
+			if (type == rttr::type::get<bool>())
+				jarithmetic = arithmetic.to_bool();
+			else if (type == rttr::type::get<char>())
+				jarithmetic = arithmetic.to_uint8();
+			else if (type == rttr::type::get<int8_t>())
+				jarithmetic = arithmetic.to_int8();
+			else if (type == rttr::type::get<int16_t>())
+				jarithmetic = arithmetic.to_int16();
+			else if (type == rttr::type::get<int32_t>())
+				jarithmetic = arithmetic.to_int32();
+			else if (type == rttr::type::get<int64_t>())
+				jarithmetic = arithmetic.to_int64();
+			else if (type == rttr::type::get<uint8_t>())
+				jarithmetic = arithmetic.to_uint8();
+			else if (type == rttr::type::get<uint16_t>())
+				jarithmetic = arithmetic.to_uint16();
+			else if (type == rttr::type::get<uint32_t>())
+				jarithmetic = arithmetic.to_uint32();
+			else if (type == rttr::type::get<uint64_t>())
+				jarithmetic = arithmetic.to_uint64();
+			else if (type == rttr::type::get<float>())
+				jarithmetic = arithmetic.to_double();
+			else if (type == rttr::type::get<double>())
+				jarithmetic = arithmetic.to_double();
 		}
 
-		return rttr::variant();
+		return jarithmetic;
 	}
 
-	rttr::variant ReadObject(Json::Value& jobj)
+	Json::Value RecurObjectToJson(rttr::instance obj, Mrk::JsonAllocator& allocator)
 	{
-		assert(jobj.IsObject());
+		Json::Value jobj(Json::ObjectType);
 
-		auto jclassKey = jobj.FindMember("MrkClassKey");
-		auto jclassValue = jobj.FindMember("MrkClassValue");
-
-		if (jclassKey != jobj.MemberEnd() && jclassValue != jobj.MemberEnd() && jclassKey->value.IsString() && jclassValue->value.IsObject())
+		if (obj.is_valid())
 		{
-			auto n = jclassKey->value.GetString();
-			auto type = rttr::type::get_by_name(jclassKey->value.GetString());
-			if (auto constructor = type.get_constructor())
+			auto props = obj.get_derived_type().get_properties();
+			for (auto& prop : props)
 			{
-				auto obj = constructor.invoke();
-				auto& jobj = jclassValue->value;
+				Json::Value jprop;
 
-				auto props = type.get_properties();
-				for (auto& prop : props)
+				auto value = prop.get_value(obj);
+				if (value)
 				{
-					auto jprop = jobj.FindMember(prop.get_name().data());
-					if (jprop != jobj.MemberEnd())
-					{
-						ReadVariant(prop.get_value(obj), jprop->value);
-					}
+					jprop = RecurVariantToJson(value, allocator);
 				}
 
-				return obj;
+				jobj.AddMember(Json::StringRef(prop.get_name().data()), jprop, allocator);
 			}
 		}
 
-		return rttr::variant();
+		return jobj;
 	}
+}
 
-	void ReadAssContainer(rttr::variant ass, Json::Value& jass)
+Json::Value Mrk::ReflectSys::ToJson(rttr::instance obj, Mrk::JsonAllocator& alloctor)
+{
+	return RecurObjectToJson(obj, alloctor);
+}
+
+// from json
+
+namespace
+{
+	void RecurObjectFromJson(rttr::instance obj, const Json::Value& jobj);
+	void RecurVariantFromJson(rttr::variant& variant, const Json::Value& jvariant);
+	void RecurArithmeticFromJson(rttr::variant& arithmetic, const Json::Value& jarithmetic);
+	void RecurEnumFromJson(rttr::variant& _enum, const Json::Value& jenum);
+	void RecurStringFromJson(rttr::variant& str, const Json::Value& jstr);
+	void RecurSeqFromJson(rttr::variant& seq, const Json::Value& jseq);
+	void RecurAssFromJson(rttr::variant& ass, const Json::Value& jass);
+
+	void RecurAssFromJson(rttr::variant& ass, const Json::Value& jass)
 	{
-		
+		auto view = ass.create_associative_view();
+		auto jdic = jass.GetObject();
+
+		auto keyType = view.get_key_type();
+		auto valueType = view.get_value_type();
+
+		for (auto& jitem : jdic)
+		{
+			auto key = keyType.create();
+			auto value = valueType.create();
+
+			RecurVariantFromJson(key, jitem.name);
+			RecurVariantFromJson(value, jitem.value);
+
+			if (key.is_valid() && value.is_valid())
+			{
+				view.insert(key, value);
+			}
+		}
 	}
 
-	void ReadSeqContainer(rttr::variant seq, Json::Value& jseq)
+	void RecurSeqFromJson(rttr::variant& seq, const Json::Value& jseq)
 	{
+		auto view = seq.create_sequential_view();
+		auto jarr = jseq.GetArray();
 
+		view.set_size(jarr.Size());
+
+		int index = 0;
+		for (auto& jitem : jarr)
+		{
+			auto value = view.get_value(index);
+			RecurVariantFromJson(value, jitem);
+			if (value.is_valid())
+			{
+				view.set_value(index, value);
+				index++;
+			}
+		}
 	}
 
-	void ReadVariant(rttr::variant variant, Json::Value& jvariant)
+	void RecurStringFromJson(rttr::variant& str, const Json::Value& jstr)
+	{
+		if (jstr.IsString())
+		{
+			str = std::string(jstr.GetString());
+		}
+	}
+
+	void RecurEnumFromJson(rttr::variant& _enum, const Json::Value& jenum)
+	{
+		if (jenum.IsInt())
+		{
+			_enum = jenum.GetInt();
+		}
+		else if (jenum.IsString())
+		{
+			_enum = jenum.GetString();
+		}
+	}
+
+	void RecurArithmeticFromJson(rttr::variant& arithmetic, const Json::Value& jarithmetic)
+	{
+		rttr::variant trans;
+
+		switch (jarithmetic.GetType())
+		{
+		case Json::FalseType:
+		case Json::TrueType:
+			trans = jarithmetic.GetBool();
+			break;
+		case Json::NumberType:
+		{
+			if (jarithmetic.IsInt())
+				trans = jarithmetic.GetInt();
+			else if (jarithmetic.IsDouble())
+				trans = jarithmetic.GetDouble();
+			else if (jarithmetic.IsUint())
+				trans = jarithmetic.GetUint();
+			else if (jarithmetic.IsInt64())
+				trans = jarithmetic.GetInt64();
+			else if (jarithmetic.IsUint64())
+				trans = jarithmetic.GetUint64();
+			break;
+		}
+		}
+
+		if (arithmetic.convert(trans.get_type()))
+		{
+			arithmetic = trans;
+		}
+	}
+
+	void RecurVariantFromJson(rttr::variant& variant, const Json::Value& jvariant)
 	{
 		auto type = variant.get_type();
-		if (jvariant.IsObject())
+		if (type.is_arithmetic())
 		{
-			if (variant.is_associative_container())
-			{
-				ReadAssContainer(variant, jvariant);
-			}
-			else
-			{
-				variant = ReadObject(jvariant);
-			}
+			RecurArithmeticFromJson(variant, jvariant);
 		}
-		else if (variant.is_sequential_container() && jvariant.IsArray())
+		else if (type.is_enumeration())
 		{
-			ReadSeqContainer(variant, jvariant);
+			RecurEnumFromJson(variant, jvariant);
+		}
+		else if (type == rttr::type::get<std::string>())
+		{
+			RecurStringFromJson(variant, jvariant);
+		}
+		else if (type.is_sequential_container())
+		{
+			RecurSeqFromJson(variant, jvariant);
+		}
+		else if (type.is_associative_container())
+		{
+			RecurAssFromJson(variant, jvariant);
 		}
 		else
 		{
-			auto basic = ReadBasicType(jvariant);
-			if (basic.convert(variant.get_type()))
+			RecurObjectFromJson(variant, jvariant);
+		}
+	}
+
+	void RecurObjectFromJson(rttr::instance obj, const Json::Value& jobj)
+	{
+		if (obj.is_valid())
+		{
+			auto props = obj.get_derived_type().get_properties();
+			for (auto& prop : props)
 			{
-				variant = basic;
+				auto jprop = jobj.FindMember(prop.get_name().data());
+				if (jprop != jobj.MemberEnd())
+				{
+					auto value = prop.get_value(obj);
+					RecurVariantFromJson(value, jprop->value);
+					if (value.is_valid())
+					{
+						auto type = prop.get_type();
+						prop.set_value(obj, value);
+					}
+				}
 			}
 		}
 	}
 }
 
-std::string MrkNew::ReflectSystem::ToJson(rttr::instance obj)
+void Mrk::ReflectSys::FromJson(rttr::instance obj, const Json::Value& jobj)
 {
-	if (!obj.is_valid())
-		return std::string();
-
-	Json::StringBuffer buffer;
-	Json::PrettyWriter writer(buffer);
-
-	WriteObject(writer, obj);
-
-	return buffer.GetString();
-}
-
-rttr::variant MrkNew::ReflectSystem::FromJson(const std::string& json)
-{
-	Json::Document jdoc;
-	if (jdoc.Parse(json.c_str()).HasParseError())
+	if (obj.is_valid())
 	{
-		throw;
+		RecurObjectFromJson(obj, jobj);
 	}
-
-	if (jdoc.IsObject())
-	{
-		return ReadObject(jdoc);
-	}
-
-	return rttr::variant();
 }

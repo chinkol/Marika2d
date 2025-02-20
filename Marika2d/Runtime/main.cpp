@@ -5,7 +5,6 @@
 #include <map>
 
 #include "Common/Log/LogSystem.h"
-#include "Common/Serialize/SerializeSystem.h"
 #include "Common/Memory/MemCtrlSystem.h"
 #include "Common/Def/UtilityDef.h"
 

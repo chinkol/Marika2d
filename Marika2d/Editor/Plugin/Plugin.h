@@ -110,7 +110,7 @@ namespace Mrk
 			{
 				ImGui::Begin("Editor Setting");
 
-				auto groups = ConfigSys::GetConfigGroups();
+				/*auto groups = ConfigSys::GetConfigGroups();
 				for (auto& [name, group] : groups)
 				{
 					for (auto iter = group.romote.MemberBegin(); iter != group.romote.MemberEnd(); iter++)
@@ -124,7 +124,7 @@ namespace Mrk
 							ImGui::Checkbox(key, &res);
 						}
 					}
-				}
+				}*/
 
 				ImGui::End();
 			}

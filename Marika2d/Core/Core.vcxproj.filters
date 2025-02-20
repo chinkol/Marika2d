@@ -57,6 +57,12 @@
     <ClCompile Include="Global\Global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Math.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GenCoreReflectInfo\GenCoreReflectInfo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -99,6 +105,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Global\Global.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GenCoreReflectInfo\GenCoreReflectInfo.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

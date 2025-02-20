@@ -1,15 +1,35 @@
 #pragma once
 
 #include "Core/Object/Object.h"
-#include "Common/Serialize/SerializeSystem.h"
+#include "Core/Reflect/Reflect.h"
+
 #include "Common/Singleton/Singleton.h"
 #include "Common/Memory/MemCtrlSystem.h"
 
 #include <map>
 #include <string>
 
+#ifndef MRK_COMPONENT_CONTENT
+#define MRK_COMPONENT_CONTENT(x)																										\
+MRK_OBJECT(x)																															\
+friend struct Mrk::ComponentTrait<x>;																									\
+static inline bool _mrk_macro_##x##_component_register_ = [](){																			\
+	Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;																		\
+	}();																																\
+virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {																\
+	auto json = Mrk::ReflectSys::ToJson(*this, alloctor);																				\
+	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(GetClassName().data(), alloctor), alloctor);	\
+	return json;																														\
+}																																		\
+virtual inline void FromJson(const Json::Value& json) override {																		\
+	Mrk::ReflectSys::FromJson(*this, json);																								\
+}
+#endif // !MRK_COMPONENT_CONTENT
+
 #ifndef MRK_COMPONENT
-#define MRK_COMPONENT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) friend struct Mrk::ComponentTrait<x>; static inline bool _mrk_macro_##x##_component_register_ = [](){ Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;}();
+#define MRK_COMPONENT(x)		\
+MRK_COMPONENT_CONTENT(x)		\
+RTTR_ENABLE(Mrk::Component)
 #endif // !MRK_COMPONENT
 
 namespace Mrk
@@ -101,10 +121,10 @@ namespace Mrk
 		static constexpr bool hasDispose = decltype(HasDispose<T>(nullptr))::value;
 	};
 
-	class Component : public Object, public ISerializable, public std::enable_shared_from_this<Component>
+	class Component : public Object, public std::enable_shared_from_this<Component>
 	{
-		MRK_COMPONENT(Component)
-		friend class GameObjectOperate;
+		MRK_COMPONENT_CONTENT(Component) RTTR_ENABLE(Object)
+			friend class GameObjectOperate;
 	public:
 		Component() = default;
 		virtual ~Component() = default;
@@ -116,7 +136,7 @@ namespace Mrk
 	class ComponentHouse : public Singleton<ComponentHouse>
 	{
 		MRK_SINGLETON(ComponentHouse)
-		using TypeBatch = std::vector<ComponentCallBack>;
+			using TypeBatch = std::vector<ComponentCallBack>;
 		using LoopBatch = std::map<std::type_index, TypeBatch*>;
 	public:
 		static void Invoke(std::string_view loopState);

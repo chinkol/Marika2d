@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "Core/GenCoreReflectInfo/GenCoreReflectInfo.h"
+#include "Core/Reflect/Reflect.h"
 #include "Core/Config/ConfigSys.h"
 #include "Core/Application/Application.h"
 #include "Core/OpenGL/OpenGL.h"
@@ -148,12 +150,16 @@ void ConfigSysTest()
 }
 int main()
 {
+	Mrk::GenCoreReflectInfo();
+
+	MrkTest::Test();
+
 	ConfigSysTest();
 	//RttrTestFunc();
 
 	auto context = Mrk::Application::GetAppContext();
 
-	context.windowTitle = Mrk::ConfigSys::GetOrSet<std::string>("Setting", "Tital", "Hello Marika Engine Editor");
+	context.windowTitle = "Hello";//Mrk::ConfigSys::GetOrSet<std::string>("Setting", "Tital", "Hello Marika Engine Editor");
 	context.windowSize = { 1280, 800 };
 
 	context.appInitedCallBack = []() {

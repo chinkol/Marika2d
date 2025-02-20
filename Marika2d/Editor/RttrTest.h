@@ -1,112 +1,87 @@
 #pragma once
 
-#include "Third/rttr/registration.h"
-#include "Third/rttr/type.h"
+#include "Core/Component/Component.h"
+#include "Core/GameObject/GameObject.h"
 
-#include "Core/Reflect/Reflect.h"
-
-#include <iostream>
-#include <map>
-
-
-class TestBase
+namespace MrkTest
 {
-    friend void RttrTestFunc();
-public:
-    int field1 = 123;
-    float field2 = 123.456f;
-    std::string field3 = "Hello World";
-    std::vector<TestBase*> field4;
-    std::map<std::string, TestBase*> fieldtest;
+	class BoneComponent : public Mrk::Component
+	{
+		MRK_COMPONENT(BoneComponent)
+	public:
+		double inline GetData1() { return data1; }
+		void inline SetData1(double val) { data1 = val; }
+	public:
+		std::string data2 = "Hello";
+		int data0 = 1209;
+		std::vector<std::string> data3 = { "H", "E", "L", "L", "O" };
+		std::map<std::string, double> data4 = { {"H", 1}, {"E", 2}, {"L", 3}, {"L", 4}, {"O", 5} };
+	private:
+		double data1 = 12.09;
+	};
 
-    MRK_RTTR_BASE()
-};
+	class Bone : public Mrk::GameObject
+	{
+		MRK_GAMEOBJECT(Bone)
+	public:
+	};
+}
 
-MRK_RTTR_TYPE(TestBase)
-(
-    rttr::registration::class_<TestBase>("TestBase")
-    .constructor<>()
-    .property("field1", &TestBase::field1)
-    .property("field2", &TestBase::field2)
-    .property("field3", &TestBase::field3)
-    .property("field4", &TestBase::field4)
-    .property("fieldtest", &TestBase::fieldtest);
-)
-
-class TestDerived1 : public TestBase
+namespace MrkTest
 {
-public:
-    double field5 = 123.456789;
+	void inline Test()
+	{
+		std::shared_ptr<Bone> bone1;
 
-    MRK_RTTR_BASE(TestBase)
-};
+		std::shared_ptr<Bone> bone11;										std::shared_ptr<Bone> bone12;
 
-MRK_RTTR_TYPE(TestDerived1)
-(
-    rttr::registration::class_<TestDerived1>("TestDerived1")
-    .constructor<>()
-    .property("field5", &TestDerived1::field5);
-)
+		std::shared_ptr<Bone> bone211; std::shared_ptr<Bone> bone212;		std::shared_ptr<Bone> bone221; std::shared_ptr<Bone> bone222;
 
-class TestDerived2 : public TestBase
-{
-public:
-    short field5 = 321;
+		bone1 = std::make_shared<Bone>(); bone1->SetName("Bone1");
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone1);
+		bone11 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone11);
+		bone12 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone12);
+		bone211 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone211);
+		bone212 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone212);
+		bone221 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone221);
+		bone222 = std::make_shared<Bone>();
+		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone222);
 
-    MRK_RTTR_BASE(TestBase)
-};
+		Mrk::GameObjectOperate::AttachChild(bone11, bone1);
+		Mrk::GameObjectOperate::AttachChild(bone12, bone1);
 
-MRK_RTTR_TYPE(TestDerived2)
-(
-    rttr::registration::class_<TestDerived2>("TestDerived2")
-    .constructor<>()
-    .property("field5", &TestDerived2::field5);
-)
+		Mrk::GameObjectOperate::AttachChild(bone211, bone11);
+		Mrk::GameObjectOperate::AttachChild(bone212, bone11);
 
-class TestDerived3 : public TestBase
-{
-public:
-    std::string field5 = "World Hello";
+		Mrk::GameObjectOperate::AttachChild(bone221, bone12);
+		Mrk::GameObjectOperate::AttachChild(bone222, bone12);
 
-    MRK_RTTR_BASE(TestBase) 
-};
+		Json::Document jdoc(Json::ArrayType);
+		auto json = bone1->ToJson(jdoc.GetAllocator());
 
-MRK_RTTR_TYPE(TestDerived3)
-(
-    rttr::registration::class_<TestDerived3>("TestDerived3")
-    .constructor<>()
-    .property("field5", &TestDerived3::field5);
-)
+		Json::StringBuffer buf;
+		Json::PrettyWriter writer(buf);
 
-static inline bool k = true;
+		json.Accept(writer);
 
-inline void RttrTestFunc()
-{ 
-    TestBase base;
-    base.field4.emplace_back(new TestDerived1());
-    base.field4.emplace_back(new TestDerived2());
-    base.field4.emplace_back(new TestDerived3());
-    base.fieldtest.emplace("1", new TestDerived1());
-    base.fieldtest.emplace("2", new TestDerived2());
-    base.fieldtest.emplace("3", new TestDerived3());
-    base.fieldtest.emplace("4", new TestBase());
+		std::cout << buf.GetString();
 
-    base.field1 = 0;
-    base.field2 = 0;
-    base.field3 = "NULL";
-    base.field4.clear();
-    base.fieldtest.clear();
+		auto db = Mrk::GameObjectFactory::CreateNew<Bone>();
+		db->FromJson(json);
 
-    auto n = rttr::type::get_by_name("TestBase").get_constructor().invoke().get_type().get_name();
+		
+		Json::StringBuffer buf1;
+		Json::PrettyWriter writer1(buf1);
 
-    auto json = MrkNew::ReflectSystem::ToJson(base);
-    auto rttrobj = MrkNew::ReflectSystem::FromJson(json);
+		auto json1 = db->ToJson(jdoc.GetAllocator());
 
-    std::shared_ptr<TestBase> test;
-    if (rttrobj.convert<decltype(test)>(test))
-    {
-        std::cout << "Yes" << std::endl;
-    }
+		json1.Accept(writer1);
 
-    std::cout << MrkNew::ReflectSystem::ToJson(base);
-}  
+		std::cout << buf1.GetString();
+	}
+}

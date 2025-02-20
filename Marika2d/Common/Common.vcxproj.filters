@@ -21,9 +21,6 @@
     <ClCompile Include="Log\LogSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Serialize\SerializeSystem.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Memory\MemCtrlSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Log\LogSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Serialize\SerializeSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Memory\MemCtrlSystem.h">

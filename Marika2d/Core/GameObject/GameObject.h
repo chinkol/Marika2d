@@ -1,14 +1,35 @@
 #pragma once
 
 #include "Core/Object/Object.h"
-#include "Common/Serialize/SerializeSystem.h"
+#include "Core/Reflect/Reflect.h"
+
 #include "Common/Singleton/Singleton.h"
 #include "Common/Memory/MemCtrlSystem.h"
 
 #include <map>
 
+#ifndef MRK_GAMEOBJECT_CONTENT
+#define MRK_GAMEOBJECT_CONTENT(x)																										\
+MRK_OBJECT(x)																															\
+static inline bool _mrk_macro_##x##_gameobject_register_ = [](){																		\
+	Mrk::GameObjectFactory::RegisterGameObject<x>(#x);																					\
+	return true;																														\
+	}();																																\
+virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {																\
+	Json::Value json = Mrk::ReflectSys::ToJson(*this, alloctor);																		\
+	SerializeGameObject(json, alloctor);																								\
+	return json;																														\
+}																																		\
+virtual inline void FromJson(const Json::Value& json) override {																		\
+	Mrk::ReflectSys::FromJson(*this, json);																								\
+	DeserializeGameObject(json);																										\
+}
+#endif // !MRK_GAMEOBJECT_CONTENT
+
 #ifndef MRK_GAMEOBJECT
-#define MRK_GAMEOBJECT(x) MRK_OBJECT(x) MRK_SERIALIZABLE(x) private: static inline bool _mrk_macro_##x##_gameobject_register_ = [](){Mrk::GameObjectFactory::RegisterGameObject<x>(#x); return true; }();
+#define MRK_GAMEOBJECT(x)			\
+MRK_GAMEOBJECT_CONTENT(x)			\
+RTTR_ENABLE(Mrk::GameObject)		
 #endif // !MRK_GAMEOBJECT
 
 namespace Mrk
@@ -23,7 +44,7 @@ namespace Mrk
 		template<typename T>
 		static void RegisterGameObject(std::string_view classname);
 		static std::shared_ptr<GameObject> CreateNew(std::string_view classname);
-		template<typename T> 
+		template<typename T>
 		static std::shared_ptr<GameObject> CreateNew();
 		static const std::map<std::string, std::function<std::shared_ptr<GameObject>()>>& GetCreators();
 		static const std::vector<std::string>& GetManifest();
@@ -33,21 +54,29 @@ namespace Mrk
 		std::vector<std::string> manifest;
 	};
 
-	class GameObject : public Object, public ISerializable, public std::enable_shared_from_this<GameObject>
+	class GameObject : public Object, public std::enable_shared_from_this<GameObject>
 	{
-		MRK_GAMEOBJECT(GameObject)
+		MRK_GAMEOBJECT_CONTENT(GameObject) RTTR_ENABLE(Object)
+	private:
 		friend class GameObjectOperate;
 	public:
-		virtual void DeSerialize(const Json::Value& jobj);
-		virtual void Serialize(Json::Value& jobj, JsonAlloc& jalloc) const;
+		const std::string& GetName();
+		void SetName(const std::string& name);
+	protected:
+		void DeserializeGameObject(const Json::Value& json);
+		void SerializeGameObject(Json::Value& json, Mrk::JsonAllocator& alloctor);
 	private:
+		void DeserializeComponents(const Json::Value& json);
+		void DeserializeChildren(const Json::Value& json);
+		Json::Value SerializeComponents(Mrk::JsonAllocator& alloctor);
+		Json::Value SerializeChildren(Mrk::JsonAllocator& alloctor);
+	protected:
 		std::string name;
 		std::weak_ptr<GameObject> parent;
-		std::vector<std::shared_ptr<Object>> children;
-		std::map<std::string, std::shared_ptr<Component>> components;
+		std::vector<std::shared_ptr<GameObject>> children;
+		std::vector<std::shared_ptr<Component>> components;
 	};
 
-	//I dont konw why I want to add this class instead of write these funcs into 'gameobject' class, maybe it makes 'gameobject' looks more clearly ?
 	class GameObjectOperate : public Singleton<GameObjectOperate>
 	{
 	public:
@@ -97,6 +126,8 @@ namespace Mrk
 	inline void GameObjectOperate::AttachComponent(const std::shared_ptr<GameObject>& holder)
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
+		assert(holder);
+
 		AttachComponent(Mrk::MemCtrlSystem::CreateNew<T>(), holder);
 	}
 
@@ -105,22 +136,16 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
 		assert(holder);
-		auto ret = holder->components.find(T::GetStaticClassName().data());
-		if (ret != holder->components.end())
-		{
-			holder->components.erase(ret);
-			ret->second->holder = std::weak_ptr<GameObject>();
-		}
-		else
-		{
-			//log : not found
-		}
+
+		auto& components = holder->components;
+		DetachComponent(T::GetStaticClassName(), holder);
 	}
 	template<typename T>
 	inline std::shared_ptr<Component> GameObjectOperate::GetComponent(const std::shared_ptr<GameObject>& holder)
 	{
+		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
+		assert(holder);
+
 		return GetComponent(T::GetStaticClassName(), holder);
 	}
 }
-
-
