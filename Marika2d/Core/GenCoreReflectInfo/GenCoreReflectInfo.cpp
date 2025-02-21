@@ -189,23 +189,3 @@ namespace Mrk
 		.constructor<>();
 		);
 }
-
-#include "Editor/RttrTest.h"
-
-namespace MrkTest
-{
-	MRK_CORE_REFLECT_REGISTER(BoneComponent)(
-		rttr::registration::class_<BoneComponent>("BoneComponent")
-		.constructor<>()
-		.property("data0", &BoneComponent::data0)
-		.property("data1", &BoneComponent::GetData1, &BoneComponent::SetData1)
-		.property("data2", &BoneComponent::data2)
-		.property("data3", &BoneComponent::data3)
-		.property("data4", &BoneComponent::data4);
-		);
-
-	MRK_CORE_REFLECT_REGISTER(Bone)(
-		rttr::registration::class_<Bone>("Bone")
-		.constructor<>();
-		);
-}

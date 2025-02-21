@@ -138,12 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
     <ClCompile Include="Asset\AssetSystem.cpp" />
     <ClCompile Include="RttrTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
     <ClInclude Include="Plugin\Plugin.h" />
     <ClInclude Include="Asset\AssetSystem.h" />
     <ClInclude Include="RttrTest.h" />
