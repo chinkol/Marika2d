@@ -1,5 +1,8 @@
 #include "Common/Singleton/Singleton.h"
 
+#include "Core/Config/ConfigSys.h"
+#include "Core/Math/Math.h"
+
 #include "Third/glm/glm.hpp"
 #include "Third/glad/include/glad.h"
 #include "Third/glfw/include/glfw3.h"
@@ -37,12 +40,16 @@ namespace Mrk
         std::string title;
     };
 
+    class AppConfig : public ConfigGroup
+    {
+        MRK_CONFIG(AppConfig)
+    public:
+        Vector2i size = { 800, 600 };
+        std::string title = "Marika Engine";
+    };
+
     struct AppContext
     {
-        // mainwnd
-        std::string windowTitle = "Marika Window";
-        glm::i32vec2 windowSize = { 800, 600 };   // width, height
-
         // viewport
         bool viewportFill = true;
         glm::vec4 viewport = { 0, 0, 800, 600 };   // left, top, width, height

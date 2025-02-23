@@ -115,13 +115,17 @@ Mrk::Application::Application() :
 
 void Mrk::Application::Run()
 {
+    auto size = ConfigSys::GetConfigItem<Vector2i>("AppConfig", "size");
+    auto title = ConfigSys::GetConfigItem<std::string>("AppConfig", "title");
+
+    Instance().window = new Window(size.x, size.y, title);
+    
     auto& context = Instance().context;
-    auto window = Instance().window;
-    window = new Window(context.windowSize.x, context.windowSize.y, context.windowTitle);
 
-    if (context.appInitedCallBack) context.appInitedCallBack();
+    if (context.appInitedCallBack) 
+        context.appInitedCallBack();
 
-    window->Run([context]()
+    Instance().window->Run([context]()
         {
             //Æô¶¯ ImGui Ö¡
             ImGui_ImplOpenGL3_NewFrame();
@@ -148,7 +152,7 @@ void Mrk::Application::Run()
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         });
 
-    delete window;
+    delete Instance().window;
 }
 
 const Mrk::AppContext& Mrk::Application::GetAppContext()

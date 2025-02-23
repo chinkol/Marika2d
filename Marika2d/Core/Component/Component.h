@@ -18,7 +18,7 @@ static inline bool _mrk_macro_##x##_component_register_ = [](){																	
 	}();																																\
 virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {																\
 	auto json = Mrk::ReflectSys::ToJson(*this, alloctor);																				\
-	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(GetClassName().data(), alloctor), alloctor);	\
+	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(GetClassTypeName().data(), alloctor), alloctor);\
 	return json;																														\
 }																																		\
 virtual inline void FromJson(const Json::Value& json) override {																		\
@@ -124,7 +124,7 @@ namespace Mrk
 	class Component : public Object, public std::enable_shared_from_this<Component>
 	{
 		MRK_COMPONENT_CONTENT(Component) RTTR_ENABLE(Object)
-			friend class GameObjectOperate;
+		friend class GameObjectOperate;
 	public:
 		Component() = default;
 		virtual ~Component() = default;

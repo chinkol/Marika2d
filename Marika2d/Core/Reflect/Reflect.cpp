@@ -273,7 +273,7 @@ namespace
 		}
 		}
 
-		if (arithmetic.convert(trans.get_type()))
+		if (trans.convert(arithmetic.get_type()))
 		{
 			arithmetic = trans;
 		}

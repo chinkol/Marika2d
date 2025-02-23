@@ -48,47 +48,9 @@ namespace
 	}
 }
 
-#include "Third/glm/glm.hpp"
-#include "Third/glm/gtc/quaternion.hpp"
-
-namespace
-{
-	void GlmReflectRegister()
-	{
-		rttr::registration::class_<glm::vec2>("glm::vec2")
-			.constructor<>()(rttr::policy::ctor::as_object)
-			.property("x", &glm::vec2::x)
-			.property("y", &glm::vec2::y);
-
-		rttr::registration::class_<glm::vec3>("glm::vec3")
-			.constructor<>()(rttr::policy::ctor::as_object)
-			.property("x", &glm::vec3::x)
-			.property("y", &glm::vec3::y)
-			.property("z", &glm::vec3::z);
-
-		rttr::registration::class_<glm::vec4>("glm::vec4")
-			.constructor<>()(rttr::policy::ctor::as_object)
-			.property("x", &glm::vec4::x)
-			.property("y", &glm::vec4::y)
-			.property("z", &glm::vec4::z)
-			.property("w", &glm::vec4::w);
-
-		rttr::registration::class_<glm::quat>("glm::quat")
-			.constructor<>()(rttr::policy::ctor::as_object)
-			.property("x", &glm::quat::x)
-			.property("y", &glm::quat::y)
-			.property("z", &glm::quat::z)
-			.property("w", &glm::quat::w);
-
-		rttr::registration::class_<glm::mat4>("glm::mat4")
-			.constructor<>()(rttr::policy::ctor::as_object);
-	}
-}
-
 void Mrk::GenCoreReflectInfo()
 {
 	BasicTypeRegister();
-	GlmReflectRegister();
 
 	// last
 	CoreTypeReflectRegister();
@@ -108,7 +70,7 @@ namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(ID)(
 		rttr::registration::class_<ID>("ID")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("low32", &ID::low32)
 		.property("high32", &ID::high32)
 		.property("total64", &ID::total64);
@@ -121,14 +83,14 @@ namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(Vector2)(
 		rttr::registration::class_<Vector2>("Vector2")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("x", &Vector2::x)
 		.property("y", &Vector2::y);
 		);
 
 	MRK_CORE_REFLECT_REGISTER(Vector3)(
 		rttr::registration::class_<Vector3>("Vector3")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("x", &Vector3::x)
 		.property("y", &Vector3::y)
 		.property("z", &Vector3::z);
@@ -136,25 +98,49 @@ namespace Mrk
 
 	MRK_CORE_REFLECT_REGISTER(Vector4)(
 		rttr::registration::class_<Vector4>("Vector4")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("x", &Vector4::x)
 		.property("y", &Vector4::y)
 		.property("z", &Vector4::z)
-		.property("z", &Vector4::w);
+		.property("w", &Vector4::w);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(Vector2i)(
+		rttr::registration::class_<Vector2i>("Vector2i")
+		.constructor<>()(rttr::policy::ctor::as_object)
+		.property("x", &Vector2i::x)
+		.property("y", &Vector2i::y);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(Vector3i)(
+		rttr::registration::class_<Vector3i>("Vector3i")
+		.constructor<>()(rttr::policy::ctor::as_object)
+		.property("x", &Vector3i::x)
+		.property("y", &Vector3i::y)
+		.property("z", &Vector3i::z);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(Vector4i)(
+		rttr::registration::class_<Vector4i>("Vector4i")
+		.constructor<>()(rttr::policy::ctor::as_object)
+		.property("x", &Vector4i::x)
+		.property("y", &Vector4i::y)
+		.property("z", &Vector4i::z)
+		.property("w", &Vector4i::w);
 		);
 
 	MRK_CORE_REFLECT_REGISTER(Quaternion)(
 		rttr::registration::class_<Quaternion>("Quaternion")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("x", &Quaternion::x)
 		.property("y", &Quaternion::y)
 		.property("z", &Quaternion::z)
-		.property("z", &Quaternion::w);
+		.property("w", &Quaternion::w);
 		);
 
 	MRK_CORE_REFLECT_REGISTER(Matrix4)(
 		rttr::registration::class_<Matrix4>("Matrix4")
-		.constructor<>()
+		.constructor<>()(rttr::policy::ctor::as_object)
 		.property("m00", &Matrix4::GetM00, &Matrix4::SetM00)
 		.property("m01", &Matrix4::GetM01, &Matrix4::SetM01)
 		.property("m02", &Matrix4::GetM02, &Matrix4::SetM02)
@@ -178,14 +164,30 @@ namespace Mrk
 
 namespace Mrk
 {
+	MRK_CORE_REFLECT_REGISTER(Object)(
+		rttr::registration::class_<Object>("Object")
+		.constructor<>();
+		);
+
 	MRK_CORE_REFLECT_REGISTER(GameObject)(
 		rttr::registration::class_<GameObject>("GameObject")
-		.constructor<>()
+		.property("id", &GameObject::GetID, &GameObject::SetID_)
 		.property("name", &GameObject::GetName, &GameObject::SetName);
 		);
 
 	MRK_CORE_REFLECT_REGISTER(Component)(
 		rttr::registration::class_<Component>("Component")
 		.constructor<>();
+		);
+}
+
+#include "Core/Application/Application.h"
+
+namespace Mrk
+{
+	MRK_CORE_REFLECT_REGISTER(AppConfig)(
+		rttr::registration::class_<AppConfig>("AppConfig")
+		.property("size", &AppConfig::size)
+		.property("title", &AppConfig::title);
 		);
 }

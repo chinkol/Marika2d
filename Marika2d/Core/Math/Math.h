@@ -7,26 +7,43 @@ namespace Mrk
 {
 	struct Vector2 : public glm::vec2
 	{
-
+		using glm::vec2::vec2;
 	};
 
 	struct Vector3 : public glm::vec3
 	{
-
+		using glm::vec3::vec3;
 	};
 
 	struct Vector4 : public glm::vec4
 	{
+		using glm::vec4::vec4;
+	};
 
+	struct Vector2i : public glm::ivec2
+	{
+		using glm::ivec2::ivec2;
+	};
+
+	struct Vector3i : public glm::ivec3
+	{
+		using glm::ivec3::ivec3;
+	};
+
+	struct Vector4i : public glm::ivec4
+	{
+		using glm::ivec4::ivec4;
 	};
 
 	struct Quaternion : public glm::quat
 	{
-
-	};
+		using glm::quat::quat;
+	}; 
 
 	struct Matrix4 : public glm::mat4
 	{
+		using glm::mat4::mat4;
+
 		float GetM00() const { return (*this)[0][0]; }
 		float GetM01() const { return (*this)[0][1]; }
 		float GetM02() const { return (*this)[0][2]; }

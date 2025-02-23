@@ -11,7 +11,6 @@ namespace Mrk
 {
     union ID
     {
-        inline operator uint64_t() { return total64; }
         uint64_t total64;
         struct
         {

@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
 #include "Core/Component/Component.h"
+#include "Core/ID/IDCreater.h"
 
 std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_view classname)
 {
@@ -72,7 +73,7 @@ void Mrk::GameObjectOperate::DetachComponent(std::string_view comName, const std
 
 	auto& children = holder->children;
 	children.erase(std::remove_if(children.begin(), children.end(), [comName](const std::shared_ptr<GameObject>& child) {
-		return child->GetClassName() == comName;
+		return child->GetClassTypeName() == comName;
 		}), children.end());
 }
 
@@ -82,7 +83,7 @@ std::shared_ptr<Mrk::Component> Mrk::GameObjectOperate::GetComponent(std::string
 
 	auto& components = holder->components;
 	auto ret = std::find_if(components.begin(), components.end(), [comName](const std::shared_ptr<Component>& component) {
-		return component->GetClassName() == comName;
+		return component->GetClassTypeName() == comName;
 		});
 
 	if (ret != components.end())
@@ -91,6 +92,21 @@ std::shared_ptr<Mrk::Component> Mrk::GameObjectOperate::GetComponent(std::string
 	}
 
 	return std::shared_ptr<Mrk::Component>();
+}
+
+Mrk::GameObject::GameObject() : 
+	id(Mrk::IDGenerater::Generate())
+{
+}
+
+Mrk::ID Mrk::GameObject::GetID()
+{
+	return id;
+}
+
+void Mrk::GameObject::SetID_(ID id)
+{
+	this->id = id;
 }
 
 const std::string& Mrk::GameObject::GetName()
@@ -123,7 +139,7 @@ void Mrk::GameObject::DeserializeGameObject(const Json::Value& json)
 
 void Mrk::GameObject::SerializeGameObject(Json::Value& json, Mrk::JsonAllocator& alloctor)
 {
-	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(GetClassName().data(), alloctor), alloctor);
+	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(this->GetClassTypeName().data(), alloctor), alloctor);
 	json.AddMember(Json::Value("children", alloctor), SerializeChildren(alloctor), alloctor);
 	json.AddMember(Json::Value("components", alloctor), SerializeComponents(alloctor), alloctor);
 }

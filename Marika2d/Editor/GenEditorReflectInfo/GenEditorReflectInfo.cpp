@@ -33,7 +33,6 @@ namespace MrkTest
 {
 	MRK_EDITOR_REFLECT_REGISTER(BoneComponent)(
 		rttr::registration::class_<BoneComponent>("BoneComponent")
-		.constructor<>()
 		.property("data0", &BoneComponent::data0)
 		.property("data1", &BoneComponent::GetData1, &BoneComponent::SetData1)
 		.property("data2", &BoneComponent::data2)
@@ -42,7 +41,6 @@ namespace MrkTest
 		);
 
 	MRK_EDITOR_REFLECT_REGISTER(Bone)(
-		rttr::registration::class_<Bone>("Bone")
-		.constructor<>();
+		rttr::registration::class_<Bone>("Bone");
 		);
 }

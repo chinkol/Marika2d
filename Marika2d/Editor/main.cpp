@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "GenEditorReflectInfo/GenEditorReflectInfo.h"
+
 #include "Core/GenCoreReflectInfo/GenCoreReflectInfo.h"
 #include "Core/Reflect/Reflect.h"
 #include "Core/Config/ConfigSys.h"
@@ -7,7 +9,7 @@
 #include "Core/OpenGL/OpenGL.h"
 #include "Core/Mesh/Mesh.h"
 
-#include "Editor/Asset/AssetSystem.h"
+//#include "Editor/Asset/AssetSystem.h"
 #include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
@@ -18,37 +20,9 @@
 
 #include <string>
 
-//void RttrTestFunc()
-//{
-//	std::string json_string;
-//
-//	{
-//		circle c_1("Circle #1");
-//		shape& my_shape = c_1;
-//
-//		c_1.set_visible(true);
-//		c_1.points = std::vector<point2d>(2, point2d(1, 1));
-//		c_1.points[1].x = 23;
-//		c_1.points[1].y = 42;
-//
-//		c_1.position.x = 12;
-//		c_1.position.y = 66;
-//
-//		c_1.radius = 5.123;
-//		c_1.color_ = color::red;
-//
-//		// additional braces are needed for a VS 2013 bug
-//		c_1.dictionary = { { {color::green, {1, 2} }, {color::blue, {3, 4} }, {color::red, {5, 6} } } };
-//
-//		c_1.no_serialize = 12345;
-//
-//		MrkNew::ReflectSystem::ToJson(c_1);
-//	}
-//}
-
 void Test()
 {
-	auto mesh = Mrk::MeshHouse::GetMesh("D:/SourceCode/Marika2d/Marika2d/TestProject/test.mem");
+	//auto mesh = Mrk::MeshHouse::GetMesh("D:/SourceCode/Marika2d/Marika2d/TestProject/test.mem");
 }
 
 void EditorLoopTest()
@@ -150,7 +124,14 @@ void ConfigSysTest()
 }
 int main()
 {
-	Mrk::GenCoreReflectInfo();
+	//Init
+	{
+		Mrk::GenCoreReflectInfo();
+		Mrk::GenEditorReflectInfo();
+
+		Mrk::ConfigSys::Init();
+	}
+	
 
 	MrkTest::Test();
 
@@ -158,9 +139,6 @@ int main()
 	//RttrTestFunc();
 
 	auto context = Mrk::Application::GetAppContext();
-
-	context.windowTitle = "Hello";//Mrk::ConfigSys::GetOrSet<std::string>("Setting", "Tital", "Hello Marika Engine Editor");
-	context.windowSize = { 1280, 800 };
 
 	context.appInitedCallBack = []() {
 		Mrk::PluginSystem::Init();

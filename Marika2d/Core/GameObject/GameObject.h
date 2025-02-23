@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/ID/IDCreater.h"
 #include "Core/Object/Object.h"
 #include "Core/Reflect/Reflect.h"
 
@@ -56,10 +57,22 @@ namespace Mrk
 
 	class GameObject : public Object, public std::enable_shared_from_this<GameObject>
 	{
-		MRK_GAMEOBJECT_CONTENT(GameObject) RTTR_ENABLE(Object)
+	public: virtual inline std::string_view GetClassTypeName() override {
+		return "GameObject";
+	} virtual inline const type_info& GetClassType() override {
+		return typeid(GameObject);
+	} static inline bool _mrk_macro_GameObject_gameobject_register_ = []() { Mrk::GameObjectFactory::RegisterGameObject<GameObject>("GameObject"); return true; }(); virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {
+		Json::Value json = Mrk::ReflectSys::ToJson(*this, alloctor); SerializeGameObject(json, alloctor); return json;
+	} virtual inline void FromJson(const Json::Value& json) override {
+		Mrk::ReflectSys::FromJson(*this, json); DeserializeGameObject(json);
+	} RTTR_ENABLE(Object)
 	private:
 		friend class GameObjectOperate;
 	public:
+		GameObject();
+
+		ID GetID();
+		void SetID_(ID id);
 		const std::string& GetName();
 		void SetName(const std::string& name);
 	protected:
@@ -71,6 +84,7 @@ namespace Mrk
 		Json::Value SerializeComponents(Mrk::JsonAllocator& alloctor);
 		Json::Value SerializeChildren(Mrk::JsonAllocator& alloctor);
 	protected:
+		ID id;
 		std::string name;
 		std::weak_ptr<GameObject> parent;
 		std::vector<std::shared_ptr<GameObject>> children;
