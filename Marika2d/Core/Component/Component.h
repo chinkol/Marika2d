@@ -124,7 +124,7 @@ namespace Mrk
 	class Component : public Object, public std::enable_shared_from_this<Component>
 	{
 		MRK_COMPONENT_CONTENT(Component) RTTR_ENABLE(Object)
-		friend class GameObjectOperate;
+		friend class GameObject;
 	public:
 		Component() = default;
 		virtual ~Component() = default;

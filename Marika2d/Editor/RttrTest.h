@@ -31,35 +31,28 @@ namespace MrkTest
 {
 	void inline Test()
 	{
-		std::shared_ptr<Bone> bone1;
+		auto bone1 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone11 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone12 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone211 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone212 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone221 = Mrk::GameObjectFactory::CreateNew<Bone>();
+		auto bone222 = Mrk::GameObjectFactory::CreateNew<Bone>();
 
-		std::shared_ptr<Bone> bone11;										std::shared_ptr<Bone> bone12;
+		bone1->AddComponent<BoneComponent>();
+		bone11->AddComponent<BoneComponent>();
+		bone12->AddComponent<BoneComponent>();
+		bone211->AddComponent<BoneComponent>();
+		bone212->AddComponent<BoneComponent>();
+		bone221->AddComponent<BoneComponent>();
+		bone222->AddComponent<BoneComponent>();
 
-		std::shared_ptr<Bone> bone211; std::shared_ptr<Bone> bone212;		std::shared_ptr<Bone> bone221; std::shared_ptr<Bone> bone222;
-
-		bone1 = std::make_shared<Bone>(); bone1->SetName("Bone1");
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone1);
-		bone11 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone11);
-		bone12 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone12);
-		bone211 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone211);
-		bone212 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone212);
-		bone221 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone221);
-		bone222 = std::make_shared<Bone>();
-		Mrk::GameObjectOperate::AttachComponent<BoneComponent>(bone222);
-
-		Mrk::GameObjectOperate::AttachChild(bone11, bone1);
-		Mrk::GameObjectOperate::AttachChild(bone12, bone1);
-
-		Mrk::GameObjectOperate::AttachChild(bone211, bone11);
-		Mrk::GameObjectOperate::AttachChild(bone212, bone11);
-
-		Mrk::GameObjectOperate::AttachChild(bone221, bone12);
-		Mrk::GameObjectOperate::AttachChild(bone222, bone12);
+		bone1->AddChild(bone11);
+		bone1->AddChild(bone12);
+		bone11->AddChild(bone211);
+		bone11->AddChild(bone212);
+		bone12->AddChild(bone221);
+		bone12->AddChild(bone222);
 
 		Json::Document jdoc(Json::ArrayType);
 		auto json = bone1->ToJson(jdoc.GetAllocator());
@@ -74,7 +67,7 @@ namespace MrkTest
 		auto db = Mrk::GameObjectFactory::CreateNew<Bone>();
 		db->FromJson(json);
 
-		
+
 		Json::StringBuffer buf1;
 		Json::PrettyWriter writer1(buf1);
 

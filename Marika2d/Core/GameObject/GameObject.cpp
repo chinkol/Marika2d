@@ -7,7 +7,9 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_v
 {
 	auto ret = Instance().creators.find(classname.data());
 	assert(ret != Instance().creators.end());
-	return ret->second();
+	auto obj = ret->second();
+	obj->AddComponent<Transform>();
+	return obj;
 }
 
 const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& Mrk::GameObjectFactory::GetCreators()
@@ -20,81 +22,7 @@ const std::vector<std::string>& Mrk::GameObjectFactory::GetManifest()
 	return Instance().manifest;
 }
 
-void Mrk::GameObjectOperate::AttachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent)
-{
-	assert(child && parent);
-	if (!child->parent.expired())
-	{
-		auto oriParent = child->parent.lock();
-		if (oriParent == parent)
-			return;
-		oriParent->children.erase(std::remove(oriParent->children.begin(), oriParent->children.end(), child), oriParent->children.end());
-	}
-	child->parent = parent;
-	parent->children.push_back(child);
-}
-
-void Mrk::GameObjectOperate::DetachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent)
-{
-	assert(child && parent);
-	parent->children.erase(std::remove(parent->children.begin(), parent->children.end(), child), parent->children.end());
-	child->parent = std::weak_ptr<GameObject>();
-}
-
-void Mrk::GameObjectOperate::AttachComponent(const std::shared_ptr<Component>& component, const std::shared_ptr<GameObject>& holder)
-{
-	assert(component && holder);
-
-	if (component->holder.lock() != holder)
-	{
-		holder->components.push_back(component);
-		component->holder = holder;
-	}
-}
-
-void Mrk::GameObjectOperate::AttachComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder)
-{
-	AttachComponent(ComponentFactory::CreateNew(comName), holder);
-}
-
-void Mrk::GameObjectOperate::DetachComponent(const std::shared_ptr<Component>& component, const std::shared_ptr<GameObject>& holder)
-{
-	assert(component && holder);
-
-	if (component->holder.lock() == holder)
-	{
-		holder->children.erase(std::find(holder->children.begin(), holder->children.end(), holder));
-	}
-}
-
-void Mrk::GameObjectOperate::DetachComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder)
-{
-	assert(holder);
-
-	auto& children = holder->children;
-	children.erase(std::remove_if(children.begin(), children.end(), [comName](const std::shared_ptr<GameObject>& child) {
-		return child->GetClassTypeName() == comName;
-		}), children.end());
-}
-
-std::shared_ptr<Mrk::Component> Mrk::GameObjectOperate::GetComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder)
-{
-	assert(holder);
-
-	auto& components = holder->components;
-	auto ret = std::find_if(components.begin(), components.end(), [comName](const std::shared_ptr<Component>& component) {
-		return component->GetClassTypeName() == comName;
-		});
-
-	if (ret != components.end())
-	{
-		return *ret;
-	}
-
-	return std::shared_ptr<Mrk::Component>();
-}
-
-Mrk::GameObject::GameObject() : 
+Mrk::GameObject::GameObject() :
 	id(Mrk::IDGenerater::Generate())
 {
 }
@@ -117,6 +45,91 @@ const std::string& Mrk::GameObject::GetName()
 void Mrk::GameObject::SetName(const std::string& name)
 {
 	this->name = name;
+}
+
+std::shared_ptr<Mrk::GameObject> Mrk::GameObject::GetParent()
+{
+	if (!parent.expired())
+	{
+		return parent.lock();
+	}
+	return std::shared_ptr<GameObject>();
+}
+
+const std::vector<std::shared_ptr<Mrk::GameObject>>& Mrk::GameObject::GetChildren()
+{
+	return children;
+}
+
+void Mrk::GameObject::AddComponent(std::string_view name)
+{
+	auto com = ComponentFactory::CreateNew(name);
+	com->holder = weak_from_this();
+	components.push_back(com);
+}
+
+void Mrk::GameObject::AddComponent(std::shared_ptr<Component> component)
+{
+	if (component)
+	{
+		if (component->holder.expired())
+		{
+			component->holder = weak_from_this();
+			components.push_back(component);
+		}
+		else if (component->holder.lock().get() != this)
+		{
+			component->holder.lock()->RemoveComponent(component->GetClassTypeName());
+			component->holder = weak_from_this();
+			components.push_back(component);
+		}
+	}
+}
+
+void Mrk::GameObject::RemoveComponent(std::string_view name)
+{
+	if (std::strcmp(name.data(), "Transform") == 0)
+	{
+		return;
+	}
+
+	components.erase(std::remove_if(components.begin(), components.end(), [name](const std::shared_ptr<Component> component) {
+		return component->GetClassTypeName() == name;
+		}), components.end());
+}
+
+std::shared_ptr<Mrk::Component> Mrk::GameObject::GetComponent(std::string_view name)
+{
+	auto ret = std::find_if(components.begin(), components.end(), [name](const std::shared_ptr<Component> component) {
+		return component->GetClassTypeName() == name;
+		});
+
+	if (ret != components.end())
+	{
+		return *ret;
+	}
+
+	return std::shared_ptr<Component>();
+}
+
+void Mrk::GameObject::AddChild(std::shared_ptr<GameObject> child)
+{
+	if (child->parent.expired())
+	{
+		child->parent = weak_from_this();
+		children.push_back(child);
+	}
+	else if (child->parent.owner_before(weak_from_this()) || weak_from_this().owner_before(child->parent))
+	{
+		child->parent.lock()->RemoveChild(child);
+		child->parent = weak_from_this();
+		children.push_back(child);
+	}
+}
+
+void Mrk::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
+{
+	children.erase(std::find(children.begin(), children.end(), child));
 }
 
 void Mrk::GameObject::DeserializeGameObject(const Json::Value& json)
@@ -146,6 +159,8 @@ void Mrk::GameObject::SerializeGameObject(Json::Value& json, Mrk::JsonAllocator&
 
 void Mrk::GameObject::DeserializeComponents(const Json::Value& jcomponents)
 {
+	assert(jcomponents.IsArray());
+
 	for (auto& jcomponent : jcomponents.GetArray())
 	{
 		if (jcomponent.IsObject())
@@ -154,12 +169,19 @@ void Mrk::GameObject::DeserializeComponents(const Json::Value& jcomponents)
 			if (jname != jcomponent.MemberEnd() && jname->value.IsString())
 			{
 				auto name = jname->value.GetString();
-				if (auto component = ComponentFactory::CreateNew(name))
+				if (std::strcmp(name, "Transform") == 0)
 				{
-					component->FromJson(jcomponent);
-					auto shared = shared_from_this();
-					GameObjectOperate::AttachComponent(component, shared);
+					components[0]->FromJson(jcomponent);
 				}
+				else
+				{
+					if (auto component = ComponentFactory::CreateNew(name))
+					{
+						component->FromJson(jcomponent);
+						AddComponent(component);
+					}
+				}
+
 			}
 		}
 	}
@@ -178,7 +200,7 @@ void Mrk::GameObject::DeserializeChildren(const Json::Value& jchildren)
 				if (auto child = GameObjectFactory::CreateNew(name))
 				{
 					child->FromJson(jchild);
-					GameObjectOperate::AttachChild(child, shared_from_this());
+					AddChild(child);
 				}
 			}
 		}

@@ -57,17 +57,7 @@ namespace Mrk
 
 	class GameObject : public Object, public std::enable_shared_from_this<GameObject>
 	{
-	public: virtual inline std::string_view GetClassTypeName() override {
-		return "GameObject";
-	} virtual inline const type_info& GetClassType() override {
-		return typeid(GameObject);
-	} static inline bool _mrk_macro_GameObject_gameobject_register_ = []() { Mrk::GameObjectFactory::RegisterGameObject<GameObject>("GameObject"); return true; }(); virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {
-		Json::Value json = Mrk::ReflectSys::ToJson(*this, alloctor); SerializeGameObject(json, alloctor); return json;
-	} virtual inline void FromJson(const Json::Value& json) override {
-		Mrk::ReflectSys::FromJson(*this, json); DeserializeGameObject(json);
-	} RTTR_ENABLE(Object)
-	private:
-		friend class GameObjectOperate;
+		MRK_GAMEOBJECT_CONTENT(GameObject) RTTR_ENABLE(Object)
 	public:
 		GameObject();
 
@@ -75,6 +65,20 @@ namespace Mrk
 		void SetID_(ID id);
 		const std::string& GetName();
 		void SetName(const std::string& name);
+
+		std::shared_ptr<GameObject> GetParent();
+		const std::vector<std::shared_ptr<GameObject>>& GetChildren();
+
+		template<typename T> void AddComponent();
+		void AddComponent(std::string_view name);
+		void AddComponent(std::shared_ptr<Component> component);
+		template<typename T> void RemoveComponent();
+		void RemoveComponent(std::string_view name);
+		template<typename T> std::shared_ptr<T> GetComponent();
+		std::shared_ptr<Component> GetComponent(std::string_view name);
+		void AddChild(std::shared_ptr<GameObject> child);
+		void RemoveChild(std::shared_ptr<GameObject> child);
+
 	protected:
 		void DeserializeGameObject(const Json::Value& json);
 		void SerializeGameObject(Json::Value& json, Mrk::JsonAllocator& alloctor);
@@ -90,29 +94,62 @@ namespace Mrk
 		std::vector<std::shared_ptr<GameObject>> children;
 		std::vector<std::shared_ptr<Component>> components;
 	};
-
-	class GameObjectOperate : public Singleton<GameObjectOperate>
-	{
-	public:
-		static void AttachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent);
-		static void DetachChild(const std::shared_ptr<GameObject>& child, const std::shared_ptr<GameObject>& parent);
-		static void AttachComponent(const std::shared_ptr<Component>& component, const std::shared_ptr<GameObject>& holder);
-		static void AttachComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder);
-		template<typename T> static void AttachComponent(const std::shared_ptr<GameObject>& holder);
-		static void DetachComponent(const std::shared_ptr<Component>& component, const std::shared_ptr<GameObject>& holder);
-		static void DetachComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder);
-		template<typename T> static void DetachComponent(const std::shared_ptr<GameObject>& holder);
-		static std::shared_ptr<Component> GetComponent(std::string_view comName, const std::shared_ptr<GameObject>& holder);
-		template<typename T> static std::shared_ptr<Component> GetComponent(const std::shared_ptr<GameObject>& holder);
-	private:
-		GameObjectOperate() = default;
-	};
 }
 
 #include "Core/Component/Component.h"
+#include "Core/Component/Transform/Transform.h"
 
 namespace Mrk
 {
+	template<typename T>
+	inline void GameObject::AddComponent()
+	{
+		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
+
+		auto com = ComponentFactory::CreateNew<T>();
+		com->holder = weak_from_this();
+		components.push_back(com);
+	}
+
+	template<typename T>
+	inline void GameObject::RemoveComponent()
+	{
+		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
+
+		if constexpr (std::is_same_v<T, Transform>)
+		{
+			return; //TODO log
+		}
+		else
+		{
+			components.erase(std::remove_if(components.begin(), components.end(), [](const std::shared_ptr<Component> component) {
+				return std::dynamic_pointer_cast<T>(component);
+				}), components.end());
+		}
+	}
+
+	template<typename T>
+	inline std::shared_ptr<T> GameObject::GetComponent()
+	{
+		if constexpr (std::is_same_v<T, Transform>)
+		{
+			return std::dynamic_pointer_cast<Transform>(components[0]);
+		}
+		else
+		{
+			auto ret = std::find_if(components.begin(), components.end(), [](const std::shared_ptr<Component> component) {
+				return std::dynamic_pointer_cast<Component>(component);
+				});
+
+			if (ret != components.end())
+			{
+				return *ret;
+			}
+
+			return std::shared_ptr<T>();
+		}
+	}
+
 	template<typename T>
 	inline void GameObjectFactory::RegisterGameObject(std::string_view classname)
 	{
@@ -133,33 +170,8 @@ namespace Mrk
 	inline std::shared_ptr<GameObject> GameObjectFactory::CreateNew()
 	{
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
-		return Mrk::MemCtrlSystem::CreateNew<T>();
-	}
-
-	template<typename T>
-	inline void GameObjectOperate::AttachComponent(const std::shared_ptr<GameObject>& holder)
-	{
-		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		assert(holder);
-
-		AttachComponent(Mrk::MemCtrlSystem::CreateNew<T>(), holder);
-	}
-
-	template<typename T>
-	inline void GameObjectOperate::DetachComponent(const std::shared_ptr<GameObject>& holder)
-	{
-		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		assert(holder);
-
-		auto& components = holder->components;
-		DetachComponent(T::GetStaticClassName(), holder);
-	}
-	template<typename T>
-	inline std::shared_ptr<Component> GameObjectOperate::GetComponent(const std::shared_ptr<GameObject>& holder)
-	{
-		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		assert(holder);
-
-		return GetComponent(T::GetStaticClassName(), holder);
+		auto obj = Mrk::MemCtrlSystem::CreateNew<T>();
+		obj->AddComponent<Transform>();
+		return obj;
 	}
 }

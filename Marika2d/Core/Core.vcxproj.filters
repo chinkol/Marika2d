@@ -63,6 +63,9 @@
     <ClCompile Include="GenCoreReflectInfo\GenCoreReflectInfo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Component\Transform\Transform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -113,9 +116,13 @@
     <ClInclude Include="GenCoreReflectInfo\GenCoreReflectInfo.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Component\Transform\Transform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\Shader\Base.Frag" />
     <None Include="OpenGL\Shader\Base.Vert" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -124,6 +124,7 @@ void ConfigSysTest()
 }
 int main()
 {
+	constexpr bool j = std::is_same_v<const Mrk::Vector3&, Mrk::Vector3>;
 	//Init
 	{
 		Mrk::GenCoreReflectInfo();

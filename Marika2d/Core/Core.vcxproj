@@ -35,6 +35,7 @@
     <ClCompile Include="Reflect\Reflect.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Component\Transform\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -53,8 +54,10 @@
     <ClInclude Include="Reflect\Reflect.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="Component\Transform\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="OpenGL\Shader\Base.Frag" />
     <None Include="OpenGL\Shader\Base.Vert" />
   </ItemGroup>

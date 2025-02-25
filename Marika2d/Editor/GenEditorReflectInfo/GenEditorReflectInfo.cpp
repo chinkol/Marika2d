@@ -17,6 +17,8 @@ void Mrk::GenEditorReflectInfo()
 			efitor_reflect_register();
 		};
 	}
+
+	editor_reflect_registers.clear();
 }
 
 #ifndef MRK_EDITOR_REFLECT_REGISTER_CONTENT
