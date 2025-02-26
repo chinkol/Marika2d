@@ -7,7 +7,7 @@ namespace Mrk
 {
 	class Transform : public Component
 	{
-		MRK_COMPONENT(Transform)
+		MRK_COMPONENT(Transform) MRK_COMPONENT_UNREMOVABLE
 	public:
 		Transform();
 
@@ -20,6 +20,11 @@ namespace Mrk
 		Vector3 GetWorldPosition();
 		void SetLocalPosition(const Vector3& newVal);
 		void SetWorldPosition(const Vector3& newVal);
+
+		const Vector3& GetLocalScale();
+		Vector3 GetWorldScale();
+		void SetLocalScale(const Vector3& newVal);
+		void SetWorldScale(const Vector3& newVal);
 
 		const Quaternion& GetLocalRotation();
 		Quaternion GetWorldRotation();

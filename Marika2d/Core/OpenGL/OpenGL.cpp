@@ -2,6 +2,8 @@
 
 #include "Third/SOIL2/SOIL2.h"
 
+#include <iostream>
+
 Mrk::EBO::EBO(const GLuint* data, size_t size)
 {
 	glGenBuffers(1, &id);
@@ -9,19 +11,19 @@ Mrk::EBO::EBO(const GLuint* data, size_t size)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
-Mrk::EBO::~EBO() 
+Mrk::EBO::~EBO()
 {
-	glDeleteBuffers(1, &id); 
+	glDeleteBuffers(1, &id);
 }
 
-void Mrk::EBO::Bind() const 
+void Mrk::EBO::Bind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 }
 
-void Mrk::EBO::UnBind() const 
+void Mrk::EBO::UnBind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 GLuint Mrk::EBO::GetID() const
@@ -42,17 +44,17 @@ Mrk::Texture::Texture(std::string_view path)
 	UnBind();
 }
 
-Mrk::Texture::~Texture() 
+Mrk::Texture::~Texture()
 {
-	glDeleteTextures(1, &id); 
+	glDeleteTextures(1, &id);
 }
 
-void Mrk::Texture::Bind() const 
+void Mrk::Texture::Bind() const
 {
-	glBindTexture(GL_TEXTURE_2D, id); 
+	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-void Mrk::Texture::UnBind() const 
+void Mrk::Texture::UnBind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -69,19 +71,19 @@ Mrk::VBO::VBO(const void* data, size_t size)
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
-Mrk::VBO::~VBO() 
-{ 
-	glDeleteBuffers(1, &id); 
-}
-
-void Mrk::VBO::Bind() const 
-{ 
-	glBindBuffer(GL_ARRAY_BUFFER, id); 
-}
-
-void Mrk::VBO::UnBind() const 
+Mrk::VBO::~VBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, 0); 
+	glDeleteBuffers(1, &id);
+}
+
+void Mrk::VBO::Bind() const
+{
+	glBindBuffer(GL_ARRAY_BUFFER, id);
+}
+
+void Mrk::VBO::UnBind() const
+{
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 GLuint Mrk::VBO::GetID() const
@@ -89,14 +91,14 @@ GLuint Mrk::VBO::GetID() const
 	return id;
 }
 
-Mrk::VAO::VAO() 
+Mrk::VAO::VAO()
 {
 	glGenVertexArrays(1, &id);
 }
 
-Mrk::VAO::~VAO() 
-{ 
-	glDeleteVertexArrays(1, &id); 
+Mrk::VAO::~VAO()
+{
+	glDeleteVertexArrays(1, &id);
 }
 
 void Mrk::VAO::Bind() const
@@ -106,7 +108,7 @@ void Mrk::VAO::Bind() const
 
 void Mrk::VAO::UnBind() const
 {
-	glBindVertexArray(0); 
+	glBindVertexArray(0);
 }
 
 GLuint Mrk::VAO::GetID() const
@@ -126,30 +128,25 @@ Mrk::OpenGLContext::OpenGLContext() :
 
 Mrk::ShaderProgram::ShaderProgram()
 {
+}
+
+GLuint Mrk::ShaderProgram::GetID()
+{
+	return id;
+}
+
+void Mrk::ShaderProgram::Create()
+{
 	id = glCreateProgram();
 }
 
-void Mrk::ShaderProgram::AddShader(const Shader& shader)
+void Mrk::ShaderProgram::AddShader(GLuint id)
 {
-	auto ret = shaders.try_emplace(shader.GetType(), shader);
-	if (!ret.second)
-	{
-		ret.first->second = shader;
-		glDetachShader(id, shader.GetID());
-	}
-	else
-	{
-		//log
-	}
-	glAttachShader(id, shader.GetID());
+	glAttachShader(this->id, id);
 }
 
 void Mrk::ShaderProgram::Delete()
 {
-	for (auto& shader : shaders)
-	{
-		shader.second.Delete();
-	}
 	glDeleteProgram(id);
 }
 
@@ -193,7 +190,7 @@ Mrk::Shader::Shader(std::string_view shaderPath, Type shaderType) :
 	{
 		GLchar errlog[512];
 		glGetShaderInfoLog(id, 512, NULL, errlog);
-		//std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "error shader\n" << errlog << std::endl;
 	};
 }
 
@@ -210,4 +207,36 @@ Mrk::Shader::Type Mrk::Shader::GetType() const
 void Mrk::Shader::Delete()
 {
 	glDeleteShader(id);
+}
+
+GLuint Mrk::ShaderProgramHut::GetShaderProgramID(std::string_view vs, std::string_view fs)
+{
+	std::hash<std::string> hasher;
+
+	auto hash = hasher(vs.data());
+	hash ^= hasher(fs.data()) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+
+	auto ret = Instance().sps.find(hash);
+	if (ret == Instance().sps.end())
+	{
+		return Instance().sps.emplace(hash, [vs, fs]() {
+			ShaderProgram sp;
+			sp.AddShader(GetShaderID(Shader::Type::Vertex, vs));
+			sp.AddShader(GetShaderID(Shader::Type::Fragmet, fs));
+			sp.Create();
+			return sp;
+			}()).first->second.GetID();
+	}
+
+	return ret->second.GetID();
+}
+
+GLuint Mrk::ShaderProgramHut::GetShaderID(Shader::Type type, std::string_view path)
+{
+	auto ret = Instance().temps.find(path.data());
+	if (ret == Instance().temps.end())
+	{
+		return Instance().temps.emplace(path.data(), Shader(path, type)).first->second.GetID();
+	}
+	return ret->second.GetID();
 }

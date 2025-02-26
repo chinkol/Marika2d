@@ -2,6 +2,7 @@
 
 #include "Core/Component/Component.h"
 #include "Core/GameObject/GameObject.h"
+#include "Core/Mesh/MeshRenderer.h"
 
 namespace MrkTest
 {
@@ -29,7 +30,7 @@ namespace MrkTest
 
 namespace MrkTest
 {
-	void inline Test()
+	void inline Test(std::shared_ptr<Mrk::GameObject>& recive)
 	{
 		auto bone1 = Mrk::GameObjectFactory::CreateNew<Bone>();
 		auto bone11 = Mrk::GameObjectFactory::CreateNew<Bone>();
@@ -54,6 +55,16 @@ namespace MrkTest
 		bone12->AddChild(bone221);
 		bone12->AddChild(bone222);
 
+		auto meshRenderer1 = Mrk::ComponentFactory::CreateNew<Mrk::MeshRenderer>();
+		meshRenderer1->SetVsPath("../Core/OpenGL/Shader/Base.Vert");
+		meshRenderer1->SetFsPath("../Core/OpenGL/Shader/Base.Frag");
+		bone1->AddComponent(meshRenderer1);
+
+		auto meshRenderer11 = Mrk::ComponentFactory::CreateNew<Mrk::MeshRenderer>();
+		meshRenderer11->SetVsPath("../Core/OpenGL/Shader/Base.Vert");
+		meshRenderer11->SetFsPath("../Core/OpenGL/Shader/Base.Frag");
+		bone11->AddComponent(meshRenderer11);
+
 		Json::Document jdoc(Json::ArrayType);
 		auto json = bone1->ToJson(jdoc.GetAllocator());
 
@@ -76,5 +87,7 @@ namespace MrkTest
 		json1.Accept(writer1);
 
 		std::cout << buf1.GetString();
+
+		recive = bone1;
 	}
 }

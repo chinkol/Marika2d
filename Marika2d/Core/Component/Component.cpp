@@ -9,6 +9,13 @@ std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNew(std::string_vie
 	return ret->second();
 }
 
+std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNewFromJson(std::string_view classname, const Json::Value& json)
+{
+	auto ret = Instance().fromJsonCreators.find(classname.data());
+	assert(ret != Instance().fromJsonCreators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
+	return ret->second(json);
+}
+
 const std::map<std::string, std::function<std::shared_ptr<Mrk::Component>()>>& Mrk::ComponentFactory::GetCreators()
 {
 	return Instance().creators;
@@ -19,8 +26,22 @@ std::weak_ptr<Mrk::GameObject> Mrk::Component::GetHolder()
 	return holder;
 }
 
-void Mrk::ComponentHouse::Invoke(std::string_view loopBatchName)
+bool Mrk::Component::IsRemovable()
 {
+	return true;
+}
+
+void Mrk::ComponentHut::Invoke(std::string_view loopBatchName)
+{
+	for (auto& start : Instance().unstarts)
+	{
+		if (!start.Expired())
+		{
+			start.InvokeNotCheck();
+		}
+	}
+	Instance().unstarts.clear();
+
 	size_t validCount = 0;
 	size_t invalidCount = 0;
 	auto loopBatch = Instance().loopBatches.find(loopBatchName.data());
@@ -49,7 +70,7 @@ void Mrk::ComponentHouse::Invoke(std::string_view loopBatchName)
 	}
 }
 
-void Mrk::ComponentHouse::Cleanup()
+void Mrk::ComponentHut::Cleanup()
 {
 	for (auto& loopBatch : Instance().loopBatches)
 	{
@@ -69,7 +90,7 @@ void Mrk::ComponentHouse::Cleanup()
 	}
 }
 
-void Mrk::ComponentHouse::Cleanup(const LoopBatch& loopBacth)
+void Mrk::ComponentHut::Cleanup(const LoopBatch& loopBacth)
 {
 	for (auto& typeBatch : loopBacth)
 	{
@@ -112,7 +133,6 @@ void Mrk::ComponentCallBack::Invoke() const
 void Mrk::ComponentCallBack::InvokeNotCheck() const
 {
 	(component.lock().get()->*callback)();
-	//(componentPtr->*callback)();
 }
 
 bool Mrk::ComponentCallBack::Expired() const

@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <vector>
 
 namespace Mrk
 {
@@ -75,16 +76,30 @@ namespace Mrk
 
 	class ShaderProgram
 	{
+		friend class ShaderProgramHut;
 	public:
 		ShaderProgram();
-		void AddShader(const Shader& shader);
+		GLuint GetID();
 		void Delete();
 		void Link();
 		void Use();
-		
 	private:
-		std::map<Shader::Type, Shader> shaders;
+		void Create();
+		void AddShader(GLuint id);
+	private:
 		GLuint id;
+	};
+
+	class ShaderProgramHut : public Mrk::Singleton<ShaderProgramHut>
+	{
+		MRK_SINGLETON(ShaderProgramHut)
+	public:
+		static GLuint GetShaderProgramID(std::string_view vs, std::string_view fs);
+		static GLuint GetShaderID(Shader::Type type, std::string_view path);
+	private:
+		std::map<size_t, ShaderProgram> sps;
+		std::vector< ShaderProgram> spvs;
+		std::map<std::string, Shader> temps;	// ±àÒëºÃµÄshader
 	};
 
 	class Texture

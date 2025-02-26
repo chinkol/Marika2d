@@ -133,8 +133,8 @@ int main()
 		Mrk::ConfigSys::Init();
 	}
 	
-
-	MrkTest::Test();
+	std::shared_ptr<Mrk::GameObject> recive;
+	MrkTest::Test(recive);
 
 	ConfigSysTest();
 	//RttrTestFunc();

@@ -32,6 +32,10 @@ MRK_COMPONENT_CONTENT(x)		\
 RTTR_ENABLE(Mrk::Component)
 #endif // !MRK_COMPONENT
 
+#ifndef MRK_COMPONENT_UNREMOVABLE
+#define MRK_COMPONENT_UNREMOVABLE virtual inline bool IsRemovable() override { return false; }
+#endif // !MRK_COMPONENT
+
 namespace Mrk
 {
 	class Component;
@@ -44,11 +48,14 @@ namespace Mrk
 		template<typename T>
 		static void RegisterComponent(std::string_view classname);
 		static std::shared_ptr<Component> CreateNew(std::string_view classname);
+		static std::shared_ptr<Component> CreateNewFromJson(std::string_view classname, const Json::Value& json);
 		template<typename T> static std::shared_ptr<T> CreateNew();
+		template<typename T> static std::shared_ptr<T> CreateNewFromJson(const Json::Value& json);
 		static const std::map<std::string, std::function<std::shared_ptr<Component>()>>& GetCreators();
 	private:
 		ComponentFactory() = default;
 		std::map<std::string, std::function<std::shared_ptr<Component>()>> creators;
+		std::map<std::string, std::function<std::shared_ptr<Component>(const Json::Value&)>> fromJsonCreators;
 	};
 
 	class ComponentCallBack
@@ -69,9 +76,9 @@ namespace Mrk
 	template<typename T>
 	struct ComponentTrait
 	{
-		template <typename U> static auto HasAwake(U* ptr) -> decltype(ptr->Awake(), std::true_type()) {};
-		template <typename U> static std::false_type HasAwake(...) {};
-		static ComponentCallBack::CallBack GetAwake() { return (ComponentCallBack::CallBack)&T::Awake; }
+		template <typename U> static auto HasInit(U* ptr) -> decltype(ptr->Init(), std::true_type()) {};
+		template <typename U> static std::false_type HasInit(...) {};
+		static ComponentCallBack::CallBack GetInit() { return (ComponentCallBack::CallBack)&T::Init; }
 
 		template <typename U> static auto HasStart(U* ptr) -> decltype(ptr->Start(), std::true_type()) {};
 		template <typename U> static std::false_type HasStart(...) {};
@@ -109,7 +116,7 @@ namespace Mrk
 		template <typename U> static std::false_type HasDispose(...) {};
 		static ComponentCallBack::CallBack GetDispose() { return (ComponentCallBack::CallBack)&T::Dispose; }
 
-		static constexpr bool hasAwake = decltype(HasAwake<T>(nullptr))::value;
+		static constexpr bool hasInit = decltype(HasInit<T>(nullptr))::value;
 		static constexpr bool hasStart = decltype(HasStart<T>(nullptr))::value;
 		static constexpr bool hasPreUpdate = decltype(HasPreUpdate<T>(nullptr))::value;
 		static constexpr bool hasUpdate = decltype(HasUpdate<T>(nullptr))::value;
@@ -124,19 +131,21 @@ namespace Mrk
 	class Component : public Object, public std::enable_shared_from_this<Component>
 	{
 		MRK_COMPONENT_CONTENT(Component) RTTR_ENABLE(Object)
-		friend class GameObject;
+			friend class GameObject;
 	public:
 		Component() = default;
 		virtual ~Component() = default;
 		std::weak_ptr<GameObject> GetHolder();
+		virtual bool IsRemovable();
 	protected:
 		std::weak_ptr<GameObject> holder;
 	};
 
-	class ComponentHouse : public Singleton<ComponentHouse>
+	class ComponentHut : public Singleton<ComponentHut>
 	{
-		MRK_SINGLETON(ComponentHouse)
-			using TypeBatch = std::vector<ComponentCallBack>;
+		MRK_SINGLETON(ComponentHut)
+	private:
+		using TypeBatch = std::vector<ComponentCallBack>;
 		using LoopBatch = std::map<std::type_index, TypeBatch*>;
 	public:
 		static void Invoke(std::string_view loopState);
@@ -144,9 +153,10 @@ namespace Mrk
 		template<typename T> static void AddComponent(const std::shared_ptr<T>& component);
 
 	private:
-		ComponentHouse() = default;
+		ComponentHut() = default;
 		static void Cleanup(const LoopBatch& batch);
 		template<typename T> static TypeBatch* TryEmplaceBatch(std::string_view loopState);
+		std::vector<ComponentCallBack> unstarts;
 		std::map<std::string, LoopBatch> loopBatches; // [loopstate, [comtype, {loopfuncs}]];
 	};
 }
@@ -154,9 +164,15 @@ namespace Mrk
 namespace Mrk
 {
 	template<typename T>
-	inline void ComponentHouse::AddComponent(const std::shared_ptr<T>& component)
+	inline void ComponentHut::AddComponent(const std::shared_ptr<T>& component)
 	{
+		//TODO : 增加等待队列，等下一帧开始再接入循环
+
 		assert(component);
+		if constexpr (ComponentTrait<T>::hasStart)
+		{
+			Instance().unstarts.emplace_back(component, ComponentTrait<T>::GetStart());
+		}
 		if constexpr (ComponentTrait<T>::hasPreUpdate)
 		{
 			static std::vector<ComponentCallBack>* preUpdateBatch = TryEmplaceBatch<T>("PreUpdate");
@@ -195,7 +211,7 @@ namespace Mrk
 	}
 
 	template<typename T>
-	inline Mrk::ComponentHouse::TypeBatch* ComponentHouse::TryEmplaceBatch(std::string_view loopState)
+	inline Mrk::ComponentHut::TypeBatch* ComponentHut::TryEmplaceBatch(std::string_view loopState)
 	{
 		auto& loopBacth = Instance().loopBatches.try_emplace(loopState.data(), std::map<std::type_index, std::vector<ComponentCallBack>*>()).first->second;
 		auto& batch = loopBacth.try_emplace(typeid(T), new std::vector<ComponentCallBack>()).first->second;
@@ -205,31 +221,63 @@ namespace Mrk
 	template<typename T>
 	inline void ComponentFactory::RegisterComponent(std::string_view classname)
 	{
-		auto ret = Instance().creators.try_emplace(classname.data(), []() {
-			auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
-			ComponentHouse::AddComponent(newCom);
-			if constexpr (ComponentTrait<T>::hasAwake)
+		static_assert(std::is_base_of_v<Component, T>, "T is not Component !");
+
+		Instance().creators.try_emplace(classname.data(), []() {
+			auto com = Mrk::MemCtrlSystem::CreateNew<T>();
+
+			if constexpr (ComponentTrait<T>::hasInit)
 			{
-				(newCom.get()->*ComponentTrait<T>::GetAwake())();
+				(com.get()->*ComponentTrait<T>::GetInit())();
 			}
-			return newCom;
+
+			ComponentHut::AddComponent(com);
+			return com;
 			});
-		if (!ret.second)
-		{
-			//log
-		}
+
+		Instance().fromJsonCreators.try_emplace(classname.data(), [](const Json::Value& jvalue) {
+			auto com = Mrk::MemCtrlSystem::CreateNew<T>();
+			com->FromJson(jvalue);
+
+			if constexpr (ComponentTrait<T>::hasInit)
+			{
+				(com.get()->*ComponentTrait<T>::GetInit())();
+			}
+
+			ComponentHut::AddComponent(com);
+			return com;
+			});
 	}
 
 	template<typename T>
 	inline std::shared_ptr<T> ComponentFactory::CreateNew()
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
-		auto newCom = Mrk::MemCtrlSystem::CreateNew<T>();
-		ComponentHouse::AddComponent(newCom);
-		if constexpr (ComponentTrait<T>::hasAwake)
+
+		auto com = Mrk::MemCtrlSystem::CreateNew<T>();
+
+		if constexpr (ComponentTrait<T>::hasInit)
 		{
-			(newCom.get()->*ComponentTrait<T>::GetAwake())();
+			(com.get()->*ComponentTrait<T>::GetInit())();
 		}
-		return newCom;
+
+		ComponentHut::AddComponent(com);
+		return com;
+	}
+	template<typename T>
+	inline std::shared_ptr<T> ComponentFactory::CreateNewFromJson(const Json::Value& json)
+	{
+		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
+
+		auto com = Mrk::MemCtrlSystem::CreateNew<T>();
+		com->FromJson(json);
+
+		if constexpr (ComponentTrait<T>::hasInit)
+		{
+			(com.get()->*ComponentTrait<T>::GetInit())();
+		}
+
+		ComponentHut::AddComponent(com);
+		return com;
 	}
 }

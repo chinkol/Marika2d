@@ -9,7 +9,8 @@
 #define MRK_OBJECT(x)															\
 public:																			\
 virtual inline std::string_view GetClassTypeName() override { return #x; }		\
-virtual inline const type_info& GetClassType() override { return typeid(x); }		
+virtual inline const type_info& GetClassType() override { return typeid(x); }	\
+static inline std::string_view StaticGetClassTypeName() { return #x; }			
 #endif // !MRK_OBJECT
 
 #ifndef MRK_OBJECT_SERIALIZE_SELF

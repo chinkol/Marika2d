@@ -130,6 +130,28 @@ void Mrk::Transform::SetWorldPosition(const Mrk::Vector3& newVal)
 	SetLocalDirty();
 }
 
+const Mrk::Vector3& Mrk::Transform::GetLocalScale()
+{
+	return localScale;
+}
+
+Mrk::Vector3 Mrk::Transform::GetWorldScale()
+{
+	UpdateLocalMatrix();
+	UpdateWorldMatrix();
+	return { worldMatrix[0].length(), worldMatrix[1].length(), worldMatrix[2].length() };
+}
+
+void Mrk::Transform::SetLocalScale(const Vector3& newVal)
+{
+	localRotation = newVal;
+	SetLocalDirty();
+}
+
+void Mrk::Transform::SetWorldScale(const Vector3& newVal)
+{
+}
+
 const Mrk::Quaternion& Mrk::Transform::GetLocalRotation()
 {
 	return localRotation;

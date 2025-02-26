@@ -37,6 +37,7 @@ namespace Mrk
 {
 	class GameObject;
 	class Component;
+	class Transform;
 
 	class GameObjectFactory : public Singleton<GameObjectFactory>
 	{
@@ -91,8 +92,9 @@ namespace Mrk
 		ID id;
 		std::string name;
 		std::weak_ptr<GameObject> parent;
+		std::shared_ptr<Transform> transform;
 		std::vector<std::shared_ptr<GameObject>> children;
-		std::vector<std::shared_ptr<Component>> components;
+		std::map<std::string, std::shared_ptr<Component>> components;
 	};
 }
 
@@ -106,9 +108,17 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
 
-		auto com = ComponentFactory::CreateNew<T>();
-		com->holder = weak_from_this();
-		components.push_back(com);
+		components.try_emplace(T::StaticGetClassTypeName().data(), [this]() {
+			auto com = ComponentFactory::CreateNew<T>();
+			com->holder = weak_from_this();
+
+			if constexpr (std::is_same_v<T, Transform>)
+			{
+				transform = com;
+			}
+
+			return com;
+			}());
 	}
 
 	template<typename T>
@@ -122,9 +132,7 @@ namespace Mrk
 		}
 		else
 		{
-			components.erase(std::remove_if(components.begin(), components.end(), [](const std::shared_ptr<Component> component) {
-				return std::dynamic_pointer_cast<T>(component);
-				}), components.end());
+			components.erase(T::StaticGetClassTypeName().data());
 		}
 	}
 
@@ -133,17 +141,14 @@ namespace Mrk
 	{
 		if constexpr (std::is_same_v<T, Transform>)
 		{
-			return std::dynamic_pointer_cast<Transform>(components[0]);
+			return transform;
 		}
 		else
 		{
-			auto ret = std::find_if(components.begin(), components.end(), [](const std::shared_ptr<Component> component) {
-				return std::dynamic_pointer_cast<Component>(component);
-				});
-
+			auto ret = components.find(T::StaticGetClassTypeName().data());
 			if (ret != components.end())
 			{
-				return *ret;
+				return std::dynamic_pointer_cast<T>(ret->second);
 			}
 
 			return std::shared_ptr<T>();

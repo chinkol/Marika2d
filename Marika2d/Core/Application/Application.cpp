@@ -132,17 +132,17 @@ void Mrk::Application::Run()
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            Mrk::ComponentHouse::Invoke("PreUpdate");
-            Mrk::ComponentHouse::Invoke("Update");
-            Mrk::ComponentHouse::Invoke("LateUpdate");
-            Mrk::ComponentHouse::Invoke("FixedUpdate");    //TODO : 改定时
+            Mrk::ComponentHut::Invoke("PreUpdate");
+            Mrk::ComponentHut::Invoke("Update");
+            Mrk::ComponentHut::Invoke("LateUpdate");
+            Mrk::ComponentHut::Invoke("FixedUpdate");    //TODO : 改定时
 
             if (context.updateCallBack) 
                 context.updateCallBack();
 
-            Mrk::ComponentHouse::Invoke("PreDraw");
-            Mrk::ComponentHouse::Invoke("Draw");
-            Mrk::ComponentHouse::Invoke("LateDraw");
+            Mrk::ComponentHut::Invoke("PreDraw");
+            Mrk::ComponentHut::Invoke("Draw");
+            Mrk::ComponentHut::Invoke("LateDraw");
 
             if (context.drawCallBack) 
                 context.drawCallBack();

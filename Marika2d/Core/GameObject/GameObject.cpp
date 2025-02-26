@@ -63,9 +63,11 @@ const std::vector<std::shared_ptr<Mrk::GameObject>>& Mrk::GameObject::GetChildre
 
 void Mrk::GameObject::AddComponent(std::string_view name)
 {
-	auto com = ComponentFactory::CreateNew(name);
-	com->holder = weak_from_this();
-	components.push_back(com);
+	components.try_emplace(name.data(), [name, this]() {
+		auto com = ComponentFactory::CreateNew(name.data());
+		com->holder = weak_from_this();
+		return com;
+		}());
 }
 
 void Mrk::GameObject::AddComponent(std::shared_ptr<Component> component)
@@ -74,39 +76,37 @@ void Mrk::GameObject::AddComponent(std::shared_ptr<Component> component)
 	{
 		if (component->holder.expired())
 		{
-			component->holder = weak_from_this();
-			components.push_back(component);
+			if (components.try_emplace(component->GetClassTypeName().data(), component).second)
+			{
+				component->holder = weak_from_this();
+			}
 		}
 		else if (component->holder.lock().get() != this)
 		{
-			component->holder.lock()->RemoveComponent(component->GetClassTypeName());
-			component->holder = weak_from_this();
-			components.push_back(component);
+			if (components.try_emplace(component->GetClassTypeName().data(), component).second)
+			{
+				component->holder.lock()->RemoveComponent(component->GetClassTypeName());
+				component->holder = weak_from_this();
+			}
 		}
 	}
 }
 
 void Mrk::GameObject::RemoveComponent(std::string_view name)
 {
-	if (std::strcmp(name.data(), "Transform") == 0)
+	auto ret = components.find(name.data());
+	if (ret != components.end() && ret->second->IsRemovable())
 	{
-		return;
+		components.erase(ret);
 	}
-
-	components.erase(std::remove_if(components.begin(), components.end(), [name](const std::shared_ptr<Component> component) {
-		return component->GetClassTypeName() == name;
-		}), components.end());
 }
 
 std::shared_ptr<Mrk::Component> Mrk::GameObject::GetComponent(std::string_view name)
 {
-	auto ret = std::find_if(components.begin(), components.end(), [name](const std::shared_ptr<Component> component) {
-		return component->GetClassTypeName() == name;
-		});
-
+	auto ret = components.find(name.data());
 	if (ret != components.end())
 	{
-		return *ret;
+		return ret->second;
 	}
 
 	return std::shared_ptr<Component>();
@@ -169,19 +169,15 @@ void Mrk::GameObject::DeserializeComponents(const Json::Value& jcomponents)
 			if (jname != jcomponent.MemberEnd() && jname->value.IsString())
 			{
 				auto name = jname->value.GetString();
-				if (std::strcmp(name, "Transform") == 0)
+				auto ret = components.find(name);
+				if (ret != components.end())
 				{
-					components[0]->FromJson(jcomponent);
+					ret->second->FromJson(jcomponent);
 				}
 				else
 				{
-					if (auto component = ComponentFactory::CreateNew(name))
-					{
-						component->FromJson(jcomponent);
-						AddComponent(component);
-					}
+					AddComponent(ComponentFactory::CreateNewFromJson(name, jcomponent));
 				}
-
 			}
 		}
 	}
@@ -210,7 +206,7 @@ void Mrk::GameObject::DeserializeChildren(const Json::Value& jchildren)
 Json::Value Mrk::GameObject::SerializeComponents(Mrk::JsonAllocator& alloctor)
 {
 	Json::Value jarr = Json::Value(Json::ArrayType);
-	for (auto& component : components)
+	for (auto& [_, component] : components)
 	{
 		jarr.PushBack(component->ToJson(alloctor), alloctor);
 	}

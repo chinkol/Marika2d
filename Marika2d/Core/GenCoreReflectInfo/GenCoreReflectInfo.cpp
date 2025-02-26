@@ -155,28 +155,43 @@ namespace Mrk
 
 	MRK_CORE_REFLECT_REGISTER(GameObject)(
 		rttr::registration::class_<GameObject>("GameObject")
-		.constructor<>()
 		.property("id", &GameObject::GetID, &GameObject::SetID_)
 		.property("name", &GameObject::GetName, &GameObject::SetName);
 		);
 }
 
 #include "Core/Component/Component.h"
-#include "Core/Component/Transform/Transform.h"
+
 
 namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(Component)(
-		rttr::registration::class_<Component>("Component")
-		.constructor<>();
+		rttr::registration::class_<Component>("Component");
 		);
+}
 
+#include "Core/Component/Transform/Transform.h"
+
+namespace Mrk
+{
 	MRK_CORE_REFLECT_REGISTER(Transform)(
 		rttr::registration::class_<Transform>("Transform")
-		.constructor<>()
 		.property("localPosition", &Transform::GetLocalPosition, &Transform::SetLocalPosition)
-		.property("localRotation", &Transform::GetLocalRotation, &Transform::SetLocalRotation);
+		.property("localRotation", &Transform::GetLocalRotation, &Transform::SetLocalRotation)
+		.property("localScale", &Transform::GetLocalScale, &Transform::SetLocalScale);
 		)
+}
+
+
+#include "Core/Mesh/MeshRenderer.h"
+
+namespace Mrk
+{
+	MRK_CORE_REFLECT_REGISTER(MeshRenderer)(
+		rttr::registration::class_<MeshRenderer>("MeshRenderer")
+		.property("vs", &MeshRenderer::GetVsPath, &MeshRenderer::SetVsPath)
+		.property("fs", &MeshRenderer::GetFsPath, &MeshRenderer::SetFsPath);
+		);
 }
 
 #include "Core/Application/Application.h"
