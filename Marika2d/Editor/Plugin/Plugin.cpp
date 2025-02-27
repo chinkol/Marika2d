@@ -38,7 +38,7 @@ void Mrk::PluginAssetImport::Init()
 {
 	fileDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection | ImGuiFileBrowserFlags_ConfirmOnEnter | ImGuiFileBrowserFlags_CloseOnEsc);
 	fileDlg.SetTitle("Import Asset");
-	fileDlg.SetTypeFilters(AssetSystem::GetImportSupports());
+	fileDlg.SetTypeFilters(AssetSys::GetImportSupports());
 
 	saveDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_HideRegularFiles | ImGuiFileBrowserFlags_CreateNewDir);
 	saveDlg.SetTitle("Save Asset To");
@@ -65,7 +65,7 @@ void Mrk::PluginAssetImport::Update()
 	{
 		for (auto& fromPath : fromPathes)
 		{
-			AssetSystem::Import(fromPath, toPath);
+			AssetSys::Import(fromPath, toPath);
 		}
 		fromPathes.clear();
 		toPath.clear();

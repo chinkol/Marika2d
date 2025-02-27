@@ -189,8 +189,9 @@ namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(MeshRenderer)(
 		rttr::registration::class_<MeshRenderer>("MeshRenderer")
-		.property("vs", &MeshRenderer::GetVsPath, &MeshRenderer::SetVsPath)
-		.property("fs", &MeshRenderer::GetFsPath, &MeshRenderer::SetFsPath);
+		.property("meshPath", &MeshRenderer::GetMeshPath, &MeshRenderer::SetMeshPath)
+		.property("vsPath", &MeshRenderer::GetVsPath, &MeshRenderer::SetVsPath)
+		.property("fsPath", &MeshRenderer::GetFsPath, &MeshRenderer::SetFsPath);
 		);
 }
 
@@ -201,6 +202,26 @@ namespace Mrk
 	MRK_CORE_REFLECT_REGISTER(AppConfig)(
 		rttr::registration::class_<AppConfig>("AppConfig")
 		.property("size", &AppConfig::size)
-		.property("title", &AppConfig::title);
+		.property("title", &AppConfig::title)
+		.property("projDir", &AppConfig::projDir);
+		);
+}
+
+#include "Core/Mesh/Mesh.h"
+
+namespace Mrk
+{
+	MRK_CORE_REFLECT_REGISTER(Vertex)(
+		rttr::registration::class_<Vertex>("Vertex")
+		.property("position", &Vertex::position)
+		.property("normal", &Vertex::normal)
+		.property("texcoord", &Vertex::texcoord);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(SubMesh)(
+		rttr::registration::class_<SubMesh>("SubMesh")
+		.property("matIndex", &SubMesh::matIndex)
+		.property("offset", &SubMesh::offset)
+		.property("count", &SubMesh::count);
 		);
 }

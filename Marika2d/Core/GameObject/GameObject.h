@@ -108,17 +108,21 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T Is Not A Component !");
 
-		components.try_emplace(T::StaticGetClassTypeName().data(), [this]() {
-			auto com = ComponentFactory::CreateNew<T>();
-			com->holder = weak_from_this();
+		auto ret = components.find(T::StaticGetClassTypeName().data());
+		if (ret == components.end())
+		{
+			components.emplace(T::StaticGetClassTypeName().data(), [this]() {
+				auto com = ComponentFactory::CreateNew<T>();
+				com->holder = weak_from_this();
 
-			if constexpr (std::is_same_v<T, Transform>)
-			{
-				transform = com;
-			}
+				if constexpr (std::is_same_v<T, Transform>)
+				{
+					transform = com;
+				}
 
-			return com;
-			}());
+				return com;
+				}());
+		}
 	}
 
 	template<typename T>
@@ -159,15 +163,14 @@ namespace Mrk
 	inline void GameObjectFactory::RegisterGameObject(std::string_view classname)
 	{
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
-		if (Instance().creators.try_emplace(classname.data(), []() {
-			return Mrk::MemCtrlSystem::CreateNew<T>();
-			}).second)
+
+		auto ret = Instance().creators.find(classname.data());
+		if (ret == Instance().creators.end())
 		{
 			Instance().manifest.push_back(classname.data());
-		}
-		else
-		{
-			throw; // repeat?
+			Instance().creators.emplace(classname.data(), []() {
+				return Mrk::MemCtrlSystem::CreateNew<T>();
+				});
 		}
 	}
 

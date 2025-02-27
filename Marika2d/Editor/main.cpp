@@ -9,7 +9,7 @@
 #include "Core/OpenGL/OpenGL.h"
 #include "Core/Mesh/Mesh.h"
 
-//#include "Editor/Asset/AssetSystem.h"
+#include "Editor/Asset/AssetSystem.h"
 #include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
@@ -20,7 +20,13 @@
 
 #include <string>
 
-void Test()
+void AssetTest()
+{
+
+	//Mrk::AssetSys::Import("../TestProject/Mualani/Mualani.fbx", Mrk::ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
+}
+
+void MeshTest()
 {
 	//auto mesh = Mrk::MeshHouse::GetMesh("D:/SourceCode/Marika2d/Marika2d/TestProject/test.mem");
 }
@@ -29,7 +35,7 @@ void EditorLoopTest()
 {
 	static auto tex1 = SOIL_load_OGL_single_cubemap("OpenGL-DDS/Textures/desertcube1024.cbdds", SOIL_DDS_CUBEMAP_FACE_ORDER, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
 	static auto tex2 = SOIL_load_OGL_texture("OpenGL-DDS/Textures/grass.dds", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
-	
+
 	ImGui::DockSpaceOverViewport();
 
 	//viewport
@@ -116,15 +122,14 @@ void EditorLoopTest()
 }
 void ModelImprotTest()
 {
-	
+
 }
 void ConfigSysTest()
 {
-	
+
 }
 int main()
 {
-	constexpr bool j = std::is_same_v<const Mrk::Vector3&, Mrk::Vector3>;
 	//Init
 	{
 		Mrk::GenCoreReflectInfo();
@@ -132,7 +137,7 @@ int main()
 
 		Mrk::ConfigSys::Init();
 	}
-	
+
 	std::shared_ptr<Mrk::GameObject> recive;
 	MrkTest::Test(recive);
 
@@ -143,6 +148,9 @@ int main()
 
 	context.appInitedCallBack = []() {
 		Mrk::PluginSystem::Init();
+
+		AssetTest();
+		MeshTest();
 		};
 
 	context.updateCallBack = []() {
@@ -150,10 +158,10 @@ int main()
 		{
 
 			EditorLoopTest();
-			Test();
+
 
 		}
-		
+
 		Mrk::PluginSystem::Update();
 
 		{

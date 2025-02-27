@@ -46,6 +46,7 @@ namespace Mrk
     public:
         Vector2i size = { 800, 600 };
         std::string title = "Marika Engine";
+        std::string projDir = "../TestProject";
     };
 
     struct AppContext
@@ -53,9 +54,6 @@ namespace Mrk
         // viewport
         bool viewportFill = true;
         glm::vec4 viewport = { 0, 0, 800, 600 };   // left, top, width, height
-
-        // project dir
-        std::string projDir = "D:/SourceCode/Marika2d/Marika2d/TestProject";
 
         // callbacks
         std::function<void()> appInitedCallBack;

@@ -10,7 +10,7 @@ Mrk::Vertex::Vertex() :
 {
 }
 
-Mrk::Vertex::Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texcoord) :
+Mrk::Vertex::Vertex(const Vector3& position, const Vector3& normal, const Vector2& texcoord) :
 	position(position),
 	normal(normal),
 	texcoord(texcoord)
@@ -24,9 +24,9 @@ Mrk::Vertex::Vertex(float px, float py, float pz, float nx, float ny, float nz, 
 {
 }
 
-Mrk::Mesh::Mesh() : 
-	boundingMin({0, 0, 0}),
-	boundingMax({0, 0, 0})
+Mrk::Mesh::Mesh() :
+	boundingMin({ 0, 0, 0 }),
+	boundingMax({ 0, 0, 0 })
 {
 }
 
@@ -53,7 +53,7 @@ const std::vector<Mrk::SubMesh>& Mrk::Mesh::GetSubMeshes()
 	return subMeshes;
 }
 
-std::shared_ptr<Mrk::Mesh> Mrk::MeshHouse::GetMesh(std::string_view meshPath)
+std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::GetMesh(std::string_view meshPath)
 {
 	auto ret = Instance().meshs.try_emplace(meshPath.data(), nullptr);
 	if (ret.second)
@@ -63,12 +63,12 @@ std::shared_ptr<Mrk::Mesh> Mrk::MeshHouse::GetMesh(std::string_view meshPath)
 	return ret.first->second;
 }
 
-std::shared_ptr<Mrk::Mesh> Mrk::MeshHouse::LoadMesh(std::string_view path)
+std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::LoadMesh(std::string_view path)
 {
-	std::filesystem::path mem(path);
-	if (std::filesystem::exists(mem) && mem.extension() == ".mem")
+	std::filesystem::path mesh(path);
+	if (std::filesystem::exists(mesh) && mesh.extension() == MRK_MESH_FILE_EXTENSION)
 	{
-		std::ifstream stream(mem, std::ios::binary);
+		std::ifstream stream(mesh, std::ios::binary);
 		if (stream.is_open())
 		{
 			char head[80];

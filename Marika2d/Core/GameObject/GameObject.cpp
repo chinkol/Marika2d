@@ -63,11 +63,15 @@ const std::vector<std::shared_ptr<Mrk::GameObject>>& Mrk::GameObject::GetChildre
 
 void Mrk::GameObject::AddComponent(std::string_view name)
 {
-	components.try_emplace(name.data(), [name, this]() {
-		auto com = ComponentFactory::CreateNew(name.data());
-		com->holder = weak_from_this();
-		return com;
-		}());
+	auto ret = components.find(name.data());
+	if (ret == components.end())
+	{
+		components.emplace(name.data(), [name, this]() {
+			auto com = ComponentFactory::CreateNew(name.data());
+			com->holder = weak_from_this();
+			return com;
+			}());
+	}
 }
 
 void Mrk::GameObject::AddComponent(std::shared_ptr<Component> component)

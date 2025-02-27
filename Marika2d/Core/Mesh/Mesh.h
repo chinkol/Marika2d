@@ -3,6 +3,8 @@
 #include "Common/Singleton/Singleton.h"
 #include "Common/Memory/MemCtrlSystem.h"
 
+#include "Core/Math/Math.h"
+
 #include "Third/glad/include/glad.h"
 #include "Third/glm/glm.hpp"
 
@@ -13,28 +15,32 @@
 #include <vector>
 #include <map>
 
+#ifndef MRK_MESH_FILE_EXTENSION
+#define MRK_MESH_FILE_EXTENSION ".mmsh"
+#endif // !MRK_MESH_FILE_EXTENSION
+
 namespace Mrk
 {
 	struct Vertex
 	{
 		Vertex();
-		Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texcoord);
+		Vertex(const Vector3& position, const Vector3& normal, const Vector2& texcoord);
 		Vertex(float px, float py, float pz, float nx, float ny, float nz, float tx, float ty);
-		glm::vec3 position;
-		glm::vec3 normal;
-		glm::vec2 texcoord;
+		Vector3 position;
+		Vector3 normal;
+		Vector2 texcoord;
 	};
 
 	struct SubMesh
 	{
 		GLuint matIndex;	//material index
-		GLuint offset;	//index offset
+		GLuint offset;		//index offset
 		GLuint count;		//index count
 	};
 
 	class Mesh
 	{
-		friend class MeshHouse;
+		friend class MeshHut;
 	public:
 		~Mesh();
 		void Bind();
@@ -55,19 +61,17 @@ namespace Mrk
 		GLuint ebo = 0;
 	};
 
-	class MeshHouse : public Singleton<MeshHouse>
+	class MeshHut : public Singleton<MeshHut>
 	{
-		MRK_SINGLETON(MeshHouse)
+		MRK_SINGLETON(MeshHut)
 	public:
 		static std::shared_ptr<Mesh> GetMesh(std::string_view meshPath);
 
 	private:
-		MeshHouse() = default;
+		MeshHut() = default;
 		static std::shared_ptr<Mesh> LoadMesh(std::string_view path);
 
 	private:
 		std::map<std::string, std::shared_ptr<Mesh>> meshs;
 	};
 }
-
-
