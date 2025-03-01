@@ -141,13 +141,13 @@
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
-    <ClCompile Include="Asset\AssetSystem.cpp" />
+    <ClCompile Include="Asset\AssetSys.cpp" />
     <ClCompile Include="RttrTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
     <ClInclude Include="Plugin\Plugin.h" />
-    <ClInclude Include="Asset\AssetSystem.h" />
+    <ClInclude Include="Asset\AssetSys.h" />
     <ClInclude Include="RttrTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

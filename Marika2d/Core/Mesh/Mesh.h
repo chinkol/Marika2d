@@ -33,7 +33,6 @@ namespace Mrk
 
 	struct SubMesh
 	{
-		GLuint matIndex;	//material index
 		GLuint offset;		//index offset
 		GLuint count;		//index count
 	};
@@ -42,20 +41,18 @@ namespace Mrk
 	{
 		friend class MeshHut;
 	public:
+		Mesh();
 		~Mesh();
 		void Bind();
 
-		const glm::vec3& GetBoundingMin();
-		const glm::vec3& GetBoundingMax();
+		const Vector3& GetBoundingMin();
+		const Vector3& GetBoundingMax();
 		const std::vector<SubMesh>& GetSubMeshes();
 
 	private:
-		Mesh();
-
-	private:
 		std::vector<SubMesh> subMeshes;
-		glm::vec3 boundingMax;
-		glm::vec3 boundingMin;
+		Vector3 max;
+		Vector3 min;
 		GLuint vao = 0;
 		GLuint vbo = 0;
 		GLuint ebo = 0;
@@ -70,6 +67,7 @@ namespace Mrk
 	private:
 		MeshHut() = default;
 		static std::shared_ptr<Mesh> LoadMesh(std::string_view path);
+		static void LoadMeshGL(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, std::shared_ptr<Mesh> mesh);
 
 	private:
 		std::map<std::string, std::shared_ptr<Mesh>> meshs;

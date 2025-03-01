@@ -9,7 +9,7 @@
 #include "Core/OpenGL/OpenGL.h"
 #include "Core/Mesh/Mesh.h"
 
-#include "Editor/Asset/AssetSystem.h"
+#include "Editor/Asset/AssetSys.h"
 #include "Editor/Plugin/Plugin.h"
 
 #include "Third/SOIL2/SOIL2.h"
@@ -28,7 +28,8 @@ void AssetTest()
 
 void MeshTest()
 {
-	//auto mesh = Mrk::MeshHouse::GetMesh("D:/SourceCode/Marika2d/Marika2d/TestProject/test.mem");
+	auto mesh = Mrk::MeshHut::GetMesh("D:/QinKL/SorceCode/Marika2d/koko/Marika2d/Marika2d/TestProject/FuNingNa/Meshes/Body.mmsh");
+	int i = 0;
 }
 
 void EditorLoopTest()

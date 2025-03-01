@@ -1,6 +1,6 @@
 #include "Plugin.h"
 
-#include "Editor/Asset/AssetSystem.h"
+#include "Editor/Asset/AssetSys.h"
 
 void Mrk::PluginSystem::Init()
 {
@@ -40,7 +40,7 @@ void Mrk::PluginAssetImport::Init()
 	fileDlg.SetTitle("Import Asset");
 	fileDlg.SetTypeFilters(AssetSys::GetImportSupports());
 
-	saveDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_HideRegularFiles | ImGuiFileBrowserFlags_CreateNewDir);
+	saveDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_HideRegularFiles | ImGuiFileBrowserFlags_CreateNewDir, ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
 	saveDlg.SetTitle("Save Asset To");
 }
 

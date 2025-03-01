@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Asset\AssetSystem.cpp">
+    <ClCompile Include="Asset\AssetSys.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Plugin\Plugin.cpp">
@@ -32,7 +32,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Asset\AssetSystem.h">
+    <ClInclude Include="Asset\AssetSys.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Plugin.h">

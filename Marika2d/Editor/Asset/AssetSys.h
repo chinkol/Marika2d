@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Common/Singleton/Singleton.h"
 #include "Common/Utility/Utility.h"
 
@@ -56,6 +54,7 @@ namespace Mrk
 	class IAssetlImporter
 	{
 	public:
+		virtual ~IAssetlImporter() = default;
 		virtual std::string_view GetExtension() = 0;
 		virtual void Import(const std::filesystem::path& from, const std::filesystem::path& to) = 0;
 	};
@@ -63,26 +62,31 @@ namespace Mrk
 	class AssetUtility
 	{
 	public:
-		static void MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<uint32_t>& indices, const std::filesystem::path& filename);
+		static void MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& filename);
 		static void MakePrefab(std::shared_ptr<GameObject> gameObject, const std::filesystem::path& to);
 	private:
 		AssetUtility() = default;
 	};
 
-	class FbxImporter : public IAssetlImporter
+	class AssimpAssetImporter : public IAssetlImporter
 	{
-		MRK_ASSET_IMPORTER(FbxImporter, fbx)
 	public:
+		virtual ~AssimpAssetImporter() override;
 		virtual void Import(const std::filesystem::path& from, const std::filesystem::path& to) override;
-	private:
+	protected:
 		void ProcessNode(aiNode* aiNode, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<GameObject> objNode);
 		void ProcessMaterial(aiMaterial* aiMat, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<MeshRenderer> meshRenderer);
 		void ProcessTexture(const std::filesystem::path& from, const std::filesystem::path& to);
 		void ProcessMesh(std::vector<aiMesh*> aiMeshes, const std::filesystem::path& to);
 		void ProcessSubMesh(aiMesh* aiMesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
-	private:
+	protected:
 		Assimp::Importer importer;
 		const aiScene* aiScene;
+	};
+
+	class FbxImporter : public AssimpAssetImporter
+	{
+		MRK_ASSET_IMPORTER(FbxImporter, fbx)
 	};
 }
 

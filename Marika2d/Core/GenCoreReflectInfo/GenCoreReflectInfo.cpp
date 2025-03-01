@@ -220,7 +220,6 @@ namespace Mrk
 
 	MRK_CORE_REFLECT_REGISTER(SubMesh)(
 		rttr::registration::class_<SubMesh>("SubMesh")
-		.property("matIndex", &SubMesh::matIndex)
 		.property("offset", &SubMesh::offset)
 		.property("count", &SubMesh::count);
 		);

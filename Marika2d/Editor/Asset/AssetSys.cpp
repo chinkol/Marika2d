@@ -1,4 +1,4 @@
-#include "AssetSystem.h"
+#include "AssetSys.h"
 
 #include "Core/GameObject/GameObject.h"
 #include "Core/Mesh/MeshRenderer.h"
@@ -25,8 +25,10 @@ void Mrk::AssetSys::Import(const std::filesystem::path& from, const std::filesys
 	}
 }
 
-void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<uint32_t>& indices, const std::filesystem::path& path)
+void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& path)
 {
+	assert(vertices.size() == indices.size());
+
 	if (!std::filesystem::exists(path.parent_path()))
 	{
 		std::filesystem::create_directories(path.parent_path());
@@ -47,8 +49,12 @@ void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex
 
 	uint32_t indexOffset = 0;
 
-	for (auto& subVertices : vertices)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
+		// 顶点
+
+		auto& subVertices = vertices[i];
+
 		//写入顶点数量
 		auto vertexCount = (uint32_t)subVertices.size();
 		file.write(reinterpret_cast<const char*>(&vertexCount), sizeof(uint32_t));
@@ -61,11 +67,16 @@ void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex
 			file.write(reinterpret_cast<const char*>(&vertex.texcoord), sizeof(vertex.texcoord));
 		}
 
-		// 写入索引
-		auto indexCount = subVertices.size() * 3;
+		// 索引
+
+		auto& subIndices = indices[i];
+
+		// 写入索引数量
+		auto indexCount = (uint32_t)subIndices.size();
 		file.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
 
-		for (auto& index : indices)
+		// 写入索引
+		for (auto& index : subIndices)
 		{
 			auto realIndex = index + indexOffset;
 			file.write(reinterpret_cast<const char*>(&realIndex), sizeof(realIndex));
@@ -110,23 +121,30 @@ void Mrk::AssetUtility::MakePrefab(std::shared_ptr<GameObject> gameObject, const
 	}
 }
 
-void Mrk::FbxImporter::Import(const std::filesystem::path& from, const std::filesystem::path& to)
+Mrk::AssimpAssetImporter::~AssimpAssetImporter()
+{
+	importer.FreeScene();
+}
+
+void Mrk::AssimpAssetImporter::Import(const std::filesystem::path& from, const std::filesystem::path& to)
 {
 	if (std::filesystem::exists(from))
 	{
 		aiScene = importer.ReadFile(Utility::GBKToUTF8(from.string()), aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 		if (!aiScene || aiScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiScene->mRootNode)
+		{
 			throw;	// error file
+		}
 
 		if (!std::filesystem::exists(to.parent_path()))
 		{
 			std::filesystem::create_directories(to.parent_path());
 		}
 
+		// process
 		auto objRoot = GameObjectFactory::CreateNew<GameObject>();
 		objRoot->SetName(from.filename().replace_extension().string());
 		ProcessNode(aiScene->mRootNode, from, to / from.filename().replace_extension(), objRoot);
-
 		AssetUtility::MakePrefab(objRoot, to / from.filename().replace_extension() / from.filename().replace_extension(".mpre"));
 	}
 	else
@@ -135,7 +153,7 @@ void Mrk::FbxImporter::Import(const std::filesystem::path& from, const std::file
 	}
 }
 
-void Mrk::FbxImporter::ProcessNode(aiNode* aiNode, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<GameObject> objNode)
+void Mrk::AssimpAssetImporter::ProcessNode(aiNode* aiNode, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<GameObject> objNode)
 {
 	// meshes
 	if (aiNode->mNumMeshes > 0)
@@ -175,7 +193,7 @@ void Mrk::FbxImporter::ProcessNode(aiNode* aiNode, const std::filesystem::path& 
 	}
 }
 
-void Mrk::FbxImporter::ProcessMaterial(aiMaterial* aiMat, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<MeshRenderer> meshRenderer)
+void Mrk::AssimpAssetImporter::ProcessMaterial(aiMaterial* aiMat, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<MeshRenderer> meshRenderer)
 {
 	for (uint32_t i = 0; i < aiMat->GetTextureCount(aiTextureType_DIFFUSE); i++)
 	{
@@ -190,7 +208,7 @@ void Mrk::FbxImporter::ProcessMaterial(aiMaterial* aiMat, const std::filesystem:
 	}
 }
 
-void Mrk::FbxImporter::ProcessTexture(const std::filesystem::path& from, const std::filesystem::path& to)
+void Mrk::AssimpAssetImporter::ProcessTexture(const std::filesystem::path& from, const std::filesystem::path& to)
 {
 	if (!std::filesystem::exists(to.parent_path()))
 	{
@@ -203,22 +221,25 @@ void Mrk::FbxImporter::ProcessTexture(const std::filesystem::path& from, const s
 	}
 }
 
-void Mrk::FbxImporter::ProcessMesh(std::vector<aiMesh*> aiMesh, const std::filesystem::path& to)
+void Mrk::AssimpAssetImporter::ProcessMesh(std::vector<aiMesh*> aiMesh, const std::filesystem::path& to)
 {
 	std::vector<std::vector<Vertex>> vertices;
-	std::vector<uint32_t> indices;
+	std::vector<std::vector<uint32_t>> indices;
 
 	for (auto aiSubMesh : aiMesh)
 	{
 		std::vector<Vertex> subVertices;
-		ProcessSubMesh(aiSubMesh, subVertices, indices);
-		vertices.push_back(subVertices);
+		std::vector<uint32_t> subIndices;
+
+		ProcessSubMesh(aiSubMesh, subVertices, subIndices);
+		vertices.push_back(std::move(subVertices));
+		indices.push_back(std::move(subIndices));
 	}
 
 	AssetUtility::MeshDataToLocalFile(vertices, indices, to);
 }
 
-void Mrk::FbxImporter::ProcessSubMesh(aiMesh* aiSubMesh, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+void Mrk::AssimpAssetImporter::ProcessSubMesh(aiMesh* aiSubMesh, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	//vertices
 	vertices.reserve(aiSubMesh->mNumVertices);
@@ -232,9 +253,8 @@ void Mrk::FbxImporter::ProcessSubMesh(aiMesh* aiSubMesh, std::vector<Vertex>& ve
 		auto normal = glm::vec3(aiNormal.x, aiNormal.y, aiNormal.z);
 		auto texCoord = glm::vec2(aiTexCoord.x, aiTexCoord.y);
 
-		vertices.push_back(Vertex(position, normal, texCoord));
+		vertices.emplace_back(position, normal, texCoord);
 	}
-	vertices.insert(vertices.end(), vertices.begin(), vertices.end());
 
 	//indices
 	indices.reserve(aiSubMesh->mNumFaces * 3);
