@@ -3,6 +3,7 @@
 #include "Core/Component/Component.h"
 #include "Core/GameObject/GameObject.h"
 #include "Core/Mesh/MeshRenderer.h"
+#include "Core/Camera/Camera.h"
 
 namespace MrkTest
 {
@@ -48,8 +49,8 @@ namespace MrkTest
 		bone221->AddComponent<BoneComponent>();
 		bone222->AddComponent<BoneComponent>();
 
-		bone1->AddChild(bone11);
-		bone1->AddChild(bone12);
+		//bone1->AddChild(bone11);
+		//bone1->AddChild(bone12);
 		bone11->AddChild(bone211);
 		bone11->AddChild(bone212);
 		bone12->AddChild(bone221);
@@ -64,6 +65,10 @@ namespace MrkTest
 		meshRenderer11->SetVsPath("../Core/OpenGL/Shader/Base.Vert");
 		meshRenderer11->SetFsPath("../Core/OpenGL/Shader/Base.Frag");
 		bone11->AddComponent(meshRenderer11);
+
+		// camera
+		auto camera = Mrk::GameObjectFactory::CreateNew<Mrk::Camera>();
+		bone1->AddChild(camera);
 
 		Json::Document jdoc(Json::ArrayType);
 		auto json = bone1->ToJson(jdoc.GetAllocator());
