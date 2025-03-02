@@ -79,7 +79,7 @@ namespace Mrk
 		std::shared_ptr<Component> GetComponent(std::string_view name);
 		void AddChild(std::shared_ptr<GameObject> child);
 		void RemoveChild(std::shared_ptr<GameObject> child);
-
+		virtual void Init();
 	protected:
 		void DeserializeGameObject(const Json::Value& json);
 		void SerializeGameObject(Json::Value& json, Mrk::JsonAllocator& alloctor);
@@ -180,6 +180,7 @@ namespace Mrk
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
 		auto obj = Mrk::MemCtrlSystem::CreateNew<T>();
 		obj->AddComponent<Transform>();
+		obj->Init();
 		return obj;
 	}
 }

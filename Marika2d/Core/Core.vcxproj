@@ -27,6 +27,7 @@
     <ClCompile Include="GenCoreReflectInfo\GenCoreReflectInfo.cpp" />
     <ClCompile Include="Global\Global.cpp" />
     <ClCompile Include="ID\IDCreater.cpp" />
+    <ClCompile Include="Render\Material\Material.cpp" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Component\Transform\Transform.cpp" />
+    <ClCompile Include="Render\Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -46,6 +48,7 @@
     <ClInclude Include="GenCoreReflectInfo\GenCoreReflectInfo.h" />
     <ClInclude Include="Global\Global.h" />
     <ClInclude Include="ID\IDCreater.h" />
+    <ClInclude Include="Render\Material\Material.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Mesh\MeshRenderer.h" />
     <ClInclude Include="Mesh\Mesh.h" />
@@ -55,6 +58,7 @@
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Component\Transform\Transform.h" />
+    <ClInclude Include="Render\Texture\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -98,7 +98,6 @@ namespace Mrk
 		static GLuint GetShaderID(Shader::Type type, std::string_view path);
 	private:
 		std::map<size_t, ShaderProgram> sps;
-		std::vector< ShaderProgram> spvs;
 		std::map<std::string, Shader> temps;	// ±àÒëºÃµÄshader
 	};
 

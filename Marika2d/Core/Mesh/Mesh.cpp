@@ -36,6 +36,12 @@ Mrk::Mesh::~Mesh()
 
 void Mrk::Mesh::Bind()
 {
+	glBindVertexArray(vao);
+}
+
+void Mrk::Mesh::UnBine()
+{
+	glBindVertexArray(0);
 }
 
 const Mrk::Vector3& Mrk::Mesh::GetBoundingMin()

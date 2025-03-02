@@ -44,6 +44,7 @@ namespace Mrk
 		Mesh();
 		~Mesh();
 		void Bind();
+		void UnBine();
 
 		const Vector3& GetBoundingMin();
 		const Vector3& GetBoundingMax();

@@ -1,16 +1,19 @@
 #pragma once
 
-#include "Core/Component/Component.h"
-#include "Core/GameObject/GameObject.h"
 #include "Common/Singleton/Singleton.h"
 
-#include "Third/glm/glm.hpp"
+#include "Core/Component/Component.h"
+#include "Core/GameObject/GameObject.h"
+#include "Core/Math/Math.h"
+#include "Core/OpenGL/OpenGL.h"
+
+#include <array>
 
 namespace Mrk
 {
 	class Camera;
 
-	class CameraHouse : public Singleton<CameraHouse>
+	class CameraHut : public Singleton<CameraHut>
 	{
 	public:
 		const std::vector<std::weak_ptr<Camera>>& GetCameras()
@@ -21,31 +24,32 @@ namespace Mrk
 		std::vector<std::weak_ptr<Camera>> cameras;
 	};
 
-	class CameraScreenOutput
+	class CameraOutput : public Component
 	{
+		MRK_COMPONENT(CameraOutput) MRK_COMPONENT_UNREMOVABLE
 	public:
-		glm::i32vec2 GetResolution()
-		{
-			return resolution;
-		}
-		void SetResolution(glm::i32vec2 resolution)
-		{
-			this->resolution = resolution;
-			//TODO : Resize
-		}
+		void Start();
+		const Vector2i& GetResolution();
+		void SetResolution(const Vector2i& resolution);
 
 		//void ToRu(const std::vector<RenderItem>& items, const std::vector<Light> lights);
 	private:
-		glm::i32vec2 resolution;
-		glm::i32vec2 outputPos;
-		//TODO : add framebuffer
+		void ReSize(const Vector2i& newSize);
+	private:
+		Vector2i resolution;
+		Vector2i outputPos = { 0, 0 };
+
+		std::array<GLuint, 2> idTextures;
+		std::array<GLuint, 2> backBuffers;
+		std::array<GLuint, 2> backBufferTextures;
+		std::array<GLuint, 2> depthBufferTextures;
 	};
 
 	class Camera : public GameObject
 	{
 		MRK_GAMEOBJECT(Camera)
 	public:
-		CameraScreenOutput output;
+		virtual void Init() override;
 	};
 }
 

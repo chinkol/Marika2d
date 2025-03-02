@@ -224,3 +224,17 @@ namespace Mrk
 		.property("count", &SubMesh::count);
 		);
 }
+
+#include "Core/Camera/Camera.h"
+
+namespace Mrk
+{
+	MRK_CORE_REFLECT_REGISTER(Camera)(
+		rttr::registration::class_<Camera>("Camera");
+		);
+
+	MRK_CORE_REFLECT_REGISTER(CameraOutput)(
+		rttr::registration::class_<CameraOutput>("Vertex")
+		.property("resolution", &CameraOutput::GetResolution, &CameraOutput::SetResolution);
+		);
+}

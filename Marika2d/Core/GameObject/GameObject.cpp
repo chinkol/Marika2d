@@ -9,6 +9,7 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_v
 	assert(ret != Instance().creators.end());
 	auto obj = ret->second();
 	obj->AddComponent<Transform>();
+	obj->Init();
 	return obj;
 }
 
@@ -134,6 +135,10 @@ void Mrk::GameObject::AddChild(std::shared_ptr<GameObject> child)
 void Mrk::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
 {
 	children.erase(std::find(children.begin(), children.end(), child));
+}
+
+void Mrk::GameObject::Init()
+{
 }
 
 void Mrk::GameObject::DeserializeGameObject(const Json::Value& json)
