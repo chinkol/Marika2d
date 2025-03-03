@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 
 #include "Common/Singleton/Singleton.h"
 #include "Common/Def/UtilityDef.h"
@@ -37,6 +37,7 @@ static inline x* instance = nullptr;
 namespace Mrk
 {
 	class IPlugin;
+	class GameObject;
 
 	class PluginSystem : public Singleton<PluginSystem>
 	{
@@ -70,7 +71,7 @@ namespace Mrk
 	private:
 		virtual void Init() override;
 		virtual void Update();
-		
+
 	private:
 		ImGui::FileBrowser fileDlg;
 		ImGui::FileBrowser saveDlg;
@@ -78,9 +79,9 @@ namespace Mrk
 		std::filesystem::path toPath;
 	};
 
-	class PluginCreateProject : public IPlugin
+	class PluginProjectCreator : public IPlugin
 	{
-		MRK_PLUGIN(PluginCreateProject)
+		MRK_PLUGIN(PluginProjectCreator)
 	public:
 		void SelectFile();
 	private:
@@ -92,6 +93,42 @@ namespace Mrk
 		std::filesystem::path projectPath;
 		std::string empty = std::string("", 64);
 		std::string projectName = empty;
+	};
+
+	class PluginObjectSelecter : public IPlugin
+	{
+		MRK_PLUGIN(PluginObjectSelecter)
+	public:
+		std::shared_ptr<GameObject> GetSelection();
+		void SetSelection(std::shared_ptr<GameObject> selection);
+		void PickSelectionFromViewport() {};
+	private:
+		std::weak_ptr<GameObject> selection;
+	};
+
+	class PluginSceneLoader : public IPlugin
+	{
+		MRK_PLUGIN(PluginSceneLoader)
+	public:
+
+	private:
+		ImGui::FileBrowser pathSelectDlg;
+	};
+
+	class PluginSceneTreeUI : public IPlugin
+	{
+		MRK_PLUGIN(PluginSceneTreeUI)
+	public:
+		virtual void Draw() override;
+	private:
+		void CreateTreeNode(std::shared_ptr<GameObject> node);
+	};
+
+	class PluginViewportUI : public IPlugin
+	{
+		MRK_PLUGIN(PluginViewportUI)
+	public:
+		virtual void Draw() override;
 	};
 
 	// ±‡º≠∆˜≈‰÷√
@@ -145,5 +182,3 @@ namespace Mrk
 			});
 	}
 }
-
-

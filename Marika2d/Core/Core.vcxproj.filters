@@ -33,7 +33,7 @@
     <ClCompile Include="Mesh\Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ID\IDCreater.cpp">
+    <ClCompile Include="IDGenerater\IDGenerater.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Render\Render.cpp">
@@ -92,7 +92,7 @@
     <ClInclude Include="Mesh\Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ID\IDCreater.h">
+    <ClInclude Include="IDGenerater\IDGenerater.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Render\Render.h">

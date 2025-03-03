@@ -67,19 +67,38 @@ void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, idtexture, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		//mtr
+		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glDrawBuffers(2, attachments);
+
 		//check
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
 			throw; //framebuffer error
 		}
 
-		//mtr
-		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		glDrawBuffers(2, attachments);
+		// 完成后解绑
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
 void Mrk::Camera::Init()
 {
 	AddComponent(ComponentFactory::CreateNew<CameraOutput>());
+
+	CameraHut::AddCamera(std::dynamic_pointer_cast<Camera>(shared_from_this()));
+}
+
+const std::vector<std::weak_ptr<Mrk::Camera>>& Mrk::CameraHut::GetCameras()
+{
+	return Instance().cameras;
+}
+
+void Mrk::CameraHut::AddCamera(std::weak_ptr<Camera> camera)
+{
+	if (!camera.expired())
+	{
+		Instance().cameras.push_back(camera);
+		Instance().mainCamera = camera.lock();
+	}
 }

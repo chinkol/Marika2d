@@ -1,4 +1,4 @@
-#include "IDCreater.h"
+#include "IDGenerater.h"
 
 Mrk::ID Mrk::IDGenerater::Generate()
 {

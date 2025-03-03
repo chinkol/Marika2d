@@ -1,13 +1,15 @@
 #include "GameObject.h"
 
 #include "Core/Component/Component.h"
-#include "Core/ID/IDCreater.h"
+#include "Core/IDGenerater/IDGenerater.h"
 
 std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_view classname)
 {
 	auto ret = Instance().creators.find(classname.data());
 	assert(ret != Instance().creators.end());
 	auto obj = ret->second();
+	GameObjectHut::AddObject(obj);
+	obj->SetName(obj->GetClassTypeName().data());
 	obj->AddComponent<Transform>();
 	obj->Init();
 	return obj;
@@ -230,4 +232,24 @@ Json::Value Mrk::GameObject::SerializeChildren(Mrk::JsonAllocator& alloctor)
 		jarr.PushBack(child->ToJson(alloctor), alloctor);
 	}
 	return jarr;
+}
+
+std::shared_ptr<Mrk::GameObject> Mrk::GameObjectHut::GetObejct(uint64_t id)
+{
+	auto ret = Instance().objects.find(id);
+	if (ret != Instance().objects.end())
+	{
+		if (!ret->second.expired())
+		{
+			return ret->second.lock();
+		}
+	}return std::shared_ptr<GameObject>();
+}
+
+void Mrk::GameObjectHut::AddObject(std::shared_ptr<GameObject> gameObject)
+{
+	if (!Instance().objects.try_emplace(gameObject->GetID().total64, gameObject).second)
+	{
+		throw;
+	}
 }

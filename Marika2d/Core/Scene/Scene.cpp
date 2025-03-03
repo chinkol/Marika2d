@@ -2,6 +2,11 @@
 
 #include "Core/GameObject/GameObject.h"
 
+std::shared_ptr<Mrk::GameObject> Mrk::Scene::GetRoot()
+{
+	return root;
+}
+
 Mrk::Scene::Scene(std::string_view sceneName, float size) :
 	name(sceneName),
 	octTree(size, size, size)
@@ -128,7 +133,7 @@ Mrk::OctLeaf::OctLeaf(const OctNodeBordor& border, size_t index, OctNode* parent
 
 }
 
-bool Mrk::OctLeaf::IsLeaf() 
+bool Mrk::OctLeaf::IsLeaf()
 {
 	return true;
 }
@@ -156,12 +161,12 @@ void Mrk::OctTree::Insert(const OctElem& elem)
 	root.Insert(elem);
 }
 
-std::shared_ptr<Mrk::Scene> Mrk::SceneSystem::GetCurrScene()
+std::shared_ptr<Mrk::Scene> Mrk::SceneHut::GetCurrScene()
 {
 	return Instance().currScene;
 }
 
-void Mrk::SceneSystem::ChangeScene(std::string name)
+void Mrk::SceneHut::ChangeScene(std::string name)
 {
 	auto ret = Instance().scenes.find(name.data());
 	if (ret != Instance().scenes.end())
@@ -174,27 +179,22 @@ void Mrk::SceneSystem::ChangeScene(std::string name)
 	}
 }
 
-void Mrk::SceneSystem::CreateNewScene(std::string_view sceneName, float size)
+void Mrk::SceneHut::CreateNew(std::string_view sceneName, float size)
 {
-	auto ret = Instance().scenes.try_emplace(sceneName.data(), nullptr);
-	if (ret.second)
-	{
+	Instance().currScene = Instance().scenes.try_emplace(sceneName.data(), [sceneName, size]() {
 		auto newScene = std::shared_ptr<Scene>(new Scene(sceneName, size));
-		ret.first->second = newScene;
-		Instance().currScene = newScene;
-	}
-	else
-	{
-		throw; // log : repeat!
-	}
+		newScene->root = GameObjectFactory::CreateNew<GameObject>();
+		newScene->root->SetName(sceneName.data());
+		return newScene;
+		}()).first->second;
 }
 
-void Mrk::SceneSystem::LoadSceneFromFile(std::string_view fileName)
+void Mrk::SceneHut::FromFile(std::string_view fileName)
 {
 	//TODO:
 }
 
-void Mrk::SceneSystem::SaveSceneToFile(std::string_view fileName)
+void Mrk::SceneHut::ToFile(std::string_view fileName)
 {
 	//TODO:
 }

@@ -2,6 +2,9 @@
 
 #include "Editor/Asset/AssetSys.h"
 
+#include "Core/Scene/Scene.h"
+#include "Core/GameObject/GameObject.h"
+
 void Mrk::PluginSystem::Init()
 {
 	Instance().plugins.clear();
@@ -111,4 +114,68 @@ void Mrk::PluginCreateProject::Update()
 		}
 		ImGui::EndPopup();
 	}
+}
+
+void Mrk::PluginSceneTreeUI::Draw()
+{
+	ImGui::Begin("SceneTree");
+
+	if (auto mainScene = SceneHut::GetCurrScene())
+	{
+		CreateTreeNode(mainScene->GetRoot());
+	};
+
+
+	ImGui::End();
+}
+
+void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
+{
+	if (node)
+	{
+		ImGui::PushID(node->GetID().total64);
+		if (ImGui::TreeNode(node->GetName().c_str()))
+		{
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				PluginObjectSelecter::GetInstance()->SetSelection(node);
+			}
+			for (auto& child : node->GetChildren())
+			{
+				CreateTreeNode(child);
+			}
+			ImGui::TreePop();
+		}
+		else
+		{
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				PluginObjectSelecter::GetInstance()->SetSelection(node);
+			}
+		}
+		ImGui::PopID();
+	}
+}
+
+std::shared_ptr<Mrk::GameObject> Mrk::PluginObjectSelecter::GetSelection()
+{
+	if (!selection.expired())
+	{
+		return selection.lock();
+	}
+	return std::shared_ptr<GameObject>();
+}
+
+void Mrk::PluginObjectSelecter::SetSelection(std::shared_ptr<GameObject> selection)
+{
+	if (selection)
+	{
+		this->selection = selection;
+	}
+}
+
+void Mrk::PluginViewportUI::Draw()
+{
+	ImGui::Begin("Viewport");
+	ImGui::End();
 }

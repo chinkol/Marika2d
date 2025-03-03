@@ -8,6 +8,7 @@
 #include "Core/OpenGL/OpenGL.h"
 
 #include <array>
+#include <vector>
 
 namespace Mrk
 {
@@ -15,12 +16,13 @@ namespace Mrk
 
 	class CameraHut : public Singleton<CameraHut>
 	{
+		friend class Camera;
 	public:
-		const std::vector<std::weak_ptr<Camera>>& GetCameras()
-		{
-
-		}
+		static const std::vector<std::weak_ptr<Camera>>& GetCameras();
 	private:
+		static void AddCamera(std::weak_ptr<Camera> camera);
+	private:
+		std::weak_ptr<Camera> mainCamera;
 		std::vector<std::weak_ptr<Camera>> cameras;
 	};
 
@@ -52,4 +54,3 @@ namespace Mrk
 		virtual void Init() override;
 	};
 }
-

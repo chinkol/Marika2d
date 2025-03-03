@@ -39,27 +39,6 @@ void EditorLoopTest()
 
 	ImGui::DockSpaceOverViewport();
 
-	//viewport
-	ImGui::Begin("main viewport");
-	ImGui::Image((ImTextureID)tex1, ImGui::GetWindowSize());
-	ImGui::End();
-
-	ImGui::Begin("edit viewport");
-	ImGui::Image((ImTextureID)tex2, ImGui::GetWindowSize());
-	ImGui::End();
-
-	ImGui::Begin("debug logger");
-	ImGui::End();
-
-	ImGui::Begin("component watcher");
-	ImGui::End();
-
-	ImGui::Begin("project manager");
-	ImGui::End();
-
-	ImGui::Begin("scene tree");
-	ImGui::End();
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -103,6 +82,11 @@ void EditorLoopTest()
 
 		if (ImGui::BeginMenu("New"))
 		{
+			if (ImGui::MenuItem("Scene"))
+			{
+				Mrk::SceneHut::CreateNew("Scene", 10000);
+			}
+
 			if (ImGui::BeginMenu("GameObject"))
 			{
 				auto& manifest = Mrk::GameObjectFactory::GetManifest();
@@ -111,10 +95,19 @@ void EditorLoopTest()
 					if (ImGui::MenuItem(item.c_str()))
 					{
 						auto obj = Mrk::GameObjectFactory::CreateNew(item);
+						if (auto selection = Mrk::PluginObjectSelecter::GetInstance()->GetSelection())
+						{
+							selection->AddChild(obj);
+						}
+						else if (auto sceneRoot = Mrk::SceneHut::GetCurrScene()->GetRoot())
+						{
+							sceneRoot->AddChild(obj);
+						}
 					}
 				}
 				ImGui::EndMenu();
 			}
+
 			ImGui::EndMenu();
 		}
 
@@ -131,7 +124,7 @@ void ConfigSysTest()
 }
 int main()
 {
-	//Init
+	// App Init
 	{
 		Mrk::GenCoreReflectInfo();
 		Mrk::GenEditorReflectInfo();

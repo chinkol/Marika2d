@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/ID/IDCreater.h"
+#include "Core/IDGenerater/IDGenerater.h"
 #include "Core/Object/Object.h"
 #include "Core/Reflect/Reflect.h"
 
@@ -8,6 +8,8 @@
 #include "Common/Memory/MemCtrlSystem.h"
 
 #include <map>
+#include <unordered_map>
+#include <stack>
 
 #ifndef MRK_GAMEOBJECT_CONTENT
 #define MRK_GAMEOBJECT_CONTENT(x)																										\
@@ -38,6 +40,18 @@ namespace Mrk
 	class GameObject;
 	class Component;
 	class Transform;
+
+	class GameObjectHut : public Singleton<GameObjectHut>
+	{
+		MRK_SINGLETON(GameObjectHut)
+		friend class GameObjectFactory;
+	public:
+		static std::shared_ptr<GameObject> GetObejct(uint64_t id);
+	private:
+		static void AddObject(std::shared_ptr<GameObject> gameObject);
+	private:
+		std::unordered_map<uint64_t, std::weak_ptr<GameObject>> objects;
+	};
 
 	class GameObjectFactory : public Singleton<GameObjectFactory>
 	{
@@ -179,6 +193,9 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<GameObject, T>, "T Is Not A GameObject !");
 		auto obj = Mrk::MemCtrlSystem::CreateNew<T>();
+		GameObjectHut::AddObject(obj);
+		static std::string name = T::StaticGetClassTypeName().data();
+		obj->SetName(name);
 		obj->AddComponent<Transform>();
 		obj->Init();
 		return obj;

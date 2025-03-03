@@ -88,7 +88,9 @@ namespace Mrk
 
 	class Scene
 	{
-		friend class SceneSystem;
+		friend class SceneHut;
+	public:
+		std::shared_ptr<GameObject> GetRoot();
 	private:
 		Scene(std::string_view sceneName, float size);
 	private:
@@ -97,17 +99,17 @@ namespace Mrk
 		OctTree octTree;
 	};
 
-	class SceneSystem : Singleton<SceneSystem>
+	class SceneHut : Singleton<SceneHut>
 	{
-		MRK_SINGLETON(SceneSystem)
+		MRK_SINGLETON(SceneHut)
 	public:
 		static std::shared_ptr<Scene> GetCurrScene();
 		static void ChangeScene(std::string name);
-		static void CreateNewScene(std::string_view sceneName, float size);
-		static void LoadSceneFromFile(std::string_view fileName);
-		static void SaveSceneToFile(std::string_view fileName);
+		static void CreateNew(std::string_view sceneName, float size);
+		static void FromFile(std::string_view fileName);
+		static void ToFile(std::string_view fileName);
 	private:
-		SceneSystem() = default;
+		SceneHut() = default;
 		std::shared_ptr<Scene> currScene;
 		std::map<std::string, std::shared_ptr<Scene>> scenes;
 	};
