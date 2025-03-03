@@ -15,7 +15,7 @@
 
 #ifndef MRK_PLUGIN
 #define MRK_PLUGIN(x)												\
-friend class PluginSystem;											\
+friend class PluginSys;												\
 public:																\
 static inline x* GetInstance() {									\
 	return instance;												\
@@ -28,7 +28,7 @@ virtual inline std::string_view GetPluginName() override {			\
 	return #x;														\
 }																	\
 static inline bool _mrk_macro_##x##_editor_plugin_register_ = [](){	\
-	Mrk::PluginSystem::RegisterPlugin<x>();							\
+	Mrk::PluginSys::RegisterPlugin<x>();							\
 	return true;													\
 }();																\
 static inline x* instance = nullptr;
@@ -39,9 +39,9 @@ namespace Mrk
 	class IPlugin;
 	class GameObject;
 
-	class PluginSystem : public Singleton<PluginSystem>
+	class PluginSys : public Singleton<PluginSys>
 	{
-		MRK_SINGLETON(PluginSystem)
+		MRK_SINGLETON(PluginSys)
 	public:
 		template<typename T> static void RegisterPlugin();
 		static void Init();
@@ -79,9 +79,9 @@ namespace Mrk
 		std::filesystem::path toPath;
 	};
 
-	class PluginProjectCreator : public IPlugin
+	class PluginProjectCreater : public IPlugin
 	{
-		MRK_PLUGIN(PluginProjectCreator)
+		MRK_PLUGIN(PluginProjectCreater)
 	public:
 		void SelectFile();
 	private:
@@ -110,7 +110,10 @@ namespace Mrk
 	{
 		MRK_PLUGIN(PluginSceneLoader)
 	public:
-
+		void SelectFile();
+	private:
+		virtual void Init() override;
+		virtual void Update() override;
 	private:
 		ImGui::FileBrowser pathSelectDlg;
 	};
@@ -174,7 +177,7 @@ namespace Mrk
 namespace Mrk
 {
 	template<typename T>
-	inline void PluginSystem::RegisterPlugin()
+	inline void PluginSys::RegisterPlugin()
 	{
 		static_assert(std::is_base_of_v<IPlugin, T>, "T Is Not A Plugin");
 		Instance().creators.push_back([]() {

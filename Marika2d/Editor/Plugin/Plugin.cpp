@@ -5,7 +5,7 @@
 #include "Core/Scene/Scene.h"
 #include "Core/GameObject/GameObject.h"
 
-void Mrk::PluginSystem::Init()
+void Mrk::PluginSys::Init()
 {
 	Instance().plugins.clear();
 	for (auto& creator : Instance().creators)
@@ -16,7 +16,7 @@ void Mrk::PluginSystem::Init()
 	}
 }
 
-void Mrk::PluginSystem::Update()
+void Mrk::PluginSys::Update()
 {
 	for (auto& plugin : Instance().plugins)
 	{
@@ -24,7 +24,7 @@ void Mrk::PluginSystem::Update()
 	}
 }
 
-void Mrk::PluginSystem::Draw()
+void Mrk::PluginSys::Draw()
 {
 	for (auto& plugin : Instance().plugins)
 	{
@@ -75,24 +75,24 @@ void Mrk::PluginAssetImport::Update()
 	}
 }
 
-void Mrk::PluginCreateProject::SelectFile()
+void Mrk::PluginProjectCreater::SelectFile()
 {
 	pathSelectDlg.Open();
 }
 
-void Mrk::PluginCreateProject::CreateNewProj(const std::filesystem::path& path)
+void Mrk::PluginProjectCreater::CreateNewProj(const std::filesystem::path& path)
 {
 	std::filesystem::create_directory(path);
 	//TODO
 }
 
-void Mrk::PluginCreateProject::Init()
+void Mrk::PluginProjectCreater::Init()
 {
 	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory);
 	pathSelectDlg.SetTitle("Create Project");
 }
 
-void Mrk::PluginCreateProject::Update()
+void Mrk::PluginProjectCreater::Update()
 {
 	pathSelectDlg.Display();
 	if (pathSelectDlg.HasSelected())
@@ -178,4 +178,28 @@ void Mrk::PluginViewportUI::Draw()
 {
 	ImGui::Begin("Viewport");
 	ImGui::End();
+}
+
+void Mrk::PluginSceneLoader::SelectFile()
+{
+	pathSelectDlg.Open();
+}
+
+void Mrk::PluginSceneLoader::Init()
+{
+	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_ConfirmOnEnter);
+	pathSelectDlg.SetTitle("Create Project");
+}
+
+void Mrk::PluginSceneLoader::Update()
+{
+	pathSelectDlg.Display();
+	if (pathSelectDlg.HasSelected())
+	{
+		auto path = pathSelectDlg.GetSelected();
+		if (std::filesystem::exists(path) && path.extension() == "msce");
+		{
+
+		}
+	}
 }

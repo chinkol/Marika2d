@@ -45,7 +45,7 @@ void EditorLoopTest()
 		{
 			if (ImGui::MenuItem("Create"))
 			{
-				Mrk::PluginCreateProject::GetInstance()->SelectFile();
+				Mrk::PluginProjectCreater::GetInstance()->SelectFile();
 			}
 			if (ImGui::MenuItem("Open"))
 			{
@@ -80,11 +80,26 @@ void EditorLoopTest()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("New"))
+		if (ImGui::BeginMenu("Scene"))
 		{
-			if (ImGui::MenuItem("Scene"))
+			if (ImGui::MenuItem("Load(.msce)"))
+			{
+				Mrk::PluginSceneLoader::GetInstance()->SelectFile();
+			}
+
+			if (ImGui::MenuItem("New"))
 			{
 				Mrk::SceneHut::CreateNew("Scene", 10000);
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("GameObject"))
+		{
+			if (ImGui::MenuItem("Load(.mpre)"))
+			{
+
 			}
 
 			if (ImGui::BeginMenu("GameObject"))
@@ -141,7 +156,7 @@ int main()
 	auto context = Mrk::Application::GetAppContext();
 
 	context.appInitedCallBack = []() {
-		Mrk::PluginSystem::Init();
+		Mrk::PluginSys::Init();
 
 		AssetTest();
 		MeshTest();
@@ -156,7 +171,7 @@ int main()
 
 		}
 
-		Mrk::PluginSystem::Update();
+		Mrk::PluginSys::Update();
 
 		{
 
@@ -165,7 +180,7 @@ int main()
 		};
 
 	context.drawCallBack = []() {
-		Mrk::PluginSystem::Draw();
+		Mrk::PluginSys::Draw();
 		};
 
 	Mrk::Application::SetAppContext(context);
