@@ -87,6 +87,11 @@ void EditorLoopTest()
 				Mrk::PluginSceneLoader::GetInstance()->SelectFile();
 			}
 
+			if (ImGui::MenuItem("Save(.msce)"))
+			{
+				Mrk::PluginSceneSaver::GetInstance()->SelectFile();
+			}
+
 			if (ImGui::MenuItem("New"))
 			{
 				Mrk::SceneHut::CreateNew("Scene", 10000);
@@ -114,9 +119,9 @@ void EditorLoopTest()
 						{
 							selection->AddChild(obj);
 						}
-						else if (auto sceneRoot = Mrk::SceneHut::GetCurrScene()->GetRoot())
+						else if (auto scene = Mrk::SceneHut::GetCurrScene())
 						{
-							sceneRoot->AddChild(obj);
+							scene->GetRoot()->AddChild(obj);
 						}
 					}
 				}
@@ -147,16 +152,12 @@ int main()
 		Mrk::ConfigSys::Init();
 	}
 
-	std::shared_ptr<Mrk::GameObject> recive;
-	MrkTest::Test(recive);
-
-	ConfigSysTest();
-	//RttrTestFunc();
-
 	auto context = Mrk::Application::GetAppContext();
-
 	context.appInitedCallBack = []() {
 		Mrk::PluginSys::Init();
+
+		std::shared_ptr<Mrk::GameObject> recive;
+		MrkTest::Test(recive);
 
 		AssetTest();
 		MeshTest();

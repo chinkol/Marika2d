@@ -1,8 +1,24 @@
 #include "Camera.h"
 
+Mrk::CameraOutput::~CameraOutput()
+{
+	for (size_t i = 0; i < 2; i++)
+	{
+		glDeleteFramebuffers(1, &backBuffers[i]);
+		glDeleteTextures(1, &backBufferTextures[i]);
+		glDeleteTextures(1, &depthBufferTextures[i]);
+		glDeleteTextures(1, &idTextures[i]);
+	}
+}
+
 void Mrk::CameraOutput::Start()
 {
 	ReSize(resolution);
+}
+
+void Mrk::CameraOutput::PreDraw()
+{
+	currBackBufferIndex = (currBackBufferIndex + 1) % 2;
 }
 
 const Mrk::Vector2i& Mrk::CameraOutput::GetResolution()
@@ -14,6 +30,26 @@ void Mrk::CameraOutput::SetResolution(const Vector2i& resolution)
 {
 	this->resolution = resolution;
 	//TODO : Resize
+}
+
+GLuint Mrk::CameraOutput::GetBackBuffer()
+{
+	return backBufferTextures[currBackBufferIndex];
+}
+
+GLuint Mrk::CameraOutput::GetIdTexture()
+{
+	return idTextures[currBackBufferIndex];
+}
+
+GLuint Mrk::CameraOutput::GetBackBuffertexture()
+{
+	return backBufferTextures[currBackBufferIndex];
+}
+
+GLuint Mrk::CameraOutput::GetDepthBuffertexture()
+{
+	return depthBufferTextures[currBackBufferIndex];
 }
 
 void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
@@ -89,16 +125,31 @@ void Mrk::Camera::Init()
 	CameraHut::AddCamera(std::dynamic_pointer_cast<Camera>(shared_from_this()));
 }
 
+std::shared_ptr<Mrk::Camera> Mrk::CameraHut::GetMainCamera()
+{
+	MRK_INSTANCE_REF;
+
+	if (!instance.mainCamera.expired())
+	{
+		return instance.mainCamera.lock();
+	}
+	return std::shared_ptr<Mrk::Camera>();
+}
+
 const std::vector<std::weak_ptr<Mrk::Camera>>& Mrk::CameraHut::GetCameras()
 {
-	return Instance().cameras;
+	MRK_INSTANCE_REF;
+
+	return instance.cameras;
 }
 
 void Mrk::CameraHut::AddCamera(std::weak_ptr<Camera> camera)
 {
+	MRK_INSTANCE_REF;
+
 	if (!camera.expired())
 	{
-		Instance().cameras.push_back(camera);
-		Instance().mainCamera = camera.lock();
+		instance.cameras.push_back(camera);
+		instance.mainCamera = camera.lock();
 	}
 }

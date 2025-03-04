@@ -41,11 +41,11 @@ namespace Mrk
 	{
 		MRK_SINGLETON(RenderSys)
 	public:
-		void Draw();
-		void Commit(RenderLayer renderLayer, const ObjectRenderParam& renderParam);
+		static void Draw();
+		static void Commit(RenderLayer renderLayer, const ObjectRenderParam& renderParam);
+	private:
+		static void DrawLayer(const std::vector<ObjectRenderParam>& renderParams);
 	private:
 		std::array<std::vector<ObjectRenderParam>, 4> renderables;
 	};
 }
-
-

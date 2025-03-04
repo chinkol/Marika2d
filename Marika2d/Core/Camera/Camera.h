@@ -18,6 +18,7 @@ namespace Mrk
 	{
 		friend class Camera;
 	public:
+		static std::shared_ptr<Camera> GetMainCamera();
 		static const std::vector<std::weak_ptr<Camera>>& GetCameras();
 	private:
 		static void AddCamera(std::weak_ptr<Camera> camera);
@@ -30,9 +31,17 @@ namespace Mrk
 	{
 		MRK_COMPONENT(CameraOutput) MRK_COMPONENT_UNREMOVABLE
 	public:
+		~CameraOutput();
+
 		void Start();
+		void PreDraw();
 		const Vector2i& GetResolution();
 		void SetResolution(const Vector2i& resolution);
+
+		GLuint GetBackBuffer();
+		GLuint GetIdTexture();
+		GLuint GetBackBuffertexture();
+		GLuint GetDepthBuffertexture();
 
 		//void ToRu(const std::vector<RenderItem>& items, const std::vector<Light> lights);
 	private:
@@ -41,8 +50,9 @@ namespace Mrk
 		Vector2i resolution;
 		Vector2i outputPos = { 0, 0 };
 
-		std::array<GLuint, 2> idTextures;
+		int currBackBufferIndex = 0;
 		std::array<GLuint, 2> backBuffers;
+		std::array<GLuint, 2> idTextures;
 		std::array<GLuint, 2> backBufferTextures;
 		std::array<GLuint, 2> depthBufferTextures;
 	};

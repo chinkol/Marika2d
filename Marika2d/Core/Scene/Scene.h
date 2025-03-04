@@ -91,6 +91,8 @@ namespace Mrk
 		friend class SceneHut;
 	public:
 		std::shared_ptr<GameObject> GetRoot();
+		void FromFile(std::string_view filename);
+		void ToFile(std::string_view filename);
 	private:
 		Scene(std::string_view sceneName, float size);
 	private:
@@ -107,7 +109,7 @@ namespace Mrk
 		static void ChangeScene(std::string name);
 		static void CreateNew(std::string_view sceneName, float size);
 		static void FromFile(std::string_view fileName);
-		static void ToFile(std::string_view fileName);
+		static void ToFile(std::string_view fileDir);
 	private:
 		SceneHut() = default;
 		std::shared_ptr<Scene> currScene;

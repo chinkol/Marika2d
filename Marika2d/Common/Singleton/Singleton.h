@@ -4,6 +4,11 @@
 #define MRK_SINGLETON(x) friend class Mrk::Singleton<x>;
 #endif // !MRK_SINGLETON
 
+#ifndef MRK_INSTANCE_REF
+#define MRK_INSTANCE_REF auto& instance = Instance()
+#endif // !MRK_INSTANCE_REF
+
+
 namespace Mrk
 {
     template<typename T>

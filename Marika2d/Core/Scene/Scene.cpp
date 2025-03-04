@@ -2,9 +2,68 @@
 
 #include "Core/GameObject/GameObject.h"
 
+#include <filesystem>
+#include <fstream>
+
+#ifndef MRK_SCENE_EXTENSION
+#define MRK_SCENE_EXTENSION ".msce"
+#endif // !MRK_SCENE_EXTENSION
+
+
 std::shared_ptr<Mrk::GameObject> Mrk::Scene::GetRoot()
 {
 	return root;
+}
+
+void Mrk::Scene::FromFile(std::string_view filename)
+{
+	std::filesystem::path fromPath = filename.data();
+	if (std::filesystem::exists(fromPath) && fromPath.extension() == MRK_SCENE_EXTENSION)
+	{
+		std::ifstream ifstream(fromPath);
+		if (ifstream.is_open())
+		{
+			std::string content;
+			char ch;
+			while (ifstream.get(ch))
+			{
+				content += ch;
+			}
+			ifstream.close();
+
+			Json::Document jdoc;
+			jdoc.Parse(content); if (!jdoc.HasParseError())
+			{
+				root->FromJson(jdoc);
+			}
+		}
+	}
+}
+
+void Mrk::Scene::ToFile(std::string_view filename)
+{
+	std::filesystem::path toPath = filename.data();
+	if (toPath.extension() == MRK_SCENE_EXTENSION)
+	{
+		if (!std::filesystem::exists(toPath.parent_path()))
+		{
+			std::filesystem::create_directories(toPath.parent_path());
+		}
+
+		std::ofstream ofstream(toPath);
+		if (ofstream.is_open())
+		{
+			Json::StringBuffer buf;
+			Json::PrettyWriter writer(buf);
+
+			Json::Document jdoc;
+			auto json = root->ToJson(jdoc.GetAllocator());
+			json.Accept(writer);
+
+			ofstream << buf.GetString() << std::endl;
+			ofstream.close();
+		}
+	}
 }
 
 Mrk::Scene::Scene(std::string_view sceneName, float size) :
@@ -191,10 +250,14 @@ void Mrk::SceneHut::CreateNew(std::string_view sceneName, float size)
 
 void Mrk::SceneHut::FromFile(std::string_view fileName)
 {
-	//TODO:
+	auto scene = std::shared_ptr<Scene>(new Scene("Scene", 1000));
+	scene->root = GameObjectFactory::CreateNew<GameObject>();
+	scene->root->SetName("Scene");
+	scene->FromFile(fileName);
+	Instance().currScene = scene;
 }
 
 void Mrk::SceneHut::ToFile(std::string_view fileName)
 {
-	//TODO:
+	Instance().currScene->ToFile(fileName);
 }

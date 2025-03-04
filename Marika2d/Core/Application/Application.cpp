@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Core/Component/Component.h"
+#include "Core/Render/Render.h"
 
 Mrk::Window::Window(int width, int height, std::string_view title) :
     width(width),
@@ -25,7 +26,7 @@ void Mrk::Window::Run(const std::function<void()>& externCallBack)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         externCallBack();
-      
+
         // 交换缓冲区
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -108,7 +109,7 @@ void Mrk::Window::Cleanup()
     glfwTerminate();
 }
 
-Mrk::Application::Application() : 
+Mrk::Application::Application() :
     window(nullptr)
 {
 }
@@ -119,10 +120,10 @@ void Mrk::Application::Run()
     auto title = ConfigSys::GetConfigItem<std::string>("AppConfig", "title");
 
     Instance().window = new Window(size.x, size.y, title);
-    
+
     auto& context = Instance().context;
 
-    if (context.appInitedCallBack) 
+    if (context.appInitedCallBack)
         context.appInitedCallBack();
 
     Instance().window->Run([context]()
@@ -137,14 +138,15 @@ void Mrk::Application::Run()
             Mrk::ComponentHut::Invoke("LateUpdate");
             Mrk::ComponentHut::Invoke("FixedUpdate");    //TODO : 改定时
 
-            if (context.updateCallBack) 
+            if (context.updateCallBack)
                 context.updateCallBack();
 
             Mrk::ComponentHut::Invoke("PreDraw");
             Mrk::ComponentHut::Invoke("Draw");
+            Mrk::RenderSys::Draw();
             Mrk::ComponentHut::Invoke("LateDraw");
 
-            if (context.drawCallBack) 
+            if (context.drawCallBack)
                 context.drawCallBack();
 
             // 渲染 ImGui

@@ -118,6 +118,18 @@ namespace Mrk
 		ImGui::FileBrowser pathSelectDlg;
 	};
 
+	class PluginSceneSaver : public IPlugin
+	{
+		MRK_PLUGIN(PluginSceneSaver)
+	public:
+		void SelectFile();
+	private:
+		virtual void Init() override;
+		virtual void Update() override;
+	private:
+		ImGui::FileBrowser pathSelectDlg;
+	};
+
 	class PluginSceneTreeUI : public IPlugin
 	{
 		MRK_PLUGIN(PluginSceneTreeUI)
@@ -135,15 +147,10 @@ namespace Mrk
 	};
 
 	// ±‡º≠∆˜≈‰÷√
-	class PluginEdtorConfig : public IPlugin
+	class PluginEdtorConfigUI : public IPlugin
 	{
-		MRK_PLUGIN(PluginEdtorConfig)
+		MRK_PLUGIN(PluginEdtorConfigUI)
 	public:
-		void Show()
-		{
-			needShow = true;
-		}
-
 		virtual inline void Draw() override
 		{
 			if (needShow)

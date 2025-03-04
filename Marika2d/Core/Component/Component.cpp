@@ -33,19 +33,21 @@ bool Mrk::Component::IsRemovable()
 
 void Mrk::ComponentHut::Invoke(std::string_view loopBatchName)
 {
-	for (auto& start : Instance().unstarts)
+	MRK_INSTANCE_REF;
+
+	for (auto& start : instance.unstarts)
 	{
 		if (!start.Expired())
 		{
 			start.InvokeNotCheck();
 		}
 	}
-	Instance().unstarts.clear();
+	instance.unstarts.clear();
 
 	size_t validCount = 0;
 	size_t invalidCount = 0;
-	auto loopBatch = Instance().loopBatches.find(loopBatchName.data());
-	if (loopBatch != Instance().loopBatches.end())
+	auto loopBatch = instance.loopBatches.find(loopBatchName.data());
+	if (loopBatch != instance.loopBatches.end())
 	{
 		for (auto& typeBatch : loopBatch->second)
 		{

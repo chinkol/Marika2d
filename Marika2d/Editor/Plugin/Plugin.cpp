@@ -4,6 +4,9 @@
 
 #include "Core/Scene/Scene.h"
 #include "Core/GameObject/GameObject.h"
+#include "Core/Camera/Camera.h"
+
+#include "Third/imgui/imgui_internal.h"
 
 void Mrk::PluginSys::Init()
 {
@@ -133,7 +136,7 @@ void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
 {
 	if (node)
 	{
-		ImGui::PushID(node->GetID().total64);
+		ImGui::PushID(std::to_string(node->GetID().total64).c_str());
 		if (ImGui::TreeNode(node->GetName().c_str()))
 		{
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -177,6 +180,26 @@ void Mrk::PluginObjectSelecter::SetSelection(std::shared_ptr<GameObject> selecti
 void Mrk::PluginViewportUI::Draw()
 {
 	ImGui::Begin("Viewport");
+
+	auto wndSize = ImGui::GetContentRegionAvail();
+	auto wndPos = ImGui::GetCurrentWindow()->WorkRect.Min;
+
+	if (auto mainCamera = Mrk::CameraHut::GetMainCamera())
+	{
+		if (auto output = mainCamera->GetComponent<CameraOutput>())
+		{
+			auto& resolution = output->GetResolution();
+			if (resolution.x != wndSize.x || resolution.y != wndSize.y)
+			{
+				output->SetResolution({ wndSize.x , wndSize.y });
+			}
+
+			ImVec2 uv0 = ImVec2(0.0f, 1.0f);  // ×óÏÂ½Ç
+			ImVec2 uv1 = ImVec2(1.0f, 0.0f);  // ÓÒÉÏ½Ç
+			ImGui::Image((ImTextureID)(output->GetBackBuffertexture()), ImVec2(wndSize.x, wndSize.y), uv0, uv1);
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -187,8 +210,8 @@ void Mrk::PluginSceneLoader::SelectFile()
 
 void Mrk::PluginSceneLoader::Init()
 {
-	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_ConfirmOnEnter);
-	pathSelectDlg.SetTitle("Create Project");
+	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_ConfirmOnEnter, ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
+	pathSelectDlg.SetTitle("Load Scene");
 }
 
 void Mrk::PluginSceneLoader::Update()
@@ -197,9 +220,35 @@ void Mrk::PluginSceneLoader::Update()
 	if (pathSelectDlg.HasSelected())
 	{
 		auto path = pathSelectDlg.GetSelected();
-		if (std::filesystem::exists(path) && path.extension() == "msce");
+		if (std::filesystem::exists(path) && path.extension() == ".msce")
 		{
-
+			SceneHut::FromFile(path.string());
 		}
+		pathSelectDlg.ClearSelected();
+	}
+}
+
+void Mrk::PluginSceneSaver::SelectFile()
+{
+	pathSelectDlg.Open();
+}
+
+void Mrk::PluginSceneSaver::Init()
+{
+	pathSelectDlg = ImGui::FileBrowser(ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_ConfirmOnEnter | ImGuiFileBrowserFlags_EnterNewFilename, ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
+	pathSelectDlg.SetTitle("Load Scene");
+}
+
+void Mrk::PluginSceneSaver::Update()
+{
+	pathSelectDlg.Display();
+	if (pathSelectDlg.HasSelected())
+	{
+		auto path = pathSelectDlg.GetSelected();
+		if (path.extension() == ".msce")
+		{
+			SceneHut::ToFile(path.string());
+		}
+		pathSelectDlg.ClearSelected();
 	}
 }
