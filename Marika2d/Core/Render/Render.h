@@ -22,19 +22,19 @@ namespace Mrk
 		ForeGround = 3
 	};
 
-	struct SubRenderParam
+	struct SubRenderItem
 	{
 		Material material;
 		GLuint texture;
 		GLuint shaderProgram;
 	};
 
-	struct ObjectRenderParam
+	struct RenderItem
 	{
 		ID id;
 		Matrix4 world;
 		std::shared_ptr<Mesh> mesh;
-		std::vector<SubRenderParam> subRenderParams;
+		std::vector<SubRenderItem> subRenderParams;
 	};
 
 	class RenderSys : public Singleton<RenderSys>
@@ -42,10 +42,8 @@ namespace Mrk
 		MRK_SINGLETON(RenderSys)
 	public:
 		static void Draw();
-		static void Commit(RenderLayer renderLayer, const ObjectRenderParam& renderParam);
+		static void Commit(RenderLayer renderLayer, const RenderItem& renderParam);
 	private:
-		static void DrawLayer(const std::vector<ObjectRenderParam>& renderParams);
-	private:
-		std::array<std::vector<ObjectRenderParam>, 4> renderables;
+		std::array<std::vector<RenderItem>, 4> renderItems;
 	};
 }

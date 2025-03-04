@@ -52,6 +52,53 @@ GLuint Mrk::CameraOutput::GetDepthBuffertexture()
 	return depthBufferTextures[currBackBufferIndex];
 }
 
+void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& renderLayers)
+{
+	//bind backbuffer
+	auto backbuffer = backBuffers[currBackBufferIndex];
+	glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
+
+	//camera
+	//glUniform4fv(0, );
+	//glUniform4fv(1, );
+	//glUniform4fv(2, );
+
+	//light
+	//......
+
+	//clear
+	//gl->glEnable()
+	glViewport(0, 0, resolution.x, resolution.y);
+	glClearColor(190.0f * 0.9f / 255.0f, 237.0f * 0.9f / 255.0f, 199.0f * 0.9f / 255.0f, 1.0f);
+	GLuint clearColor[] = { 0, 0, 0, 0 };
+	glClearBufferuiv(GL_COLOR, 2, clearColor);
+	glClearBufferuiv(GL_COLOR, 1, clearColor);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//background
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_FALSE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	Shot(renderLayers[(int)RenderLayer::BackGround]);
+
+	//geometry
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	Shot(renderLayers[(int)RenderLayer::Geometry]);
+
+	//transparent
+	//......
+
+	//foreground
+	//......
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glFlush();
+}
+
 void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 {
 	resolution = { std::max(800, resolution.x), std::max(600, resolution.y) };
@@ -115,6 +162,14 @@ void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 
 		// 完成后解绑
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
+{ 
+	for (auto& item : renderItems)
+	{
+		
 	}
 }
 

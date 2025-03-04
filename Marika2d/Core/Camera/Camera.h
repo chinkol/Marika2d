@@ -6,6 +6,7 @@
 #include "Core/GameObject/GameObject.h"
 #include "Core/Math/Math.h"
 #include "Core/OpenGL/OpenGL.h"
+#include "Core/Render/Render.h"
 
 #include <array>
 #include <vector>
@@ -43,9 +44,10 @@ namespace Mrk
 		GLuint GetBackBuffertexture();
 		GLuint GetDepthBuffertexture();
 
-		//void ToRu(const std::vector<RenderItem>& items, const std::vector<Light> lights);
+		void Shot(const std::array<std::vector<RenderItem>, 4>& renderLayers);
 	private:
 		void ReSize(const Vector2i& newSize);
+		void Shot(const std::vector<RenderItem>& renderItems);
 	private:
 		Vector2i resolution;
 		Vector2i outputPos = { 0, 0 };
