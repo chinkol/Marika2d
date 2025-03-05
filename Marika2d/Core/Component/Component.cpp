@@ -4,21 +4,34 @@
 
 std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNew(std::string_view classname)
 {
-	auto ret = Instance().creators.find(classname.data());
-	assert(ret != Instance().creators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.creators.find(classname.data());
+	assert(ret != instance.creators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
 	return ret->second();
 }
 
 std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNewFromJson(std::string_view classname, const Json::Value& json)
 {
-	auto ret = Instance().fromJsonCreators.find(classname.data());
-	assert(ret != Instance().fromJsonCreators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.fromJsonCreators.find(classname.data());
+	assert(ret != instance.fromJsonCreators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
 	return ret->second(json);
 }
 
 const std::map<std::string, std::function<std::shared_ptr<Mrk::Component>()>>& Mrk::ComponentFactory::GetCreators()
 {
-	return Instance().creators;
+	MRK_INSTANCE_REF;
+
+	return instance.creators;
+}
+
+const std::vector<std::string>& Mrk::ComponentFactory::GetManifest()
+{
+	MRK_INSTANCE_REF;
+
+	return instance.manifest;
 }
 
 std::weak_ptr<Mrk::GameObject> Mrk::Component::GetHolder()
@@ -74,7 +87,9 @@ void Mrk::ComponentHut::Invoke(std::string_view loopBatchName)
 
 void Mrk::ComponentHut::Cleanup()
 {
-	for (auto& loopBatch : Instance().loopBatches)
+	MRK_INSTANCE_REF;
+
+	for (auto& loopBatch : instance.loopBatches)
 	{
 		auto& [_, typeBatch] = loopBatch;
 		for (auto& [_, callbacks] : typeBatch)

@@ -52,8 +52,10 @@ namespace Mrk
 		template<typename T> static std::shared_ptr<T> CreateNew();
 		template<typename T> static std::shared_ptr<T> CreateNewFromJson(const Json::Value& json);
 		static const std::map<std::string, std::function<std::shared_ptr<Component>()>>& GetCreators();
+		static const std::vector<std::string>& GetManifest();
 	private:
 		ComponentFactory() = default;
+		std::vector<std::string> manifest;
 		std::map<std::string, std::function<std::shared_ptr<Component>()>> creators;
 		std::map<std::string, std::function<std::shared_ptr<Component>(const Json::Value&)>> fromJsonCreators;
 	};
@@ -223,7 +225,9 @@ namespace Mrk
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T is not Component !");
 
-		Instance().creators.try_emplace(classname.data(), []() {
+		MRK_INSTANCE_REF;
+
+		instance.creators.try_emplace(classname.data(), []() {
 			auto com = Mrk::MemCtrlSystem::CreateNew<T>();
 
 			if constexpr (ComponentTrait<T>::hasInit)
@@ -235,7 +239,7 @@ namespace Mrk
 			return com;
 			});
 
-		Instance().fromJsonCreators.try_emplace(classname.data(), [](const Json::Value& jvalue) {
+		auto success = instance.fromJsonCreators.try_emplace(classname.data(), [](const Json::Value& jvalue) {
 			auto com = Mrk::MemCtrlSystem::CreateNew<T>();
 			com->FromJson(jvalue);
 
@@ -246,7 +250,12 @@ namespace Mrk
 
 			ComponentHut::AddComponent(com);
 			return com;
-			});
+			}).second;
+
+		if (success)
+		{
+			instance.manifest.push_back(classname.data());
+		}
 	}
 
 	template<typename T>

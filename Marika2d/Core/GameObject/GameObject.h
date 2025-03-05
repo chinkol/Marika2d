@@ -44,7 +44,7 @@ namespace Mrk
 	class GameObjectHut : public Singleton<GameObjectHut>
 	{
 		MRK_SINGLETON(GameObjectHut)
-		friend class GameObjectFactory;
+			friend class GameObjectFactory;
 	public:
 		static std::shared_ptr<GameObject> GetObejct(uint64_t id);
 	private:
@@ -83,6 +83,7 @@ namespace Mrk
 
 		std::shared_ptr<GameObject> GetParent();
 		const std::vector<std::shared_ptr<GameObject>>& GetChildren();
+		const std::map<std::string, std::shared_ptr<Component>>& GetComponents();
 
 		template<typename T> void AddComponent();
 		void AddComponent(std::string_view name);

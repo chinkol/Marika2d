@@ -17,12 +17,16 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_v
 
 const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& Mrk::GameObjectFactory::GetCreators()
 {
-	return Instance().creators;
+	MRK_INSTANCE_REF;
+
+	return instance.creators;
 }
 
 const std::vector<std::string>& Mrk::GameObjectFactory::GetManifest()
 {
-	return Instance().manifest;
+	MRK_INSTANCE_REF;
+
+	return instance.manifest;
 }
 
 Mrk::GameObject::GameObject() :
@@ -62,6 +66,11 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObject::GetParent()
 const std::vector<std::shared_ptr<Mrk::GameObject>>& Mrk::GameObject::GetChildren()
 {
 	return children;
+}
+
+const std::map<std::string, std::shared_ptr<Mrk::Component>>& Mrk::GameObject::GetComponents()
+{
+	return components;
 }
 
 void Mrk::GameObject::AddComponent(std::string_view name)

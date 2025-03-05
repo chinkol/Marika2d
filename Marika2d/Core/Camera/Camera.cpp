@@ -67,7 +67,6 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 	//......
 
 	//clear
-	//gl->glEnable()
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(190.0f * 0.9f / 255.0f, 237.0f * 0.9f / 255.0f, 199.0f * 0.9f / 255.0f, 1.0f);
 	GLuint clearColor[] = { 0, 0, 0, 0 };

@@ -203,7 +203,8 @@ namespace Mrk
 		rttr::registration::class_<AppConfig>("AppConfig")
 		.property("size", &AppConfig::size)
 		.property("title", &AppConfig::title)
-		.property("projDir", &AppConfig::projDir);
+		.property("projDir", &AppConfig::projDir)
+		.property("fontPath", &AppConfig::fontPath);
 		);
 }
 
@@ -234,7 +235,7 @@ namespace Mrk
 		);
 
 	MRK_CORE_REFLECT_REGISTER(CameraOutput)(
-		rttr::registration::class_<CameraOutput>("Vertex")
+		rttr::registration::class_<CameraOutput>("CameraOutput")
 		.property("resolution", &CameraOutput::GetResolution, &CameraOutput::SetResolution);
 		);
 }

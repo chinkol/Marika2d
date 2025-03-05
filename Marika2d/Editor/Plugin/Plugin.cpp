@@ -252,3 +252,227 @@ void Mrk::PluginSceneSaver::Update()
 		pathSelectDlg.ClearSelected();
 	}
 }
+
+void Mrk::PluginPropertiesInspectUI::Draw()
+{
+	ImGui::Begin("Inspector");
+
+	if (auto selection = PluginObjectSelecter::GetInstance()->GetSelection())
+	{
+		auto& components = selection->GetComponents();
+		for (auto& [name, component] : components)
+		{
+			(void)RecurObject(*component, name);
+		}
+
+		auto& manifest = ComponentFactory::GetManifest();
+		std::vector<const char*> cstrManifest;
+		std::transform(manifest.begin(), manifest.end(), std::back_inserter(cstrManifest), [](const std::string& str) {
+			return str.c_str();
+			});
+
+		int currItem = 0;
+		if (ImGui::Combo("Add Component", &currItem, cstrManifest.data(), (int)(cstrManifest.size())))
+		{
+			selection->AddComponent(cstrManifest.at(currItem));
+		}
+	}
+
+	ImGui::End();
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurArithmetic(rttr::variant& arithmetic, std::string_view name)
+{
+	auto type = arithmetic.get_type();
+
+	if (type == rttr::type::get<bool>())
+	{
+		auto value = arithmetic.get_value<bool>();
+		if (ImGui::Checkbox(name.data(), &value))
+		{
+			arithmetic = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<int16_t>())
+	{
+		auto value = (int)arithmetic.get_value<int16_t>();
+		if (ImGui::InputInt(name.data(), &value))
+		{
+			arithmetic = (int16_t)value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<int32_t>())
+	{
+		auto value = arithmetic.get_value<int32_t>();
+		if (ImGui::InputInt(name.data(), &value))
+		{
+			arithmetic = (int32_t)value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<int64_t>())
+	{
+		auto value = (int)arithmetic.get_value<int64_t>();
+		if (ImGui::InputInt(name.data(), &value))
+		{
+			arithmetic = (int64_t)value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<uint32_t>())
+	{
+		auto value = (int)arithmetic.get_value<uint32_t>();
+		if (ImGui::InputInt(name.data(), &value))
+		{
+			arithmetic = (uint32_t)value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<uint64_t>())
+	{
+		auto value = (int)arithmetic.get_value<uint64_t>();
+		if (ImGui::InputInt(name.data(), &value))
+		{
+			arithmetic = (uint64_t)value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<float>())
+	{
+		auto value = arithmetic.get_value<float>();
+		if (ImGui::InputFloat(name.data(), &value))
+		{
+			arithmetic = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<double>())
+	{
+		auto value = arithmetic.get_value<double>();
+		if (ImGui::InputDouble(name.data(), &value))
+		{
+			arithmetic = value;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurSeqContainer(rttr::variant& array, std::string_view name)
+{
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurAssContainer(rttr::variant& array, std::string_view name)
+{
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurString(rttr::variant& str, std::string_view name)
+{
+	std::string value = str.get_value<std::string>();
+	char buffer[256];
+	strncpy_s(buffer, value.c_str(), sizeof(buffer));
+	if (ImGui::InputText(name.data(), buffer, sizeof(buffer)))
+	{
+		str = value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurVariant(rttr::variant& variant, std::string_view name)
+{
+	auto type = variant.get_type();
+
+	if (type.is_valid())
+	{
+		if (type.is_arithmetic())
+		{
+			return RecurArithmetic(variant, name);
+		}
+		else if (type == rttr::type::get<std::string>())
+		{
+			return RecurString(variant, name);
+		}
+		else if (type.is_associative_container())
+		{
+			return RecurAssContainer(variant, name);
+		}
+		else if (type.is_sequential_container())
+		{
+			return RecurSeqContainer(variant, name);
+		}
+		else if (type.is_class())
+		{
+			return RecurObject(variant, name);
+		}
+		else
+		{
+			ImGui::Text("%s: [Unsupported Type]", name.data());
+		}
+	}
+
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::RecurProperties(rttr::instance obj)
+{
+	auto type = obj.get_derived_type();
+	auto props = type.get_properties();
+
+	for (auto& prop : props)
+	{
+		auto propName = prop.get_name();
+		auto propValue = prop.get_value(obj);
+
+		if (RecurVariant(propValue, propName.data()))
+		{
+			if (propValue.is_valid())
+			{
+				try
+				{
+					prop.set_value(obj, propValue);
+					return true;
+				}
+				catch (const std::exception& ex)
+				{
+					if (ImGui::BeginPopupModal("Setter Error"))
+					{
+						ImGui::Text(ex.what());
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::string_view name)
+{
+	auto type = obj.get_type();
+
+	if (type.is_derived_from<Mrk::Component>())
+	{
+		if (ImGui::CollapsingHeader(name.data()))
+		{
+			return RecurProperties(obj);
+		}
+	}
+	else
+	{
+		if (ImGui::TreeNode(name.data()))
+		{
+			auto res = RecurProperties(obj);
+			ImGui::TreePop();
+			return res;
+		}
+	}
+
+	return false;
+}

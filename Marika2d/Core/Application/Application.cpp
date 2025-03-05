@@ -3,6 +3,8 @@
 #include "Core/Component/Component.h"
 #include "Core/Render/Render.h"
 
+#include "Third/imgui/freetype/imgui_freetype.h"
+
 Mrk::Window::Window(int width, int height, std::string_view title) :
     width(width),
     height(height),
@@ -87,7 +89,11 @@ void Mrk::Window::InitImGui()
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
+
+    ImFontConfig font_config;
+    font_config.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Bold | ImGuiFreeTypeBuilderFlags_LoadColor;
+    io.Fonts->AddFontFromFileTTF(ConfigSys::GetConfigItem<std::string>("AppConfig", "fontPath").c_str(), 16.0f, &font_config, io.Fonts->GetGlyphRangesChineseFull());
+    io.Fonts->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
 
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);

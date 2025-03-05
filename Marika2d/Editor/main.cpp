@@ -15,6 +15,7 @@
 #include "Third/SOIL2/SOIL2.h"
 #include "Third/imgui/imgui.h"
 #include "Third/imgui/imgui_browser.h"
+#include "Third/imgui/freetype/imgui_freetype.h"
 
 #include "RttrTest.h"
 
@@ -126,6 +127,19 @@ void EditorLoopTest()
 					}
 				}
 				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Test"))
+		{
+			if (ImGui::MenuItem("ReLoad Font"))
+			{
+			}
+
+			if (ImGui::MenuItem("ReLoad Font With FreeType"))
+			{
 			}
 
 			ImGui::EndMenu();

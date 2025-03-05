@@ -47,6 +47,7 @@ namespace Mrk
         Vector2i size = { 800, 600 };
         std::string title = "Marika Engine";
         std::string projDir = "../TestProject";
+        std::string fontPath = "c:/Windows/Fonts/msyh.ttc";
     };
 
     struct AppContext

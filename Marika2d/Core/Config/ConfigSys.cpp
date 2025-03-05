@@ -60,6 +60,7 @@ void Mrk::ConfigSys::Init()
 			if (std::filesystem::exists(path))
 			{
 				ReadConfig(path, group);
+				WriteConfig(path, group);	// 先读入再写入，确保新增成员的默认值可以保存, 以及被错误保存或读取的成员变量值可以恢复
 			}
 			else
 			{

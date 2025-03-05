@@ -38,6 +38,7 @@ namespace Mrk
 {
 	class IPlugin;
 	class GameObject;
+	class Component;
 
 	class PluginSys : public Singleton<PluginSys>
 	{
@@ -178,6 +179,21 @@ namespace Mrk
 		}
 	private:
 		bool needShow = false;
+	};
+
+	class PluginPropertiesInspectUI : public IPlugin
+	{
+		MRK_PLUGIN(PluginPropertiesInspectUI)
+	public:
+		void Draw();
+	private:
+		bool RecurProperties(rttr::instance obj);
+		bool RecurObject(rttr::instance obj, std::string_view name);
+		bool RecurArithmetic(rttr::variant& base, std::string_view name);
+		bool RecurSeqContainer(rttr::variant& array, std::string_view name);
+		bool RecurAssContainer(rttr::variant& array, std::string_view name);
+		bool RecurString(rttr::variant& str, std::string_view name);
+		bool RecurVariant(rttr::variant& variant, std::string_view name);
 	};
 }
 
