@@ -62,8 +62,8 @@ void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex
 		//Ð´Èë¶¥µã
 		for (auto& vertex : subVertices)
 		{
-			file.write(reinterpret_cast<const char*>(&vertex.normal), sizeof(vertex.normal));
 			file.write(reinterpret_cast<const char*>(&vertex.position), sizeof(vertex.position));
+			file.write(reinterpret_cast<const char*>(&vertex.normal), sizeof(vertex.normal));
 			file.write(reinterpret_cast<const char*>(&vertex.texcoord), sizeof(vertex.texcoord));
 		}
 
@@ -266,3 +266,4 @@ void Mrk::AssimpAssetImporter::ProcessSubMesh(aiMesh* aiSubMesh, std::vector<Ver
 		indices.push_back(face.mIndices[2]);
 	}
 }
+

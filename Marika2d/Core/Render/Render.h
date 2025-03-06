@@ -32,9 +32,9 @@ namespace Mrk
 	struct RenderItem
 	{
 		ID id;
-		Matrix4 world;
 		std::shared_ptr<Mesh> mesh;
-		std::vector<SubRenderItem> subRenderParams;
+		Matrix4 world;
+		GLuint sp;
 	};
 
 	class RenderSys : public Singleton<RenderSys>
@@ -44,6 +44,6 @@ namespace Mrk
 		static void Draw();
 		static void Commit(RenderLayer renderLayer, const RenderItem& renderParam);
 	private:
-		std::array<std::vector<RenderItem>, 4> renderItems;
+		std::array<std::vector<RenderItem>, 4> renderLayers;
 	};
 }

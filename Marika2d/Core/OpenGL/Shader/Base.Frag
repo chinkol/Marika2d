@@ -3,25 +3,17 @@
 in vec3 normal;
 in vec2 texCoord;
 	
-layout(location = 0) out vec4 color;
-layout(location = 1) out uvec2 outId;
+layout (location = 0) out vec4 color;
+layout (location = 1) out uvec2 outId;
 
-uniform uvec2 objectId;
-uniform sampler2D diffuseMap;
+layout (location = 16) uniform uvec2 objectId;
+layout (location = 17) uniform sampler2D diffuseMap;
 
 void main()
 {
 	color = texture(diffuseMap, texCoord);
 	outId = objectId;
 }
-
-
-
-
-
-
-
-
 
 struct Light
 {

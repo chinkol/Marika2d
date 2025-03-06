@@ -39,7 +39,7 @@ void Mrk::Mesh::Bind()
 	glBindVertexArray(vao);
 }
 
-void Mrk::Mesh::UnBine()
+void Mrk::Mesh::UnBind()
 {
 	glBindVertexArray(0);
 }
@@ -61,7 +61,9 @@ const std::vector<Mrk::SubMesh>& Mrk::Mesh::GetSubMeshes()
 
 std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::GetMesh(std::string_view meshPath)
 {
-	auto ret = Instance().meshs.try_emplace(meshPath.data(), nullptr);
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.meshs.try_emplace(meshPath.data(), nullptr);
 	if (ret.second)
 	{
 		ret.first->second = LoadMesh(meshPath);
@@ -133,12 +135,16 @@ std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::LoadMesh(std::string_view path)
 				indexOffset += subIndexCount;
 			}
 
+			// TODO : fixme : 多读了一条空数据
+			mesh->subMeshes.pop_back();
+
 			// bounding box
-			CalMeshAABBBound(vertices, mesh->min, mesh->max);
+			CalMeshAABBBound(vertices, mesh->max, mesh->min);
 
 			// gl vao vbo ebo
 			LoadMeshGL(vertices, indices, mesh);
 
+			stream.close();
 			return mesh;
 		}
 	}
@@ -149,6 +155,8 @@ std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::LoadMesh(std::string_view path)
 
 void Mrk::MeshHut::LoadMeshGL(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, std::shared_ptr<Mesh> mesh)
 {
+	static_assert(sizeof(Vertex) == 8 * sizeof(float), "Vertex struct size mismatch");
+
 	if (mesh)
 	{
 		GLuint vao, vbo, ebo;
@@ -176,5 +184,10 @@ void Mrk::MeshHut::LoadMeshGL(const std::vector<Vertex>& vertices, const std::ve
 		mesh->vao = vao;
 		mesh->vbo = vbo;
 		mesh->ebo = ebo;
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			std::cerr << "OpenGL Mesh Error: " << err << std::endl;
+		}
 	}
 }

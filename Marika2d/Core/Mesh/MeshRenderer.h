@@ -18,6 +18,7 @@ namespace Mrk
 		void SetFsPath(const std::string& fs);
 		void SetVsPath(const std::string& vs);
 		void Start();
+		void PreDraw();
 	private:
 		void InitSp();
 	private:

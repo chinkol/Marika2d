@@ -1,5 +1,8 @@
 #include "MeshRenderer.h"
 
+#include "Core/Render/Render.h"
+#include "Core/GameObject/GameObject.h"
+
 const std::string& Mrk::MeshRenderer::GetMeshPath()
 {
     return meshPath;
@@ -33,10 +36,34 @@ void Mrk::MeshRenderer::SetVsPath(const std::string& vs)
 
 void Mrk::MeshRenderer::Start()
 {
-    InitSp();
+
+}
+
+void Mrk::MeshRenderer::PreDraw()
+{
+    if (!sp)
+    {
+        InitSp();
+    }
+
+    if (mesh && !holder.expired())
+    {
+        RenderItem renderItem;
+        renderItem.sp = sp;
+        renderItem.id = holder.lock()->GetID();
+        renderItem.mesh = mesh;
+        renderItem.world = Matrix4(1);
+
+        RenderSys::Commit(RenderLayer::Geometry, renderItem);
+    }
 }
 
 void Mrk::MeshRenderer::InitSp()
 {
     sp = ShaderProgramHut::GetShaderProgramID(vsPath, fsPath);
+
+    if (!sp)
+    {
+        std::cout << "error shader program" << std::endl;
+    }
 }

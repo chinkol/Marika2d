@@ -153,6 +153,26 @@ void Mrk::ShaderProgram::Delete()
 void Mrk::ShaderProgram::Link()
 {
 	glLinkProgram(id);
+
+	GLint success;
+	glGetProgramiv(id, GL_LINK_STATUS, &success);
+	if (!success) {
+		// 链接失败，获取错误日志
+		GLint logLength;
+		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength);
+
+		// 分配足够的空间存储日志
+		char* infoLog = (char*)malloc(logLength);
+		glGetProgramInfoLog(id, logLength, NULL, infoLog);
+
+		// 输出错误日志
+		std::cout << infoLog << std::endl;
+
+		// 释放内存
+		free(infoLog);
+
+		throw;
+	}
 }
 
 void Mrk::ShaderProgram::Use()
@@ -188,10 +208,16 @@ Mrk::Shader::Shader(std::string_view shaderPath, Type shaderType) :
 	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		GLchar errlog[512];
-		glGetShaderInfoLog(id, 512, NULL, errlog);
-		std::cout << "error shader\n" << errlog << std::endl;
-	};
+		isValid = false;
+	}
+	else
+	{
+		isValid = true;
+	}
+}
+
+Mrk::Shader::~Shader()
+{
 }
 
 GLuint Mrk::Shader::GetID() const
@@ -204,6 +230,11 @@ Mrk::Shader::Type Mrk::Shader::GetType() const
 	return type;
 }
 
+bool Mrk::Shader::IsValid() const
+{
+	return isValid;
+}
+
 void Mrk::Shader::Delete()
 {
 	glDeleteShader(id);
@@ -211,21 +242,31 @@ void Mrk::Shader::Delete()
 
 GLuint Mrk::ShaderProgramHut::GetShaderProgramID(std::string_view vs, std::string_view fs)
 {
+	MRK_INSTANCE_REF;
+
 	std::hash<std::string> hasher;
 
 	auto hash = hasher(vs.data());
 	hash ^= hasher(fs.data()) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
 
-	auto ret = Instance().sps.find(hash);
-	if (ret == Instance().sps.end())
+	auto ret = instance.sps.find(hash);
+	if (ret == instance.sps.end())
 	{
-		return Instance().sps.emplace(hash, [vs, fs]() {
-			ShaderProgram sp;
-			sp.AddShader(GetShaderID(Shader::Type::Vertex, vs));
-			sp.AddShader(GetShaderID(Shader::Type::Fragmet, fs));
+		auto sp = ShaderProgram();
+		auto vs_ = GetShaderID(Shader::Type::Vertex, vs);
+		auto ps_ = GetShaderID(Shader::Type::Fragmet, fs);
+		if (vs_ && ps_)
+		{
 			sp.Create();
-			return sp;
-			}()).first->second.GetID();
+			sp.AddShader(vs_);
+			sp.AddShader(ps_);
+			sp.Link();
+			return instance.sps.emplace(hash, sp).first->second.GetID();
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	return ret->second.GetID();
@@ -233,10 +274,20 @@ GLuint Mrk::ShaderProgramHut::GetShaderProgramID(std::string_view vs, std::strin
 
 GLuint Mrk::ShaderProgramHut::GetShaderID(Shader::Type type, std::string_view path)
 {
-	auto ret = Instance().temps.find(path.data());
-	if (ret == Instance().temps.end())
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.temps.find(path.data());
+	if (ret == instance.temps.end())
 	{
-		return Instance().temps.emplace(path.data(), Shader(path, type)).first->second.GetID();
+		auto shader = Shader(path, type);
+		if (shader.IsValid())
+		{
+			return instance.temps.emplace(path.data(), shader).first->second.GetID();
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	return ret->second.GetID();
 }

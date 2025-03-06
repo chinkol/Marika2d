@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include "Core/Mesh/Mesh.h"
+
 Mrk::CameraOutput::~CameraOutput()
 {
 	for (size_t i = 0; i < 2; i++)
@@ -14,6 +16,11 @@ Mrk::CameraOutput::~CameraOutput()
 void Mrk::CameraOutput::Start()
 {
 	ReSize(resolution);
+
+	if (!holder.expired())
+	{
+		trans = holder.lock()->GetComponent<Transform>();
+	}
 }
 
 void Mrk::CameraOutput::PreDraw()
@@ -21,7 +28,7 @@ void Mrk::CameraOutput::PreDraw()
 	currBackBufferIndex = (currBackBufferIndex + 1) % 2;
 }
 
-const Mrk::Vector2i& Mrk::CameraOutput::GetResolution()
+const Mrk::Vector2i& Mrk::CameraOutput::GetResolution() const
 {
 	return resolution;
 }
@@ -29,7 +36,17 @@ const Mrk::Vector2i& Mrk::CameraOutput::GetResolution()
 void Mrk::CameraOutput::SetResolution(const Vector2i& resolution)
 {
 	this->resolution = resolution;
-	//TODO : Resize
+	ReSize(resolution);
+}
+
+const Mrk::CameraFrustum& Mrk::CameraOutput::GetFrustum() const
+{
+	return frustum;
+}
+
+void Mrk::CameraOutput::SetFrustum_(const CameraFrustum& frumstum)
+{
+	this->frustum = frumstum;
 }
 
 GLuint Mrk::CameraOutput::GetBackBuffer()
@@ -58,10 +75,27 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 	auto backbuffer = backBuffers[currBackBufferIndex];
 	glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
 
+
+	//TODO : replace me
+	{
+		if (!renderLayers[1].empty())
+		{
+			glUseProgram(renderLayers[1][0].sp);
+		}
+	}
+
 	//camera
-	//glUniform4fv(0, );
-	//glUniform4fv(1, );
-	//glUniform4fv(2, );
+
+	if (trans)
+	{
+		auto view = trans->GetViewMatrix();
+		auto proj = frustum.GetProjMatrix();
+		auto viewproj = proj * view;
+
+		glUniformMatrix4fv(MRK_GL_LOCATING_VIEW, 1, GL_FALSE, (GLfloat*)&view);
+		glUniformMatrix4fv(MRK_GL_LOCATING_PROJ, 1, GL_FALSE, (GLfloat*)&proj);
+		glUniformMatrix4fv(MRK_GL_LOCATING_VIEWPROJ, 1, GL_FALSE, (GLfloat*)&viewproj);
+	}
 
 	//light
 	//......
@@ -100,7 +134,9 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 
 void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 {
-	resolution = { std::max(800, resolution.x), std::max(600, resolution.y) };
+	resolution = { std::max(0, newSize.x), std::max(0, newSize.y) };
+
+	frustum.SetAspect((float)resolution.x / (float)resolution.y);
 
 	//unbinding
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -165,10 +201,22 @@ void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 }
 
 void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
-{ 
+{
 	for (auto& item : renderItems)
 	{
-		
+		//glUseProgram(item.sp);
+
+		item.mesh->Bind();
+
+		glUniform2ui(MRK_GL_LOCATING_OBJECTID, item.id.low32, item.id.high32);
+		glUniformMatrix4fv(MRK_GL_LOCATING_WORLD, 1, GL_FALSE, (GLfloat*)&item.world);
+
+		auto subMeshes = item.mesh->GetSubMeshes();
+		for (size_t i = 0; i < subMeshes.size(); i++)
+		{
+			auto& subMesh = subMeshes[i];
+			glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
+		}
 	}
 }
 
@@ -206,4 +254,108 @@ void Mrk::CameraHut::AddCamera(std::weak_ptr<Camera> camera)
 		instance.cameras.push_back(camera);
 		instance.mainCamera = camera.lock();
 	}
+}
+
+float Mrk::CameraFrustum::GetNearZ() const
+{
+	return nearZ;
+}
+
+void Mrk::CameraFrustum::SetNearZ(float nearZ)
+{
+	isDirty = true;
+	this->nearZ = nearZ;
+}
+
+float Mrk::CameraFrustum::GetFarZ() const
+{
+	return farZ;
+}
+
+void Mrk::CameraFrustum::SetFarZ(float farZ)
+{
+	isDirty = true;
+	this->farZ = farZ;
+}
+
+float Mrk::CameraFrustum::GetAngle() const
+{
+	return angle;
+}
+
+void Mrk::CameraFrustum::SetAngle(float angle)
+{
+	isDirty = true;
+	this->angle = angle;
+}
+
+float Mrk::CameraFrustum::GetAspect() const
+{
+	return aspect;
+}
+
+void Mrk::CameraFrustum::SetAspect(float aspect)
+{
+	isDirty = true;
+	this->aspect = aspect;
+}
+
+const Mrk::Matrix4& Mrk::CameraFrustum::GetProjMatrix()
+{
+	if (isDirty)
+	{
+		proj = glm::perspective(glm::radians(angle), aspect, nearZ, farZ);
+		isDirty = false;
+	}
+
+	return proj;
+}
+
+void Mrk::CameraController::Start()
+{
+	assert(!holder.expired());
+
+	trans = holder.lock()->GetComponent<Transform>();
+}
+
+#include "Third/imgui/imgui.h"
+
+void Mrk::CameraController::Update()
+{
+	auto& io = ImGui::GetIO();
+
+	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+	{
+		trans->RotateWorld(io.MouseDelta.x * 0.1f, { 0.0f, -1.0f, 0.0f });
+		trans->RotateLocal(io.MouseDelta.y * 0.1f, { 1.0f, 0.0f, 0.0f });
+	}
+
+	if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
+	{
+		trans->TranslateLocal({ 0.025f * io.MouseDelta.x, 0.025f * io.MouseDelta.y, 0 });
+	}
+
+	if (io.MouseWheel != 0)
+	{
+		trans->TranslateLocal({ 0.0f, 0.0f, io.MouseWheel });
+	}
+}
+
+bool Mrk::CameraController::FindCamera()
+{
+	if (!cameraTrans)
+	{
+		//TODO:
+		auto& children = holder.lock()->GetChildren();
+		for (auto& child : children)
+		{
+			if (child && child->GetClassTypeName() == "Camera")
+			{
+				cameraTrans = child->GetComponent<Transform>();
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

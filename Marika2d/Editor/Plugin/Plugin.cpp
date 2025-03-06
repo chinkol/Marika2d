@@ -191,7 +191,10 @@ void Mrk::PluginViewportUI::Draw()
 			auto& resolution = output->GetResolution();
 			if (resolution.x != wndSize.x || resolution.y != wndSize.y)
 			{
-				output->SetResolution({ wndSize.x , wndSize.y });
+				if (!ImGui::IsMouseDragging(0))
+				{
+					output->SetResolution({ wndSize.x , wndSize.y });
+				}
 			}
 
 			ImVec2 uv0 = ImVec2(0.0f, 1.0f);  // ×óÏÂ½Ç
@@ -373,12 +376,13 @@ bool Mrk::PluginPropertiesInspectUI::RecurAssContainer(rttr::variant& array, std
 
 bool Mrk::PluginPropertiesInspectUI::RecurString(rttr::variant& str, std::string_view name)
 {
-	std::string value = str.get_value<std::string>();
+	std::string value = Utility::GBKToUTF8(str.get_value<std::string>());
 	char buffer[256];
 	strncpy_s(buffer, value.c_str(), sizeof(buffer));
+	buffer[sizeof(buffer) - 1] = '\0';
 	if (ImGui::InputText(name.data(), buffer, sizeof(buffer)))
 	{
-		str = value;
+		str = Utility::UFT8ToGBK(std::string(buffer));
 		return true;
 	}
 

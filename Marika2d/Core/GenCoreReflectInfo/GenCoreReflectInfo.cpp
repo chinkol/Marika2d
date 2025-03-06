@@ -236,6 +236,14 @@ namespace Mrk
 
 	MRK_CORE_REFLECT_REGISTER(CameraOutput)(
 		rttr::registration::class_<CameraOutput>("CameraOutput")
-		.property("resolution", &CameraOutput::GetResolution, &CameraOutput::SetResolution);
+		.property("resolution", &CameraOutput::GetResolution, &CameraOutput::SetResolution)
+		.property("frumstum", &CameraOutput::GetFrustum, &CameraOutput::SetFrustum_);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(CameraFrustum)(
+		rttr::registration::class_<CameraFrustum>("CameraFrustum")
+		.property("nearZ", &CameraFrustum::GetNearZ, &CameraFrustum::SetNearZ)
+		.property("farZ", &CameraFrustum::GetFarZ, &CameraFrustum::SetFarZ)
+		.property("aspect", &CameraFrustum::GetAspect, &CameraFrustum::SetAspect);
 		);
 }

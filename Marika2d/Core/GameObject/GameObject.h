@@ -133,6 +133,7 @@ namespace Mrk
 				if constexpr (std::is_same_v<T, Transform>)
 				{
 					transform = com;
+					transform->UpdateParentCache();
 				}
 
 				return com;

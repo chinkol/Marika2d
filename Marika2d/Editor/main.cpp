@@ -169,12 +169,6 @@ int main()
 	auto context = Mrk::Application::GetAppContext();
 	context.appInitedCallBack = []() {
 		Mrk::PluginSys::Init();
-
-		std::shared_ptr<Mrk::GameObject> recive;
-		MrkTest::Test(recive);
-
-		AssetTest();
-		MeshTest();
 		};
 
 	context.updateCallBack = []() {

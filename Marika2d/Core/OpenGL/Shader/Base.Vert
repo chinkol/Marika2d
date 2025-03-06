@@ -8,12 +8,12 @@ out vec3 normal;
 out vec2 texCoord;
 
 // pass constant
-uniform mat4 view;
-uniform mat4 proj;
-uniform mat4 viewproj;
+layout (location = 0) uniform mat4 view;
+layout (location = 4) uniform mat4 proj;
+layout (location = 8) uniform mat4 viewproj;
 
 // object constant
-uniform mat4 world;
+layout (location = 12) uniform mat4 world;
 		
 void main()
 {

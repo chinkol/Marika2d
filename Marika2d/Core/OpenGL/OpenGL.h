@@ -12,6 +12,17 @@
 #include <map>
 #include <vector>
 
+
+#define MRK_GL_LOCATING_POSITION 0
+#define MRK_GL_LOCATING_NORMAL 1
+#define MRK_GL_LOCATING_TEXCOORD 2
+#define MRK_GL_LOCATING_VIEW 0
+#define MRK_GL_LOCATING_PROJ 4
+#define MRK_GL_LOCATING_VIEWPROJ 8
+#define MRK_GL_LOCATING_WORLD 12
+#define MRK_GL_LOCATING_OBJECTID 16
+#define MRK_GL_LOCATING_DIFFUSEMAP 17
+
 namespace Mrk
 {
 	class VAO
@@ -64,14 +75,16 @@ namespace Mrk
 
 	public:
 		Shader(std::string_view shaderPath, Type shaderType);
-		~Shader() = default;
+		~Shader();
 		GLuint GetID() const;
 		Type GetType() const;
-		void Delete();
-
+		bool IsValid() const;
 	private:
+		void Delete();
+	private:
+		bool isValid = false;
+		GLuint id = 0;
 		Type type;
-		GLuint id;
 	};
 
 	class ShaderProgram
@@ -87,7 +100,7 @@ namespace Mrk
 		void Create();
 		void AddShader(GLuint id);
 	private:
-		GLuint id;
+		GLuint id = 0;
 	};
 
 	class ShaderProgramHut : public Mrk::Singleton<ShaderProgramHut>

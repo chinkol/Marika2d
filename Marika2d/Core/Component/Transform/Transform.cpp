@@ -3,286 +3,367 @@
 #include "Core/GameObject/GameObject.h"
 
 Mrk::Transform::Transform() :
-	localMatrix(1.0f),
-	worldMatrix(1.0f),
-	localPosition(0.0f),
-	localScale(1.0f),
-	localRotation(1, 0, 0, 0)
+    localMatrix(1.0f),
+    worldMatrix(1.0f),
+    localPosition(0.0f),
+    localScale(1.0f),
+    localRotation(1.0f, 0.0f, 0.0f, 0.0f),
+    localUp(0.0f, 1.0f, 0.0f),
+    localLeft(1.0f, 0.0f, 0.0f),
+    localForward(0.0f, 0.0f, 1.0f),
+    worldUp(0.0f, 1.0f, 0.0f),
+    worldLeft(1.0f, 0.0f, 0.0f),
+    worldForward(0.0f, 0.0f, 1.0f)
 {
-
 }
 
+// 标记本地变换为脏
 void Mrk::Transform::SetLocalDirty()
 {
-	isLocalDirty = true;
-	SetWorldDirty();
+    isLocalDirty = true;
+    isDirectionsDirty = true;
+    SetWorldDirty();
 }
 
+// 标记世界变换为脏，并递归传播到子物体
 void Mrk::Transform::SetWorldDirty()
 {
-	for (auto& child : holder.lock()->GetChildren())
-	{
-		child->GetComponent<Transform>()->SetWorldDirty();
-	}
+    isWorldDirty = true;
+    isDirectionsDirty = true;
+    for (auto& child : holder.lock()->GetChildren())
+    {
+        if (auto childTrans = child->GetComponent<Transform>())
+        {
+            childTrans->SetWorldDirty();
+        }
+    }
 }
 
+// 更新本地矩阵
 void Mrk::Transform::UpdateLocalMatrix()
 {
-	if (isLocalDirty)
-	{
-		localMatrix = 1.0f;
-		glm::translate(localMatrix, localPosition);
-		localMatrix *= glm::toMat4(localRotation);
-		glm::scale(localMatrix, localScale);
-
-		isLocalDirty = false;
-	}
+    if (isLocalDirty)
+    {
+        localMatrix = glm::translate(glm::mat4(1.0f), localPosition) *
+            glm::toMat4(localRotation) *
+            glm::scale(glm::mat4(1.0f), localScale);
+        isLocalDirty = false;
+    }
 }
 
+// 更新世界矩阵
 void Mrk::Transform::UpdateWorldMatrix()
 {
-	if (isWorldDirty)
-	{
-		if (auto parent = this->holder.lock()->GetParent())
-		{
-			auto parentTrans = parent->GetComponent<Transform>();
-			parentTrans->UpdateLocalMatrix();
-			parentTrans->UpdateWorldMatrix();
-			worldMatrix = parentTrans->worldMatrix * localMatrix;
-		}
-		else
-		{
-			worldMatrix = localMatrix;
-		}
-		isWorldDirty = false;
-	}
+    if (isWorldDirty)
+    {
+        UpdateLocalMatrix();
+        if (parent)
+        {
+            parent->UpdateLocalMatrix();
+            parent->UpdateWorldMatrix();
+            worldMatrix = parent->worldMatrix * localMatrix;
+        }
+        else
+        {
+            worldMatrix = localMatrix;
+        }
+        isWorldDirty = false;
+    }
 }
 
+// 更新方向向量
+void Mrk::Transform::UpdateDirections()
+{
+    if (!isDirectionsDirty) return;
+    UpdateLocalMatrix();
+    UpdateWorldMatrix();
+    localUp = glm::normalize(localMatrix[1].xyz());
+    localLeft = glm::normalize(localMatrix[0].xyz());
+    localForward = glm::normalize(localMatrix[2].xyz());
+    worldUp = glm::normalize(worldMatrix[1].xyz());
+    worldLeft = glm::normalize(worldMatrix[0].xyz());
+    worldForward = glm::normalize(worldMatrix[2].xyz());
+    isDirectionsDirty = false;
+}
+
+// 平移（本地空间）
 void Mrk::Transform::TranslateLocal(const Mrk::Vector3& offset)
 {
-	localPosition += localRotation * offset;
-	SetLocalDirty();
+    localPosition += localRotation * offset;
+    SetLocalDirty();
 }
 
+// 平移（世界空间）
 void Mrk::Transform::TranslateWorld(const Mrk::Vector3& offset)
 {
-	localPosition += offset;
-	SetLocalDirty();
+    localPosition += offset;
+    SetLocalDirty();
 }
 
+// 旋转（本地空间）
 void Mrk::Transform::RotateLocal(float angle, const Mrk::Vector3& axis)
 {
-	localRotation = localRotation * glm::angleAxis(glm::radians(angle), axis);
-	localRotation = glm::normalize(localRotation);
-	SetLocalDirty();
+    localRotation = localRotation * glm::angleAxis(glm::radians(angle), axis);
+    localRotation = glm::normalize(localRotation);
+    SetLocalDirty();
 }
 
+// 旋转（世界空间）
 void Mrk::Transform::RotateWorld(float angle, const Mrk::Vector3& axis)
 {
-	//TODO : !!!!!!!! 矩阵归一化 看之前的代码
-
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	auto newWorldRotation = glm::angleAxis(glm::radians(angle), axis) * glm::toQuat(worldMatrix); //TODO : glm::toQuat(glm::normalize(worldMatrix));
-	if (auto parent = holder.lock()->GetParent())
-	{
-		//TODO:考虑缓存parentTransform
-		localRotation = glm::inverse(glm::toQuat(parent->GetComponent<Transform>()->worldMatrix)) * newWorldRotation;
-	}
-	else
-	{
-		localRotation = newWorldRotation;
-	}
-
-	SetLocalDirty();
+    UpdateLocalMatrix();
+    UpdateWorldMatrix();
+    auto newWorldRotation = glm::angleAxis(glm::radians(angle), axis) * glm::toQuat(worldMatrix);
+    newWorldRotation = glm::normalize(newWorldRotation);
+    if (parent)
+    {
+        localRotation = glm::inverse(glm::toQuat(parent->worldMatrix)) * newWorldRotation;
+    }
+    else
+    {
+        localRotation = newWorldRotation;
+    }
+    localRotation = glm::normalize(localRotation);
+    SetLocalDirty();
 }
 
+// 获取本地位置
 const Mrk::Vector3& Mrk::Transform::GetLocalPosition()
 {
-	return localPosition;
+    return localPosition;
 }
 
+// 获取世界位置
 Mrk::Vector3 Mrk::Transform::GetWorldPosition()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return worldMatrix[3];
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    return worldMatrix[3].xyz();
 }
 
+// 设置本地位置
 void Mrk::Transform::SetLocalPosition(const Mrk::Vector3& newVal)
 {
-	localPosition = newVal;
-	SetLocalDirty();
+    localPosition = newVal;
+    SetLocalDirty();
 }
 
+// 设置世界位置
 void Mrk::Transform::SetWorldPosition(const Mrk::Vector3& newVal)
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	if (auto parent = holder.lock()->GetParent())
-	{
-		localPosition = glm::inverse(parent->GetComponent<Transform>()->worldMatrix) * Vector4(newVal, 1.0f);
-	}
-	else
-	{
-		localPosition = newVal;
-	}
-	SetLocalDirty();
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    if (parent)
+    {
+        glm::vec4 worldPos(newVal.x, newVal.y, newVal.z, 1.0f);
+        localPosition = (glm::inverse(parent->worldMatrix) * worldPos).xyz();
+    }
+    else
+    {
+        localPosition = newVal;
+    }
+    SetLocalDirty();
 }
 
+// 获取本地缩放
 const Mrk::Vector3& Mrk::Transform::GetLocalScale()
 {
-	return localScale;
+    return localScale;
 }
 
+// 获取世界缩放
 Mrk::Vector3 Mrk::Transform::GetWorldScale()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return { worldMatrix[0].length(), worldMatrix[1].length(), worldMatrix[2].length() };
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    return { glm::length(worldMatrix[0].xyz()),
+             glm::length(worldMatrix[1].xyz()),
+             glm::length(worldMatrix[2].xyz()) };
 }
 
+// 设置本地缩放
 void Mrk::Transform::SetLocalScale(const Vector3& newVal)
 {
-	localRotation = newVal;
-	SetLocalDirty();
+    localScale = newVal;
+    SetLocalDirty();
 }
 
+// 设置世界缩放
 void Mrk::Transform::SetWorldScale(const Vector3& newVal)
 {
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    if (parent)
+    {
+        Vector3 parentWorldScale = parent->GetWorldScale();
+        localScale = newVal / parentWorldScale;
+    }
+    else
+    {
+        localScale = newVal;
+    }
+    SetLocalDirty();
 }
 
+// 获取本地旋转
 const Mrk::Quaternion& Mrk::Transform::GetLocalRotation()
 {
-	return localRotation;
+    return localRotation;
 }
 
+// 获取世界旋转
 Mrk::Quaternion Mrk::Transform::GetWorldRotation()
 {
-	//TODO : !!!!!!!! 矩阵归一化 看之前的代码
-
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return Mrk::Quaternion(glm::toQuat(worldMatrix));
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    return glm::normalize(glm::toQuat(worldMatrix));
 }
 
+// 设置本地旋转
 void Mrk::Transform::SetLocalRotation(const Mrk::Quaternion& newVal)
 {
-	localRotation = newVal;
-	localRotation = glm::normalize(localRotation);
-	SetLocalDirty();
+    localRotation = glm::normalize(newVal);
+    SetLocalDirty();
 }
 
+// 设置世界旋转
 void Mrk::Transform::SetWorldRotation(const Mrk::Quaternion& newVal)
 {
-	//TODO : !!!!!!!! 矩阵归一化 看之前的代码
-
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	if (auto parent = holder.lock()->GetParent())
-	{
-		localRotation = glm::inverse(glm::toQuat(parent->GetComponent<Transform>()->worldMatrix)) * newVal;
-	}
-	else
-	{
-		localRotation = newVal;
-	}
-	localRotation = glm::normalize(localRotation);
-	SetLocalDirty();
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    auto normalizedVal = glm::normalize(newVal);
+    if (parent)
+    {
+        localRotation = glm::inverse(glm::toQuat(parent->worldMatrix)) * normalizedVal;
+    }
+    else
+    {
+        localRotation = normalizedVal;
+    }
+    localRotation = glm::normalize(localRotation);
+    SetLocalDirty();
 }
 
+// 获取本地矩阵
 Mrk::Matrix4 Mrk::Transform::GetLocalMatrix()
 {
-	UpdateLocalMatrix();
-	return localMatrix;
+    if (isLocalDirty) UpdateLocalMatrix();
+    return localMatrix;
 }
 
+// 获取世界矩阵
 Mrk::Matrix4 Mrk::Transform::GetWorldMatrix()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return worldMatrix;
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    return worldMatrix;
 }
 
+// 矩阵分解
 void MatrixDecompose(const Mrk::Matrix4& mat, Mrk::Vector3& outPos, Mrk::Quaternion& outRot, Mrk::Vector3& outScl)
 {
-	//TODO : !!!!!!!! 矩阵归一化 看之前的代码
+    outPos = mat[3].xyz();
+    outScl.x = glm::length(mat[0].xyz());
+    outScl.y = glm::length(mat[1].xyz());
+    outScl.z = glm::length(mat[2].xyz());
 
-	outPos = mat[3];
-	outRot = glm::toQuat(mat);
-	outScl = { mat[0].length(), mat[1].length(), mat[2].length() };
+    if (outScl.x > 0.0f && outScl.y > 0.0f && outScl.z > 0.0f)
+    {
+        glm::mat4 rotationMatrix = mat;
+        rotationMatrix[0] /= outScl.x;
+        rotationMatrix[1] /= outScl.y;
+        rotationMatrix[2] /= outScl.z;
+        outRot = glm::normalize(glm::toQuat(rotationMatrix));
+    }
+    else
+    {
+        outRot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
 
+// 设置本地矩阵
 void Mrk::Transform::SetLocalMatrix(const Mrk::Matrix4& newVal)
 {
-	localMatrix = newVal;
-	MatrixDecompose(localMatrix, localPosition, localRotation, localScale);
-	SetWorldDirty();
+    localMatrix = newVal;
+    MatrixDecompose(localMatrix, localPosition, localRotation, localScale);
+    SetLocalDirty();
 }
 
+// 设置世界矩阵
 void Mrk::Transform::SetWorldMatrix(const Mrk::Matrix4& newVal)
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	worldMatrix = newVal;
-	if (auto parent = holder.lock()->GetParent())
-	{
-		localMatrix = glm::inverse(parent->GetComponent<Transform>()->worldMatrix) * newVal;
-	}
-	else
-	{
-		localMatrix = newVal;
-	}
-	MatrixDecompose(localMatrix, localPosition, localRotation, localScale);
-	SetWorldDirty();
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
+    worldMatrix = newVal;
+    if (parent)
+    {
+        localMatrix = glm::inverse(parent->worldMatrix) * newVal;
+    }
+    else
+    {
+        localMatrix = newVal;
+    }
+    MatrixDecompose(localMatrix, localPosition, localRotation, localScale);
+    SetLocalDirty();
 }
 
+// 获取本地方向向量
 Mrk::Vector3 Mrk::Transform::GetLocalUp()
 {
-	UpdateLocalMatrix();
-	return glm::normalize(localMatrix[1].xyz());
+    UpdateDirections();
+    return localUp;
 }
 
 Mrk::Vector3 Mrk::Transform::GetWorldUp()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return glm::normalize(worldMatrix[1].xyz());
+    UpdateDirections();
+    return worldUp;
 }
 
 Mrk::Vector3 Mrk::Transform::GetLocalLeft()
 {
-	UpdateLocalMatrix();
-	return glm::normalize(localMatrix[0].xyz());
+    UpdateDirections();
+    return localLeft;
 }
 
 Mrk::Vector3 Mrk::Transform::GetWorldLeft()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return glm::normalize(worldMatrix[0].xyz());
+    UpdateDirections();
+    return worldLeft;
 }
 
 Mrk::Vector3 Mrk::Transform::GetLocalForward()
 {
-	UpdateLocalMatrix();
-	return glm::normalize(localMatrix[2].xyz());
+    UpdateDirections();
+    return localForward;
 }
 
 Mrk::Vector3 Mrk::Transform::GetWorldForward()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
-	return glm::normalize(worldMatrix[2].xyz());
+    UpdateDirections();
+    return worldForward;
 }
 
+// 获取视图矩阵
 Mrk::Matrix4 Mrk::Transform::GetViewMatrix()
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix();
+    if (isLocalDirty) UpdateLocalMatrix();
+    if (isWorldDirty) UpdateWorldMatrix();
 
-	auto eye = worldMatrix[3].xyz();
-	auto lookDir = glm::normalize(worldMatrix[2].xyz());
-	auto up = glm::normalize(worldMatrix[1].xyz());
-	return glm::lookAtRH(eye, eye + lookDir, up);
+    auto eye = worldMatrix[3].xyz();
+    auto lookDir = glm::normalize(worldMatrix[2].xyz());
+    auto up = glm::normalize(worldMatrix[1].xyz());
+    return glm::lookAtRH(eye, eye + lookDir, up);
+}
+
+void Mrk::Transform::UpdateParentCache()
+{
+    if (auto parentHolder = holder.lock()->GetParent())
+    {
+        parent = parentHolder->GetComponent<Transform>();
+    }
+    else
+    {
+        parent.reset();
+    }
 }

@@ -28,6 +28,40 @@ namespace Mrk
 		std::vector<std::weak_ptr<Camera>> cameras;
 	};
 
+	class CameraFrustum
+	{
+	public:
+		float GetNearZ() const;
+		void SetNearZ(float nearZ);
+		float GetFarZ() const;
+		void SetFarZ(float farZ);
+		float GetAngle() const;
+		void SetAngle(float angle);
+		float GetAspect() const;
+		void SetAspect(float aspect);
+		const Matrix4& GetProjMatrix();
+	private:
+		Matrix4 proj;
+		float nearZ = 0.1f;
+		float farZ = 100.0f;
+		float angle = 45.0f;
+		float aspect = 16.0f / 9.0f;
+		bool isDirty = true;
+	};
+
+	class CameraController : public Component
+	{
+		MRK_COMPONENT(CameraController)
+	public:
+		void Start();
+		void Update();
+	private:
+		bool FindCamera();
+	private:
+		std::shared_ptr<Transform> trans;	// 自身 的 trans ，引用transform一般不会造成循环引用
+		std::shared_ptr<Transform> cameraTrans;
+	};
+
 	class CameraOutput : public Component
 	{
 		MRK_COMPONENT(CameraOutput) MRK_COMPONENT_UNREMOVABLE
@@ -36,8 +70,12 @@ namespace Mrk
 
 		void Start();
 		void PreDraw();
-		const Vector2i& GetResolution();
+
+		const Vector2i& GetResolution() const;
 		void SetResolution(const Vector2i& resolution);
+
+		const CameraFrustum& GetFrustum() const;
+		void SetFrustum_(const CameraFrustum& frumstum);
 
 		GLuint GetBackBuffer();
 		GLuint GetIdTexture();
@@ -51,6 +89,9 @@ namespace Mrk
 	private:
 		Vector2i resolution;
 		Vector2i outputPos = { 0, 0 };
+
+		CameraFrustum frustum;
+		std::shared_ptr<Transform> trans;	// 缓存camera的trans, 这里不会构成循环引用
 
 		int currBackBufferIndex = 0;
 		std::array<GLuint, 2> backBuffers;
