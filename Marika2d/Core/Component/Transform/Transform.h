@@ -15,7 +15,6 @@ namespace Mrk
         MRK_COMPONENT(Transform) MRK_COMPONENT_UNREMOVABLE
     public:
         Transform();
-        ~Transform();
 
         void TranslateLocal(const Vector3& offset);
         void TranslateWorld(const Vector3& offset);

@@ -7,8 +7,12 @@ std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNew(std::string_vie
 	MRK_INSTANCE_REF;
 
 	auto ret = instance.creators.find(classname.data());
-	assert(ret != instance.creators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
-	return ret->second();
+	if (ret != instance.creators.end())
+	{
+		return ret->second();
+	}
+	
+	return std::shared_ptr<Component>();
 }
 
 std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNewFromJson(std::string_view classname, const Json::Value& json)
@@ -16,8 +20,12 @@ std::shared_ptr<Mrk::Component> Mrk::ComponentFactory::CreateNewFromJson(std::st
 	MRK_INSTANCE_REF;
 
 	auto ret = instance.fromJsonCreators.find(classname.data());
-	assert(ret != instance.fromJsonCreators.end());	//Forget To Add 'MRK_COMPONENT(x)' To Component Header ?
-	return ret->second(json);
+	if (ret != instance.fromJsonCreators.end())
+	{
+		return ret->second(json);
+	}
+
+	return std::shared_ptr<Component>();
 }
 
 const std::map<std::string, std::function<std::shared_ptr<Mrk::Component>()>>& Mrk::ComponentFactory::GetCreators()

@@ -5,14 +5,20 @@
 
 std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_view classname)
 {
-	auto ret = Instance().creators.find(classname.data());
-	assert(ret != Instance().creators.end());
-	auto obj = ret->second();
-	GameObjectHut::AddObject(obj);
-	obj->SetName(obj->GetClassTypeName().data());
-	obj->AddComponent<Transform>();
-	obj->Init();
-	return obj;
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.creators.find(classname.data());
+	if (ret != instance.creators.end())
+	{
+		auto obj = ret->second();
+		GameObjectHut::AddObject(obj);
+		obj->SetName(obj->GetClassTypeName().data());
+		obj->AddComponent<Transform>();
+		obj->Init();
+		return obj;
+	}
+
+	return std::shared_ptr<GameObject>();
 }
 
 const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& Mrk::GameObjectFactory::GetCreators()
