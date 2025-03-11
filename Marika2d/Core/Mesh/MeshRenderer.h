@@ -7,27 +7,44 @@
 
 namespace Mrk
 {
+	class Material;
+
+	class MaterialSlot
+	{
+	public:
+		MaterialSlot();
+		bool GetIsShared() const;
+		void SetIsShared(bool val);
+		const std::string& GetSpName() const;
+		void SetSpName(const std::string& spName);
+		const std::string& GetMatName() const;
+		void SetMatName(const std::string& matName);
+		std::shared_ptr<Material> GetMaterial() const;
+		void Load();
+	private:
+		bool isShared;
+		std::string spName;
+		std::string matName;
+		std::shared_ptr<Material> material;
+	};
+
 	class MeshRenderer : public Component
 	{
 		MRK_COMPONENT(MeshRenderer) MRK_POOLABLE(MeshRenderer, 100)
 	public:
-		const std::string& GetMeshPath();
-		const std::string& GetFsPath();
-		const std::string& GetVsPath();
-		void SetMeshPath(const std::string& meshPath);
-		void SetFsPath(const std::string& fs);
-		void SetVsPath(const std::string& vs);
 		void Start();
 		void PreDraw();
-	private:
-		void InitSp();
+
+		const std::string& GetMeshPath();
+		void SetMeshPath(const std::string& meshPath);
+		const std::vector<MaterialSlot>& GetMatSlots();
+		void SetMatSlots(const std::vector<MaterialSlot>& matSlots);
 	private:
 		std::string meshPath;
-		std::string vsPath;
-		std::string fsPath;
 
 	private:
+		bool isDirty = true;
 		std::shared_ptr<Mesh> mesh;
-		GLuint sp;
+		std::vector<MaterialSlot> matSlots;
 	};
 }

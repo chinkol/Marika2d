@@ -22,19 +22,12 @@ namespace Mrk
 		ForeGround = 3
 	};
 
-	struct SubRenderItem
-	{
-		Material material;
-		GLuint texture;
-		GLuint shaderProgram;
-	};
-
 	struct RenderItem
 	{
 		ID id;
-		std::shared_ptr<Mesh> mesh;
 		Matrix4 world;
-		GLuint sp;
+		std::shared_ptr<Mesh> mesh;
+		std::vector<std::shared_ptr<Material>> materials;
 	};
 
 	class RenderSys : public Singleton<RenderSys>

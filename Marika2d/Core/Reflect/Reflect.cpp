@@ -217,7 +217,7 @@ namespace
 		int index = 0;
 		for (auto& jitem : jarr)
 		{
-			auto value = view.get_value(index);
+			auto value = view.get_value(index).extract_wrapped_value();
 			RecurVariantFromJson(value, jitem);
 			if (value.is_valid())
 			{

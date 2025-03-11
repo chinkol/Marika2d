@@ -4,29 +4,65 @@
 
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 
-void MrkTest::Material::SetShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+Mrk::Material::Material()
 {
-	if (shaderProgram)
+}
+
+void Mrk::Material::Bind()
+{
+	shaderProgram->Use();
+}
+
+void Mrk::Material::UploadUniforms()
+{
+	auto id = shaderProgram->GetId();
+
+	for (auto& fu : floatUniforms)
 	{
-		if (this->shaderProgram == shaderProgram)
-		{
-			return;
-		}
-		else
-		{
-			this->shaderProgram = shaderProgram;
-			uniforms = shaderProgram->CreateUniforms();
-		}
+		glUniform1f(glGetUniformLocation(id, fu.first.c_str()), fu.second);
 	}
+
+	for (auto& tu : textureUniforms)
+	{
+
+	}
+
+	// ...
 }
 
-const std::map<std::string, std::variant<float, GLuint, Mrk::Vector4>>& MrkTest::Material::GetUniforms()
+void Mrk::Material::AddFloat(std::string_view name)
 {
-	return uniforms;
+	floatUniforms.try_emplace(name.data(), 0.0f);
 }
 
-MrkTest::Shader::Shader(const std::filesystem::path& path, int shaderType)
+void Mrk::Material::AddTexture(std::string_view name)
+{
+	textureUniforms.try_emplace(name.data(), 0);
+}
+
+void Mrk::Material::AddVector(std::string_view name)
+{
+	vectorUniforms.try_emplace(name.data(), Vector4{ 0.0f,0.0f,0.0f,0.0f });
+}
+
+const std::map<std::string, float>& Mrk::Material::GetFloatUniforms()
+{
+	return floatUniforms;
+}
+
+const std::map<std::string, GLuint>& Mrk::Material::GetTextureUniforms()
+{
+	return textureUniforms;
+}
+
+const std::map<std::string, Mrk::Vector4>& Mrk::Material::GetVectorUniforms()
+{
+	return vectorUniforms;
+}
+
+Mrk::Shader::Shader(const std::filesystem::path& path, int shaderType)
 {
 	std::string code;
 
@@ -43,68 +79,42 @@ MrkTest::Shader::Shader(const std::filesystem::path& path, int shaderType)
 	}
 
 	auto lcode = code.c_str();
+	id = glCreateShader(shaderType);
 	glShaderSource(id, 1, &lcode, NULL);
 	glCompileShader(id);
 
-	bool valid;
-	glGetShaderiv(id, GL_COMPILE_STATUS, (GLint*)&valid);
-	if (!valid)
+	GLint success;
+	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+	if (!success)
 	{
 		glDeleteShader(id);
 	}
 }
 
-std::shared_ptr<MrkTest::ShaderProgram> MrkTest::ShaderProgramHut::GetShaderProgram(std::string_view name)
-{
-	MRK_INSTANCE_REF;
-
-	auto ret = instance.sps.find(name.data());
-	if (ret != instance.sps.end())
-	{
-		return ret->second;
-	}
-	else
-	{
-		std::filesystem::path shaderDir = Mrk::ConfigSys::GetConfigItem<std::string>("AppConfig", "ShaderSourcesPath");
-		auto vsPath = (shaderDir / name.data()).replace_extension(".vert");
-		auto fsPath = (shaderDir / name.data()).replace_extension(".frag");
-		if (std::filesystem::exists(vsPath) && std::filesystem::exists(fsPath))
-		{
-			auto vs = Shader(vsPath, GL_VERTEX_SHADER).id;
-			auto fs = Shader(fsPath, GL_FRAGMENT_SHADER).id;
-
-			if (vs && fs)
-			{
-				auto ctor = instance.spctors.find(name.data());
-				if (ctor != instance.spctors.end())
-				{
-					auto sp = ctor->second();
-					instance.sps.emplace(name.data(), sp);
-
-					sp->AttachShader(vs);
-					sp->AttachShader(fs);
-					sp->Link();
-
-					return sp;
-				}
-			}
-		}
-	}
-
-	return std::shared_ptr<ShaderProgram>();
-}
-
-MrkTest::ShaderProgram::ShaderProgram()
+Mrk::ShaderProgram::ShaderProgram()
 {
 	id = glCreateProgram();
 }
 
-MrkTest::ShaderProgram::~ShaderProgram()
+Mrk::ShaderProgram::~ShaderProgram()
 {
 	glDeleteProgram(id);
 }
 
-bool MrkTest::ShaderProgram::Link()
+std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::CreateMaterial()
+{
+	auto mat = std::shared_ptr<Material>(new Mrk::Material());
+	mat->shaderProgram = shared_from_this();
+
+	return mat;
+}
+
+GLuint Mrk::ShaderProgram::GetId()
+{
+	return id;
+}
+
+bool Mrk::ShaderProgram::Link()
 {
 	glLinkProgram(id);
 
@@ -125,21 +135,91 @@ bool MrkTest::ShaderProgram::Link()
 	return true;
 }
 
-void MrkTest::ShaderProgram::Use()
+void Mrk::ShaderProgram::Use()
 {
 	glUseProgram(id);
 }
 
-void MrkTest::ShaderProgram::AttachShader(GLuint id)
+void Mrk::ShaderProgram::AttachShader(GLuint id)
 {
 	glAttachShader(this->id, id);
 }
 
-std::map<std::string, std::variant<float, GLuint, Mrk::Vector4>> MrkTest::UnlitShaderProgram::CreateUniforms()
+std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetSharedMaterial(std::string_view name)
 {
-	static std::map<std::string, std::variant<float, GLuint, Mrk::Vector4>> uniforms = {
-		{ "diffuse", (GLuint)0 }
-	};
+	auto ret = sharedMaterials.find(name.data());
+	if (ret != sharedMaterials.end())
+	{
+		if (ret->second.expired())
+		{
+			ret->second = CreateMaterial();
+		}
+		return ret->second.lock();
+	}
+	else
+	{
+		auto mat = CreateMaterial();
+		sharedMaterials.emplace(name.data(), mat);
 
-	return uniforms;
+		return mat;
+	}
+}
+
+std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetUniqueMaterial()
+{
+	return CreateMaterial();
+}
+
+std::shared_ptr<Mrk::Material> Mrk::UnlitShaderProgram::CreateMaterial()
+{
+	auto mat = ShaderProgram::CreateMaterial();
+
+	mat->AddTexture("diffuse");
+
+	return mat;
+}
+
+std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std::string_view name)
+{
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.sps.find(name.data());
+	if (ret != instance.sps.end())
+	{
+		return ret->second;
+	}
+	else
+	{
+		std::filesystem::path shaderDir = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "shaderSourcesDir");
+		auto vsPath = (shaderDir / name.data()).replace_extension(".vert");
+		auto fsPath = (shaderDir / name.data()).replace_extension(".frag");
+		if (std::filesystem::exists(vsPath) && std::filesystem::exists(fsPath))
+		{
+			auto vs = Shader(vsPath, GL_VERTEX_SHADER).id;
+			auto fs = Shader(fsPath, GL_FRAGMENT_SHADER).id;
+
+			if (vs && fs)
+			{
+				auto ctor = instance.spctors.find(name.data());
+				if (ctor != instance.spctors.end())
+				{
+					auto sp = ctor->second();
+
+					sp->AttachShader(vs);
+					sp->AttachShader(fs);
+
+					if (sp->Link())
+					{
+						instance.sps.emplace(name.data(), sp);
+						return sp;
+					}
+				}
+			}
+
+			glDeleteShader(vs);
+			glDeleteShader(fs);
+		}
+	}
+
+	return std::shared_ptr<ShaderProgram>();
 }

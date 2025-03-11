@@ -2,22 +2,22 @@
 
 #include "Third/SOIL2/SOIL2.h"
 
-GLuint Mrk::Texture_::GetID()
+GLuint Mrk::Texture::GetID()
 {
     return id;
 }
 
-void Mrk::Texture_::Bind()
+void Mrk::Texture::Bind()
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 }
 
-void Mrk::Texture_::UnBind()
+void Mrk::Texture::UnBind()
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-std::shared_ptr<Mrk::Texture_> Mrk::TextureHub::GetTexture(std::string_view path)
+std::shared_ptr<Mrk::Texture> Mrk::TextureHut::GetTexture(std::string_view path)
 {
 	auto ret = Instance().textures.try_emplace(path.data(), nullptr);
 	if (ret.second)
@@ -27,9 +27,9 @@ std::shared_ptr<Mrk::Texture_> Mrk::TextureHub::GetTexture(std::string_view path
 	return ret.first->second;
 }
 
-std::shared_ptr<Mrk::Texture_> Mrk::TextureHub::LoadTexture(std::string_view path)
+std::shared_ptr<Mrk::Texture> Mrk::TextureHut::LoadTexture(std::string_view path)
 {
-	auto texture = std::make_shared<Mrk::Texture_>();
+	auto texture = std::make_shared<Mrk::Texture>();
 	texture->id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
 
 	texture->Bind();

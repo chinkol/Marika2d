@@ -75,15 +75,6 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 	auto backbuffer = backBuffers[currBackBufferIndex];
 	glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
 
-
-	//TODO : replace me
-	{
-		if (!renderLayers[1].empty())
-		{
-			glUseProgram(renderLayers[1][0].sp);
-		}
-	}
-
 	//camera
 
 	if (trans)
@@ -204,16 +195,21 @@ void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
 {
 	for (auto& item : renderItems)
 	{
-		//glUseProgram(item.sp);
-
 		item.mesh->Bind();
 
 		glUniform2ui(MRK_GL_LOCATING_OBJECTID, item.id.low32, item.id.high32);
 		glUniformMatrix4fv(MRK_GL_LOCATING_WORLD, 1, GL_FALSE, (GLfloat*)&item.world);
 
 		auto subMeshes = item.mesh->GetSubMeshes();
+		auto materials = item.materials;
+		assert(materials.size() == subMeshes.size());
+
 		for (size_t i = 0; i < subMeshes.size(); i++)
 		{
+			auto& material = materials[i];
+			material->Bind();
+			material->UploadUniforms();
+
 			auto& subMesh = subMeshes[i];
 			glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
 		}

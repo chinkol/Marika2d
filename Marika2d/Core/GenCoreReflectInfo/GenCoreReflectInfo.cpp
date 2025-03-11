@@ -187,11 +187,29 @@ namespace Mrk
 
 namespace Mrk
 {
+	MRK_CORE_REFLECT_REGISTER(MaterialSlot)(
+		rttr::registration::class_<MaterialSlot>("MaterialSlot")
+		.property("isShared", &MaterialSlot::GetIsShared, &MaterialSlot::SetIsShared)
+		.property("spName", &MaterialSlot::GetSpName, &MaterialSlot::SetSpName)
+		.property("matName", &MaterialSlot::GetMatName, &MaterialSlot::SetMatName);
+		);
+
 	MRK_CORE_REFLECT_REGISTER(MeshRenderer)(
 		rttr::registration::class_<MeshRenderer>("MeshRenderer")
 		.property("meshPath", &MeshRenderer::GetMeshPath, &MeshRenderer::SetMeshPath)
-		.property("vsPath", &MeshRenderer::GetVsPath, &MeshRenderer::SetVsPath)
-		.property("fsPath", &MeshRenderer::GetFsPath, &MeshRenderer::SetFsPath);
+		.property("matSlots", &MeshRenderer::GetMatSlots, &MeshRenderer::SetMatSlots);
+		);
+}
+
+#include "Core/Render/Material/Material.h"
+
+namespace Mrk
+{
+	MRK_CORE_REFLECT_REGISTER(ShaderSetting)(
+		rttr::registration::class_<ShaderSetting>("ShaderSetting")
+		.property("defaultShaderProgramName", &ShaderSetting::defaultShaderProgramName)
+		.property("defaultMaterialName", &ShaderSetting::defaultMaterialName)
+		.property("shaderSourcesDir", &ShaderSetting::shaderSourcesDir);
 		);
 }
 

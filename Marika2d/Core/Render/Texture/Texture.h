@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 namespace Mrk
 {
@@ -15,9 +16,9 @@ namespace Mrk
 		TexCube = GL_TEXTURE_CUBE_MAP,
 	};
 
-	class Texture_
+	class Texture
 	{
-		friend class TextureHub;
+		friend class TextureHut;
 	public:
 		GLuint GetID();
 		void Bind();
@@ -26,14 +27,14 @@ namespace Mrk
 		GLuint id;
 	};
 
-	class TextureHub : public Singleton<TextureHub>
+	class TextureHut : public Singleton<TextureHut>
 	{
 	public:
-		std::shared_ptr<Texture_> GetTexture(std::string_view path);
+		std::shared_ptr<Texture> GetTexture(std::string_view path);
 	private:
-		std::shared_ptr<Texture_> LoadTexture(std::string_view path);
+		std::shared_ptr<Texture> LoadTexture(std::string_view path);
 	private:
-		std::map<std::string, std::shared_ptr<Texture_>> textures;
+		std::map<std::string, std::shared_ptr<Texture>> textures;
 	};
 }
 

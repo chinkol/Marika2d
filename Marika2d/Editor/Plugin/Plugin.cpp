@@ -8,6 +8,8 @@
 
 #include "Third/imgui/imgui_internal.h"
 
+#include <format>
+
 void Mrk::PluginSys::Init()
 {
 	Instance().plugins.clear();
@@ -258,7 +260,7 @@ void Mrk::PluginSceneSaver::Update()
 
 void Mrk::PluginPropertiesInspectUI::Draw()
 {
-	ImGui::Begin("Inspector");
+	ImGui::Begin("Inspecter");
 
 	if (auto selection = PluginObjectSelecter::GetInstance()->GetSelection())
 	{
@@ -366,7 +368,33 @@ bool Mrk::PluginPropertiesInspectUI::RecurArithmetic(rttr::variant& arithmetic, 
 
 bool Mrk::PluginPropertiesInspectUI::RecurSeqContainer(rttr::variant& array, std::string_view name)
 {
-	return false;
+	auto seq = array.create_sequential_view();
+
+	if (!seq.is_valid() || seq.get_size() == 0)
+	{
+		ImGui::Text("%s: [Empty Sequence]", name.data());
+		return false;
+	}
+
+	bool modified = false;
+
+	if (ImGui::TreeNode(name.data()))
+	{
+		for (size_t i = 0; i < seq.get_size(); ++i)
+		{
+			auto item = seq.get_value(i).extract_wrapped_value();
+
+			if (RecurVariant(item, std::format("element {}", i)))
+			{
+				seq.set_value(i, item);
+				modified = true;
+			}
+		}
+
+		ImGui::TreePop();
+	}
+
+	return modified;
 }
 
 bool Mrk::PluginPropertiesInspectUI::RecurAssContainer(rttr::variant& array, std::string_view name)
@@ -479,4 +507,13 @@ bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::strin
 	}
 
 	return false;
+}
+
+void Mrk::PluginMaterialEditor::Draw()
+{
+	ImGui::Begin("Material");
+
+
+
+	ImGui::End();
 }

@@ -195,6 +195,13 @@ namespace Mrk
 		bool RecurString(rttr::variant& str, std::string_view name);
 		bool RecurVariant(rttr::variant& variant, std::string_view name);
 	};
+
+	class PluginMaterialEditor : public IPlugin
+	{
+		MRK_PLUGIN(PluginMaterialEditor)
+	public:
+		void Draw();
+	};
 }
 
 namespace Mrk

@@ -72,9 +72,6 @@
     <ClCompile Include="Render\Texture\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGL\Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h">
@@ -132,9 +129,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Render\Texture\Texture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

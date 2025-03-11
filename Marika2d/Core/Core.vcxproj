@@ -38,7 +38,6 @@
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Component\Transform\Transform.cpp" />
     <ClCompile Include="Render\Texture\Texture.cpp" />
-    <ClCompile Include="OpenGL\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -60,7 +59,6 @@
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Component\Transform\Transform.h" />
     <ClInclude Include="Render\Texture\Texture.h" />
-    <ClInclude Include="OpenGL\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
