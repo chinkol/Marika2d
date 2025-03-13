@@ -6,6 +6,7 @@
 #include "Core/GameObject/GameObject.h"
 #include "Core/Camera/Camera.h"
 
+#include "Third/imnodes/imnodes.h"
 #include "Third/imgui/imgui_internal.h"
 
 #include <format>
@@ -123,13 +124,12 @@ void Mrk::PluginProjectCreater::Update()
 
 void Mrk::PluginSceneTreeUI::Draw()
 {
-	ImGui::Begin("SceneTree");
+	ImGui::Begin("SceneTree", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
 	if (auto mainScene = SceneHut::GetCurrScene())
 	{
 		CreateTreeNode(mainScene->GetRoot());
 	};
-
 
 	ImGui::End();
 }
@@ -139,26 +139,62 @@ void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
 	if (node)
 	{
 		ImGui::PushID(std::to_string(node->GetID().total64).c_str());
-		if (ImGui::TreeNode(node->GetName().c_str()))
+
+		if (ImGui::TreeNodeEx(node->GetName().c_str(), node->GetChildren().empty() ? ImGuiTreeNodeFlags_Leaf : 0))
 		{
+			DragDropNode(node);
+
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				PluginObjectSelecter::GetInstance()->SetSelection(node);
 			}
-			for (auto& child : node->GetChildren())
+
+			auto& children = node->GetChildren();
+			for (auto& child : children)
 			{
 				CreateTreeNode(child);
 			}
+
 			ImGui::TreePop();
 		}
-		else
+		else if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				PluginObjectSelecter::GetInstance()->SetSelection(node);
-			}
+			PluginObjectSelecter::GetInstance()->SetSelection(node);
 		}
+
 		ImGui::PopID();
+	}
+}
+
+void Mrk::PluginSceneTreeUI::DragDropNode(std::shared_ptr<GameObject> node)
+{
+	static std::weak_ptr<GameObject> dragged;
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		dragged = node;
+		ImGui::SetDragDropPayload("GameObject", nullptr, 0);
+		ImGui::Text(node->GetName().c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GameObject"))
+		{
+			if (!dragged.expired())
+			{
+				auto dropped = dragged.lock();
+
+				//TODO : fix : 父节点拖拽到子节点，循环引用内存泄露
+				if (dropped != node)	// 确保不能拖到自身
+				{
+					node->AddChild(dropped);
+				}
+			}
+			dragged.reset();
+		}
+		ImGui::EndDragDropTarget();
 	}
 }
 
@@ -260,7 +296,7 @@ void Mrk::PluginSceneSaver::Update()
 
 void Mrk::PluginPropertiesInspectUI::Draw()
 {
-	ImGui::Begin("Inspecter");
+	ImGui::Begin("Inspecter", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
 	if (auto selection = PluginObjectSelecter::GetInstance()->GetSelection())
 	{
@@ -370,12 +406,6 @@ bool Mrk::PluginPropertiesInspectUI::RecurSeqContainer(rttr::variant& array, std
 {
 	auto seq = array.create_sequential_view();
 
-	if (!seq.is_valid() || seq.get_size() == 0)
-	{
-		ImGui::Text("%s: [Empty Sequence]", name.data());
-		return false;
-	}
-
 	bool modified = false;
 
 	if (ImGui::TreeNode(name.data()))
@@ -408,10 +438,25 @@ bool Mrk::PluginPropertiesInspectUI::RecurString(rttr::variant& str, std::string
 	char buffer[256];
 	strncpy_s(buffer, value.c_str(), sizeof(buffer));
 	buffer[sizeof(buffer) - 1] = '\0';
+
 	if (ImGui::InputText(name.data(), buffer, sizeof(buffer)))
 	{
 		str = Utility::UFT8ToGBK(std::string(buffer));
 		return true;
+	}
+	else if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILEPATH"))
+		{
+			if (payload->DataSize > 0)
+			{
+				strncpy_s(buffer, static_cast<const char*>(payload->Data), sizeof(buffer) - 1);
+				buffer[sizeof(buffer) - 1] = '\0';
+				str = buffer;
+				return true;
+			}
+		}
+		ImGui::EndDragDropTarget();
 	}
 
 	return false;
@@ -423,6 +468,10 @@ bool Mrk::PluginPropertiesInspectUI::RecurVariant(rttr::variant& variant, std::s
 
 	if (type.is_valid())
 	{
+		if (IsSepcializedType(type))
+		{
+			return RecurSpecialized(variant, name);
+		}
 		if (type.is_arithmetic())
 		{
 			return RecurArithmetic(variant, name);
@@ -452,10 +501,94 @@ bool Mrk::PluginPropertiesInspectUI::RecurVariant(rttr::variant& variant, std::s
 	return false;
 }
 
+bool Mrk::PluginPropertiesInspectUI::RecurSpecialized(rttr::variant& variant, std::string_view name)
+{
+	auto type = variant.get_type();
+
+	if (type == rttr::type::get<Mrk::Vector2>())
+	{
+		auto value = variant.get_value<Vector2>();
+		if (ImGui::InputFloat2(name.data(), (float*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Vector3>())
+	{
+		auto value = variant.get_value<Vector3>();
+		if (ImGui::InputFloat3(name.data(), (float*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Vector4>())
+	{
+		auto value = variant.get_value<Vector4>();
+		if (ImGui::InputFloat4(name.data(), (float*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Quaternion>())
+	{
+		auto value = variant.get_value<Quaternion>();
+		if (ImGui::InputFloat4(name.data(), (float*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Vector2i>())
+	{
+		auto value = variant.get_value<Vector2i>();
+		if (ImGui::InputInt2(name.data(), (int*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Vector3i>())
+	{
+		auto value = variant.get_value<Vector3i>();
+		if (ImGui::InputInt3(name.data(), (int*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+	else if (type == rttr::type::get<Mrk::Vector4i>())
+	{
+		auto value = variant.get_value<Vector4i>();
+		if (ImGui::InputInt4(name.data(), (int*)&value))
+		{
+			variant = value;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Mrk::PluginPropertiesInspectUI::IsSepcializedType(const rttr::type& type)
+{
+	return type == rttr::type::get<Vector2>()
+		|| type == rttr::type::get<Vector3>()
+		|| type == rttr::type::get<Vector4>()
+		|| type == rttr::type::get<Quaternion>()
+		|| type == rttr::type::get<Vector2i>()
+		|| type == rttr::type::get<Vector3i>()
+		|| type == rttr::type::get<Vector4i>();
+}
+
 bool Mrk::PluginPropertiesInspectUI::RecurProperties(rttr::instance obj)
 {
 	auto type = obj.get_derived_type();
 	auto props = type.get_properties();
+
+	bool modified = false;
 
 	for (auto& prop : props)
 	{
@@ -469,7 +602,7 @@ bool Mrk::PluginPropertiesInspectUI::RecurProperties(rttr::instance obj)
 				try
 				{
 					prop.set_value(obj, propValue);
-					return true;
+					modified = true;
 				}
 				catch (const std::exception& ex)
 				{
@@ -482,7 +615,7 @@ bool Mrk::PluginPropertiesInspectUI::RecurProperties(rttr::instance obj)
 		}
 	}
 
-	return false;
+	return modified;
 }
 
 bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::string_view name)
@@ -511,9 +644,28 @@ bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::strin
 
 void Mrk::PluginMaterialEditor::Draw()
 {
-	ImGui::Begin("Material");
+	ImGui::Begin("Material", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+	if (auto selection = PluginObjectSelecter::GetInstance()->GetSelection())
+	{
+		ImGui::Text(selection->GetName().c_str());
+	}
 
+	ImGui::End();
+}
 
+void Mrk::PluginImNodesTest::Draw()
+{
+	const int hardcoded_node_id = 1;
+
+	ImGui::Begin("node editor");
+
+	ImNodes::BeginNodeEditor();
+
+	ImNodes::BeginNode(hardcoded_node_id);
+	ImGui::Dummy(ImVec2(80.0f, 45.0f));
+	ImNodes::EndNode();
+
+	ImNodes::EndNodeEditor();
 
 	ImGui::End();
 }

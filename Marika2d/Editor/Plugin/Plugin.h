@@ -138,6 +138,7 @@ namespace Mrk
 		virtual void Draw() override;
 	private:
 		void CreateTreeNode(std::shared_ptr<GameObject> node);
+		void DragDropNode(std::shared_ptr<GameObject> node);
 	};
 
 	class PluginViewportUI : public IPlugin
@@ -194,6 +195,15 @@ namespace Mrk
 		bool RecurAssContainer(rttr::variant& array, std::string_view name);
 		bool RecurString(rttr::variant& str, std::string_view name);
 		bool RecurVariant(rttr::variant& variant, std::string_view name);
+		bool RecurSpecialized(rttr::variant& variant, std::string_view name);	// 处理特化类型
+		bool IsSepcializedType(const rttr::type& type);
+	};
+
+	class PluginImNodesTest : public IPlugin
+	{
+		MRK_PLUGIN(PluginImNodesTest)
+	public:
+		void Draw();
 	};
 
 	class PluginMaterialEditor : public IPlugin

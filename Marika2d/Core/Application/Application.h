@@ -6,9 +6,6 @@
 #include "Third/glm/glm.hpp"
 #include "Third/glad/include/glad.h"
 #include "Third/glfw/include/glfw3.h"
-#include "Third/imgui/imgui.h"
-#include "Third/imgui/imgui_impl_glfw.h"
-#include "Third/imgui/imgui_impl_opengl3.h"
 
 #include <string>
 #include <functional>

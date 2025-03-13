@@ -30,6 +30,9 @@
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Asset\AssetViewUI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset\AssetSys.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Asset\AssetViewUI.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

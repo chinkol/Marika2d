@@ -3,7 +3,11 @@
 #include "Core/Component/Component.h"
 #include "Core/Render/Render.h"
 
+#include "Third/imgui/imgui.h"
+#include "Third/imgui/imgui_impl_glfw.h"
+#include "Third/imgui/imgui_impl_opengl3.h"
 #include "Third/imgui/freetype/imgui_freetype.h"
+#include "Third/imnodes/imnodes.h"
 
 Mrk::Window::Window(int width, int height, std::string_view title) :
     width(width),
@@ -87,6 +91,7 @@ void Mrk::Window::InitImGui()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImNodes::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
@@ -104,6 +109,7 @@ void Mrk::Window::Cleanup()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImNodes::DestroyContext();
     ImGui::DestroyContext();
 
     if (window)
