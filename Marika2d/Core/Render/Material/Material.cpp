@@ -12,54 +12,49 @@ Mrk::Material::Material()
 
 void Mrk::Material::Bind()
 {
-	shaderProgram->Use();
+	if (shaderProgram)
+	{
+		shaderProgram->Use();
+		auto sp = shaderProgram->GetId();
+		for (auto& uniform : uniforms)
+		{
+			uniform->Bind(sp);
+		}
+	}
 }
 
-void Mrk::Material::UploadUniforms()
+const std::vector<std::unique_ptr<Mrk::Uniform>>& Mrk::Material::GetUniforms()
 {
-	auto id = shaderProgram->GetId();
+	return uniforms;
+}
 
-	for (auto& fu : floatUniforms)
+Json::Value Mrk::Material::ToJson(Mrk::JsonAllocator& alloctor)
+{
+	Json::Value jmat(Json::ArrayType);
+
+	for (auto& uniform : uniforms)
 	{
-		glUniform1f(glGetUniformLocation(id, fu.first.c_str()), fu.second);
+		jmat.PushBack(ReflectSys::ToJson(*uniform, alloctor), alloctor);
 	}
 
-	for (auto& tu : textureUniforms)
+	return jmat;
+}
+
+void Mrk::Material::FromJson(const Json::Value& json)
+{
+	if (json.IsArray())
 	{
-
+		auto jarr = json.GetArray();
+		for (auto& item : jarr)
+		{
+			
+		}
 	}
-
-	// ...
 }
 
-void Mrk::Material::AddFloat(std::string_view name)
+void Mrk::Material::AddUniform(Uniform* uniform)
 {
-	floatUniforms.try_emplace(name.data(), 0.0f);
-}
-
-void Mrk::Material::AddTexture(std::string_view name)
-{
-	textureUniforms.try_emplace(name.data(), 0);
-}
-
-void Mrk::Material::AddVector(std::string_view name)
-{
-	vectorUniforms.try_emplace(name.data(), Vector4{ 0.0f,0.0f,0.0f,0.0f });
-}
-
-const std::map<std::string, float>& Mrk::Material::GetFloatUniforms()
-{
-	return floatUniforms;
-}
-
-const std::map<std::string, GLuint>& Mrk::Material::GetTextureUniforms()
-{
-	return textureUniforms;
-}
-
-const std::map<std::string, Mrk::Vector4>& Mrk::Material::GetVectorUniforms()
-{
-	return vectorUniforms;
+	uniforms.push_back(std::unique_ptr<Uniform>(uniform));
 }
 
 Mrk::Shader::Shader(const std::filesystem::path& path, int shaderType)
@@ -173,26 +168,25 @@ std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetUniqueMaterial()
 std::shared_ptr<Mrk::Material> Mrk::UnlitShaderProgram::CreateMaterial()
 {
 	auto mat = ShaderProgram::CreateMaterial();
-
-	mat->AddTexture("diffuse");
+	mat->AddUniform(UniformFactory::CreateUniform<TextureUniform>("diffuse", TextureUnit::Tex0, TextureType::Tex2D));
 
 	return mat;
 }
 
-std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std::string_view name)
+std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std::string_view spPath)
 {
 	MRK_INSTANCE_REF;
 
-	auto ret = instance.sps.find(name.data());
+	auto ret = instance.sps.find(spPath.data());
 	if (ret != instance.sps.end())
 	{
 		return ret->second;
 	}
 	else
 	{
-		std::filesystem::path shaderDir = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "shaderSourcesDir");
-		auto vsPath = (shaderDir / name.data()).replace_extension(".vert");
-		auto fsPath = (shaderDir / name.data()).replace_extension(".frag");
+		std::filesystem::path shaderFile = spPath;
+		auto vsPath = shaderFile.replace_extension(".vert");
+		auto fsPath = shaderFile.replace_extension(".frag");
 		if (std::filesystem::exists(vsPath) && std::filesystem::exists(fsPath))
 		{
 			auto vs = Shader(vsPath, GL_VERTEX_SHADER).id;
@@ -200,7 +194,8 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 
 			if (vs && fs)
 			{
-				auto ctor = instance.spctors.find(name.data());
+				auto spName = shaderFile.remove_filename().string();
+				auto ctor = instance.spctors.find(spName);
 				if (ctor != instance.spctors.end())
 				{
 					auto sp = ctor->second();
@@ -210,7 +205,7 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 
 					if (sp->Link())
 					{
-						instance.sps.emplace(name.data(), sp);
+						instance.sps.emplace(spName, sp);
 						return sp;
 					}
 				}
@@ -222,4 +217,150 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 	}
 
 	return std::shared_ptr<ShaderProgram>();
+}
+
+Mrk::Uniform::Uniform()
+{
+}
+
+Mrk::Uniform::Uniform(std::string_view name) :
+	name(name)
+{
+}
+
+const std::string& Mrk::Uniform::GetName()
+{
+	return name;
+}
+
+void Mrk::Uniform::SetName_(const std::string& name)
+{
+	this->name = name;
+}
+
+void Mrk::Uniform::Bind(GLuint sp)
+{
+	if (location == -1)
+	{
+		location = glGetUniformLocation(sp, name.data());
+		if (location == -1)
+		{
+			std::cout << std::format("uniform {} not correct !", name) << std::endl;
+			// TODO : log
+		}
+	}
+
+	BindUniform(sp);
+}
+
+Mrk::FloatUniform::FloatUniform(std::string_view name) : Uniform(name)
+{
+}
+
+void Mrk::FloatUniform::BindUniform(GLuint sp)
+{
+	glUniform1f(location, val);
+}
+
+const std::string& Mrk::TextureUniform::GetTexturePath()
+{
+	return texturePath;
+}
+
+void Mrk::TextureUniform::SetTexturePath_(const std::string& texturePath)
+{
+	this->texturePath = texturePath;
+}
+
+Mrk::TextureUniform::TextureUniform(std::string_view name, TextureUnit unit, TextureType type) : Uniform(name),
+textureUnit(unit),
+textureType(type)
+{
+}
+
+Mrk::TextureUnit Mrk::TextureUniform::GetTextureUnit()
+{
+	return textureUnit;
+}
+
+void Mrk::TextureUniform::SetTextureUnit_(TextureUnit unit)
+{
+	textureUnit = unit;
+}
+
+Mrk::TextureType Mrk::TextureUniform::GetTextureType()
+{
+	return textureType;
+}
+
+void Mrk::TextureUniform::SetTextureType_(TextureType type)
+{
+	textureType = type;
+}
+
+void Mrk::TextureUniform::BindUniform(GLuint sp)
+{
+	glActiveTexture((GLenum)textureUnit);
+	glBindTexture((GLenum)textureType, textureId);
+	glUniform1i(location, (GLenum)textureUnit);
+}
+
+std::shared_ptr<Mrk::Material> Mrk::MaterialHut::GetMaterial(const std::filesystem::path& matPath)
+{
+	MRK_INSTANCE_REF;
+
+	auto path = matPath.string();
+
+	auto ret = instance.materials.find(path);
+	if (ret != instance.materials.end())
+	{
+		return ret->second;
+	}
+	else
+	{
+		return LoadMaterial(matPath);
+	}
+}
+
+std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesystem::path& matPath)
+{
+	MRK_INSTANCE_REF;
+
+	if (std::filesystem::exists(matPath))
+	{
+		auto ifstream = std::ifstream(matPath);
+		if (ifstream.is_open())
+		{
+			std::string content;
+			char ch;
+			while (ifstream.get(ch))
+			{
+				content += ch;
+			}
+			ifstream.close();
+
+			Json::Document jdoc;
+			jdoc.Parse(content); if (!jdoc.HasParseError())
+			{
+				auto mat = std::make_shared<Material>();
+				mat->FromJson(jdoc);
+				return instance.materials.emplace(matPath.string(), mat).first->second;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+Mrk::Uniform* Mrk::UniformFactory::CreateUniform(std::string_view name)
+{
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.ctors.find(name.data());
+	if (ret != instance.ctors.end())
+	{
+		return ret->second();
+	}
+
+	throw "not exist type";
 }

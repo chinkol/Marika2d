@@ -211,6 +211,23 @@ namespace Mrk
 		.property("defaultMaterialName", &ShaderSetting::defaultMaterialName)
 		.property("shaderSourcesDir", &ShaderSetting::shaderSourcesDir);
 		);
+
+	MRK_CORE_REFLECT_REGISTER(Uniform)(
+		rttr::registration::class_<Uniform>("Uniform")
+		.property("name", &Uniform::GetName, &Uniform::SetName_);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(FloatUniform)(
+		rttr::registration::class_<FloatUniform>("FloatUniform")
+		.property("val", &FloatUniform::val);
+		);
+
+	MRK_CORE_REFLECT_REGISTER(TextureUniform)(
+		rttr::registration::class_<TextureUniform>("TextureUniform")
+		.property("texturePath", &TextureUniform::GetTexturePath, &TextureUniform::SetTexturePath_)
+		.property("textureUnit", &TextureUniform::GetTextureUnit, &TextureUniform::SetTextureUnit_)
+		.property("textureType", &TextureUniform::GetTextureType, &TextureUniform::SetTextureType_);
+		);
 }
 
 #include "Core/Application/Application.h"

@@ -63,7 +63,6 @@ int main()
 
 	auto context = Mrk::Application::GetAppContext();
 	context.updateCallBack = []() {
-		ImGui::ShowDebugLogWindow();
 		};
 	Mrk::Application::SetAppContext(context);
 	Mrk::Application::Run();

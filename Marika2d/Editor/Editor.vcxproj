@@ -138,16 +138,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Asset\AssetViewUI.cpp" />
+    <ClCompile Include="Asset\AssetView.cpp" />
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
     <ClCompile Include="Asset\AssetSys.cpp" />
     <ClCompile Include="RttrTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Asset\AssetViewUI.h" />
+    <ClInclude Include="Asset\AssetView.h" />
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
+    <ClInclude Include="Plugin\UI\PluginMenuBarUI.h" />
     <ClInclude Include="Plugin\Plugin.h" />
     <ClInclude Include="Asset\AssetSys.h" />
     <ClInclude Include="RttrTest.h" />

@@ -85,7 +85,7 @@ Mrk::MaterialSlot::MaterialSlot() :
     static std::string defaultSpName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultShaderProgramName");
     static std::string defaultMatName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultMaterialName");
 
-    spName = defaultSpName;
+    spPath = defaultSpName;
     matName = matName = defaultMatName;
 }
 
@@ -101,12 +101,12 @@ void Mrk::MaterialSlot::SetIsShared(bool val)
 
 const std::string& Mrk::MaterialSlot::GetSpName() const
 {
-    return spName;
+    return spPath;
 }
 
-void Mrk::MaterialSlot::SetSpName(const std::string& spName)
+void Mrk::MaterialSlot::SetSpName(const std::string& spPath)
 {
-    this->spName = spName;
+    this->spPath = spPath;
 }
 
 const std::string& Mrk::MaterialSlot::GetMatName() const
@@ -126,5 +126,8 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialSlot::GetMaterial() const
 
 void Mrk::MaterialSlot::Load()
 {
-    material = isShared ? ShaderProgramHut::GetShaderProgram(spName)->GetSharedMaterial(matName) : ShaderProgramHut::GetShaderProgram(spName)->GetUniqueMaterial();
+    if (auto sp = ShaderProgramHut::GetShaderProgram(spPath))
+    {
+        material = isShared ? sp->GetSharedMaterial(matName) : sp->GetUniqueMaterial();
+    }
 }

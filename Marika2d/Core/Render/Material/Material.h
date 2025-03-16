@@ -13,7 +13,7 @@
 #include <map>
 
 #ifndef MRK_SHADERPROGRAM
-#define MRK_SHADERPROGRAM(x) private: static inline bool _mrk_macro_shader_program_##x##_register = [](){ Mrk::ShaderProgramHut::RegisterShaderProgram<x>(#x); return true; }();
+#define MRK_SHADERPROGRAM(x, y) private: static inline bool _mrk_macro_shader_program_##x##_register = [](){ Mrk::ShaderProgramHut::RegisterShaderProgram<x>(y); return true; }();
 #endif // !MRK_SHADERPROGRAM
 
 namespace Mrk
@@ -22,7 +22,7 @@ namespace Mrk
 	{
 		MRK_CONFIG(ShaderSetting)
 	public:
-		std::string defaultShaderProgramName = "UnlitShaderProgram";
+		std::string defaultShaderProgramName = "Unlit";
 		std::string defaultMaterialName = "default";
 		std::string shaderSourcesDir = "../TestProject/ShaderSources";
 	};
@@ -36,10 +36,20 @@ namespace Mrk
 	public:
 		template<typename T>
 		static void RegisterShaderProgram(std::string_view name);
-		static std::shared_ptr<ShaderProgram> GetShaderProgram(std::string_view name);
+		static std::shared_ptr<ShaderProgram> GetShaderProgram(std::string_view spPath);
 	private:
 		std::map<std::string, std::shared_ptr<ShaderProgram>> sps;
 		std::map<std::string, std::function<std::shared_ptr<ShaderProgram>()>> spctors;
+	};
+
+	class MaterialHut : public Singleton<MaterialHut>
+	{
+		MRK_SINGLETON(MaterialHut)
+	public:
+		static std::shared_ptr<Material> GetMaterial(const std::filesystem::path& matPath);
+		static std::shared_ptr<Material> LoadMaterial(const std::filesystem::path& matPath);
+	private:
+		std::map<std::string, std::shared_ptr<Material>> materials;
 	};
 
 	struct Shader
@@ -69,36 +79,165 @@ namespace Mrk
 
 	class UnlitShaderProgram : public ShaderProgram
 	{
-		MRK_SHADERPROGRAM(UnlitShaderProgram)
+		MRK_SHADERPROGRAM(UnlitShaderProgram, "Unlit")
 	public:
 		virtual std::shared_ptr<Material> CreateMaterial() override;
 	};
 
-	class Material
+#ifndef MRK_UNIFORM
+#define MRK_UNIFORM(x)														\
+RTTR_ENABLE(Uniform)														\
+public: x() = default;														\
+private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
+	return true;															\
+	}();																														
+#endif // !MRK_UNIFORM
+
+	class Uniform;
+
+	class UniformFactory : public Singleton<UniformFactory>
 	{
-		friend class ShaderProgram;
+		MRK_SINGLETON(UniformFactory)
+	public:
+		template<typename T>
+		static void Regeister(std::string_view name);
+		template<typename T>
+		static Uniform* CreateUniform();
+		template<typename T, typename ...Args>
+		static Uniform* CreateUniform(Args&&... args);
+		static Uniform* CreateUniform(std::string_view name);
 	private:
+		std::map<std::string, std::function<Uniform*()>> ctors;
+	};
+
+	class Uniform
+	{
+		RTTR_ENABLE()
+	public:
+		Uniform();	// 留给序列化使用
+		Uniform(std::string_view name);
+
+		const std::string& GetName();
+		void SetName_(const std::string& name);
+
+		void Bind(GLuint sp);
+
+	protected:
+		virtual void BindUniform(GLuint sp) = 0;
+	protected:
+		std::string name;
+		GLint location = -1;
+	};
+
+	class FloatUniform : public Uniform
+	{
+		MRK_UNIFORM(FloatUniform)
+	public:
+		float val = 0;
+
+		FloatUniform(std::string_view name);
+	private:
+		virtual void BindUniform(GLuint sp);
+	};
+
+	enum class TextureUnit : GLuint
+	{
+		Tex0 = GL_TEXTURE0,
+		Tex1 = GL_TEXTURE1,
+		Tex2 = GL_TEXTURE2,
+		Tex3 = GL_TEXTURE3,
+		Tex4 = GL_TEXTURE4,
+		Tex5 = GL_TEXTURE5,
+		Tex6 = GL_TEXTURE6,
+		Tex7 = GL_TEXTURE7,
+		Tex8 = GL_TEXTURE8,
+		Tex9 = GL_TEXTURE9,
+		Tex10 = GL_TEXTURE10,
+		Tex11 = GL_TEXTURE11,
+		Tex12 = GL_TEXTURE12,
+		Tex13 = GL_TEXTURE13
+		//Tex14 = GL_TEXTURE14,		// 留给环境贴图
+		//Tex15 = GL_TEXTURE15,		// 留给光照贴图
+	};
+
+	enum class TextureType : GLuint
+	{
+		Tex2D = GL_TEXTURE_2D,
+		TexCube = GL_TEXTURE_CUBE_MAP
+	};
+
+	class TextureUniform : public Uniform
+	{
+		MRK_UNIFORM(TextureUniform)
+	public:
+		TextureUniform(std::string_view name, TextureUnit unit, TextureType type);
+
+		const std::string& GetTexturePath();
+		void SetTexturePath_(const std::string& texturePath);
+
+		TextureUnit GetTextureUnit();
+		void SetTextureUnit_(TextureUnit unit);
+
+		TextureType GetTextureType();
+		void SetTextureType_(TextureType type);
+
+	private:
+		virtual void BindUniform(GLuint sp) override;
+	private:
+		GLuint textureId = 0;
+		std::string texturePath;
+		TextureUnit textureUnit;
+		TextureType textureType;
+		
+	};
+
+	class Material : public Object
+	{
+		MRK_OBJECT(Material) RTTR_ENABLE(Object)
+		friend class ShaderProgram;
+	public:
 		Material();
 	public:
 		void Bind();
-		void UploadUniforms();
-		void AddFloat(std::string_view name);
-		void AddTexture(std::string_view name);
-		void AddVector(std::string_view name);
-		const std::map<std::string, float>& GetFloatUniforms();
-		const std::map<std::string, GLuint>& GetTextureUniforms();
-		const std::map<std::string, Vector4>& GetVectorUniforms();
+		void AddUniform(Uniform* uniform);
+		const std::vector<std::unique_ptr<Uniform>>& GetUniforms();
+		virtual Json::Value ToJson(Mrk::JsonAllocator& alloctor);
+		virtual void FromJson(const Json::Value& json);
 	private:
 		std::shared_ptr<ShaderProgram> shaderProgram;
-
-		std::map<std::string, float> floatUniforms;
-		std::map<std::string, GLuint> textureUniforms;
-		std::map<std::string, Vector4> vectorUniforms;
+		std::vector<std::unique_ptr<Uniform>> uniforms;
 	};
 }
 
 namespace Mrk
 {
+	template<typename T>
+	inline void UniformFactory::Regeister(std::string_view name)
+	{
+		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
+
+		MRK_INSTANCE_REF;
+
+		instance.ctors.try_emplace(name.data(), []() {
+			return new T();
+			});
+	}
+	template<typename T>
+	inline Uniform* UniformFactory::CreateUniform()
+	{
+		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
+
+		return new T();
+	}
+
+	template<typename T, typename ...Args>
+	inline Uniform* UniformFactory::CreateUniform(Args && ...args)
+	{
+		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
+
+		return new T(std::forward<Args>(args)...);
+	}
+
 	template<typename T>
 	inline void ShaderProgramHut::RegisterShaderProgram(std::string_view name)
 	{

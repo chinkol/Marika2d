@@ -1,4 +1,4 @@
-#include "AssetViewUI.h"
+#include "AssetView.h"
 
 #include "Common/Utility/Utility.h"
 
@@ -44,6 +44,8 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
     {
         if (ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node.name).c_str()))
         {
+            MouseClick(node);
+
             for (auto& child : node.children)
             {
                 DrawNode(child);
@@ -55,6 +57,8 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
     {
         ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node.name).c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
+        MouseClick(node);
+
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
             auto text = node.path.c_str();
@@ -63,4 +67,50 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
             ImGui::EndDragDropSource();
         }
     }
+}
+
+void Mrk::Editor::AssetViewUI::MouseClick(AssetNode& node)
+{
+    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) 
+    {
+        ImGui::OpenPopup("AssetRightPopup");
+    }
+
+    if (ImGui::BeginPopup("AssetRightPopup")) 
+    {
+        std::filesystem::path path = node.path;
+
+        auto behaviors = AssetNodeBehaviorHut::GetBehaviors(path.extension().string());
+        for (auto& [name, behavior] : behaviors)
+        {
+            if (ImGui::MenuItem(name.c_str())) 
+            {
+                behavior();
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+std::map<std::string, std::function<void()>> Mrk::Editor::AssetNodeBehaviorHut::GetBehaviors(std::string_view suffix)
+{
+    MRK_INSTANCE_REF;
+
+    auto ret = instance.ctors.find(suffix.data());
+    if (ret != instance.ctors.end())
+    {
+        return std::unique_ptr<IAssertNodeBehavior>(ret->second())->MakeBehaviors();
+    }
+    
+    return std::map<std::string, std::function<void()>>();
+}
+
+std::map<std::string, std::function<void()>> Mrk::Editor::AssertNodeBehavior_mmsh::MakeBehaviors()
+{
+    return {
+        {"This is a mmsh", []() {
+            std::cout << "This is a mmsh" << std::endl;
+        }}
+    };
 }

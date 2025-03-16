@@ -207,11 +207,13 @@ void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
 		for (size_t i = 0; i < subMeshes.size(); i++)
 		{
 			auto& material = materials[i];
-			material->Bind();
-			material->UploadUniforms();
+			if (material)
+			{
+				material->Bind();
 
-			auto& subMesh = subMeshes[i];
-			glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
+				auto& subMesh = subMeshes[i];
+				glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
+			}
 		}
 	}
 }

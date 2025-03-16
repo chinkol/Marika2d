@@ -9,13 +9,8 @@
 #include <map>
 #include <string>
 
-#ifndef MRK_COMPONENT_CONTENT
-#define MRK_COMPONENT_CONTENT(x)																										\
-MRK_OBJECT(x)																															\
-friend struct Mrk::ComponentTrait<x>;																									\
-static inline bool _mrk_macro_##x##_component_register_ = [](){																			\
-	Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;																		\
-	}();																																\
+#ifndef MRK_COMPONENT_SERIALIZE_SELF
+#define MRK_COMPONENT_SERIALIZE_SELF																							\
 virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {																\
 	auto json = Mrk::ReflectSys::ToJson(*this, alloctor);																				\
 	json.AddMember(Json::Value(MRK_REFLECT_CLASS_JSON_PROP_NAME, alloctor), Json::Value(GetClassTypeName().data(), alloctor), alloctor);\
@@ -24,7 +19,28 @@ virtual inline Json::Value ToJson(Mrk::JsonAllocator& alloctor) override {						
 virtual inline void FromJson(const Json::Value& json) override {																		\
 	Mrk::ReflectSys::FromJson(*this, json);																								\
 }
+#endif // !MRK_COMPONENT_SERIALIZE_SELF
+
+#ifndef MRK_COMPONENT_REGISTER
+#define MRK_COMPONENT_REGISTER(x)																										\
+friend struct Mrk::ComponentTrait<x>;																									\
+static inline bool _mrk_macro_##x##_component_register_ = [](){																			\
+	Mrk::ComponentFactory::RegisterComponent<x>(#x); return true;																		\
+	}();	
+#endif // !MRK_COMPONENT_REGISTER
+
+#ifndef MRK_COMPONENT_CONTENT
+#define MRK_COMPONENT_CONTENT(x)																										\
+MRK_OBJECT(x)																															\
+MRK_COMPONENT_REGISTER(x)																												\
+MRK_COMPONENT_SERIALIZE_SELF
 #endif // !MRK_COMPONENT_CONTENT
+
+#ifndef MRK_COMPONENT_NO_SERIALIZE
+#define MRK_COMPONENT_NO_SERIALIZE(x)																										\
+MRK_OBJECT(x)																															\
+MRK_COMPONENT_REGISTER(x)
+#endif // !MRK_COMPONENT_NO_SERIALIZE
 
 #ifndef MRK_COMPONENT
 #define MRK_COMPONENT(x)		\

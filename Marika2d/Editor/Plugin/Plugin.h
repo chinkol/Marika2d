@@ -219,8 +219,10 @@ namespace Mrk
 	template<typename T>
 	inline void PluginSys::RegisterPlugin()
 	{
+		MRK_INSTANCE_REF;
+
 		static_assert(std::is_base_of_v<IPlugin, T>, "T Is Not A Plugin");
-		Instance().creators.push_back([]() {
+		instance.creators.push_back([]() {
 			return new T();
 			});
 	}
