@@ -36,6 +36,9 @@
     <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset\AssetSys.h">
@@ -54,6 +57,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\UI\PluginMenuBarUI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2487,6 +2487,9 @@
     <ClInclude Include="imnodes\imnodes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="nfd\nfd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\src\glad.c">

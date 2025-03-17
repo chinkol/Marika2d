@@ -117,7 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Third.lib;Common.lib;Core.lib;box2dd.lib;glfw3.lib;assimp-vc143-mtd.lib;OpenGL32.lib;rttr_core_d.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Third.lib;Common.lib;Core.lib;box2dd.lib;glfw3.lib;assimp-vc143-mtd.lib;OpenGL32.lib;rttr_core_d.lib;freetyped.lib;nfd_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -141,6 +141,7 @@
     <ClCompile Include="Asset\AssetView.cpp" />
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.cpp" />
     <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
     <ClCompile Include="Asset\AssetSys.cpp" />
@@ -149,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="Asset\AssetView.h" />
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
+    <ClInclude Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.h" />
     <ClInclude Include="Plugin\UI\PluginMenuBarUI.h" />
     <ClInclude Include="Plugin\Plugin.h" />
     <ClInclude Include="Asset\AssetSys.h" />

@@ -32,7 +32,8 @@ namespace Mrk::Editor
     public:
         template<typename T>
         static void Register(std::string_view suffix);
-        static std::map<std::string, std::function<void()>> GetBehaviors(std::string_view suffix);
+        static std::map<std::string, std::function<void(const AssetNode&)>> GetRightClickBehaviors(std::string_view suffix);
+        static std::map<std::string, std::function<void(const AssetNode&)>> GetLeftClickBehaviors(std::string_view suffix);
     private:
         std::map<std::string, std::function<IAssertNodeBehavior*()>> ctors;
     };
@@ -41,15 +42,30 @@ namespace Mrk::Editor
     {
         friend class AssetNodeBehaviorHut;
     public:
-        virtual std::map<std::string, std::function<void()>> MakeBehaviors() = 0;
+        virtual std::map<std::string, std::function<void(const AssetNode&)>> MakeRightClickBehaviors();
+        virtual std::map<std::string, std::function<void(const AssetNode&)>> MakeLeftClickBehaviors();
     private:
     };
 
-    class AssertNodeBehavior_mmsh : public IAssertNodeBehavior
+    class AssetNodeBehavior_mmsh : public IAssertNodeBehavior
     {
-        MRK_ASSETNOEW_BEHAVIOR(AssertNodeBehavior_mmsh, ".mmsh")
+        MRK_ASSETNOEW_BEHAVIOR(AssetNodeBehavior_mmsh, ".mmsh")
     public:
-        virtual std::map<std::string, std::function<void()>> MakeBehaviors() override;
+        virtual std::map<std::string, std::function<void(const AssetNode&)>> MakeRightClickBehaviors() override;
+    };
+
+    class AssetNodeBehavior_mmat : public IAssertNodeBehavior
+    {
+        MRK_ASSETNOEW_BEHAVIOR(AssetNodeBehavior_mmat, ".mmat")
+    public:
+        virtual std::map<std::string, std::function<void(const AssetNode&)>> MakeLeftClickBehaviors() override;
+    };
+
+    class AssetNodeBehavior_vert : public IAssertNodeBehavior
+    {
+        MRK_ASSETNOEW_BEHAVIOR(AssetNodeBehavior_vert, ".vert")
+    public:
+        virtual std::map<std::string, std::function<void(const AssetNode&)>> MakeRightClickBehaviors();
     };
 
     class AssetViewUI : public IPlugin
@@ -60,7 +76,8 @@ namespace Mrk::Editor
         void Draw();
     private:
         void DrawNode(AssetNode& node);
-        void MouseClick(AssetNode& node);
+        void MouseRightClick(AssetNode& node);
+        void MouseLeftClick(AssetNode& node);
     private:
         AssetNode root;
     };

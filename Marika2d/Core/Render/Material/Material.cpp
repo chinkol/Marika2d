@@ -45,7 +45,7 @@ void Mrk::Material::FromJson(const Json::Value& json)
 	if (json.IsArray())
 	{
 		auto jarr = json.GetArray();
-		for (auto& item : jarr)
+		for (auto& jitem : jarr)
 		{
 			
 		}
@@ -184,22 +184,25 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 	}
 	else
 	{
-		std::filesystem::path shaderFile = spPath;
-		auto vsPath = shaderFile.replace_extension(".vert");
-		auto fsPath = shaderFile.replace_extension(".frag");
-		if (std::filesystem::exists(vsPath) && std::filesystem::exists(fsPath))
+		std::filesystem::path _spPath = spPath;
+
+		auto spName = _spPath.filename().replace_extension().string();
+		auto ctor = instance.spctors.find(spName);
+
+		if (ctor != instance.spctors.end())
 		{
-			auto vs = Shader(vsPath, GL_VERTEX_SHADER).id;
-			auto fs = Shader(fsPath, GL_FRAGMENT_SHADER).id;
+			auto sp = ctor->second();
 
-			if (vs && fs)
+			auto vsPath = _spPath.replace_filename(sp->GetName()).replace_extension(".vert");
+			auto fsPath = _spPath.replace_filename(sp->GetName()).replace_extension(".frag");
+
+			if (std::filesystem::exists(vsPath) && std::filesystem::exists(fsPath))
 			{
-				auto spName = shaderFile.remove_filename().string();
-				auto ctor = instance.spctors.find(spName);
-				if (ctor != instance.spctors.end())
-				{
-					auto sp = ctor->second();
+				auto vs = Shader(vsPath, GL_VERTEX_SHADER).id;
+				auto fs = Shader(fsPath, GL_FRAGMENT_SHADER).id;
 
+				if (vs && fs)
+				{
 					sp->AttachShader(vs);
 					sp->AttachShader(fs);
 
@@ -209,10 +212,10 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 						return sp;
 					}
 				}
-			}
 
-			glDeleteShader(vs);
-			glDeleteShader(fs);
+				glDeleteShader(vs);
+				glDeleteShader(fs);
+			}
 		}
 	}
 

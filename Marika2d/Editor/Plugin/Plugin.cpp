@@ -642,12 +642,73 @@ bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::strin
 	return false;
 }
 
+void Mrk::PluginMaterialEditor::SetSelectedMaterialFile(std::string_view file)
+{
+	selectedMaterialFile = file;
+}
+
 void Mrk::PluginMaterialEditor::Draw()
 {
 	ImGui::Begin("Material", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
-	if (auto selection = PluginObjectSelecter::GetInstance()->GetSelection())
+	
+	std::filesystem::path matPath = selectedMaterialFile;
+	if (std::filesystem::exists(matPath))
 	{
-		ImGui::Text(selection->GetName().c_str());
+		if (auto material = MaterialHut::GetMaterial(matPath.string())) 
+		{
+			auto& uniforms = material->GetUniforms();
+			for (auto& uniform : uniforms)
+			{
+				if (ImGui::TreeNode(uniform->GetName().c_str()))
+				{
+					auto props = uniform->get_type().get_global_properties();
+					for (auto& prop : props)
+					{
+						auto propType = prop.get_type();
+						auto propName = prop.get_name();
+						auto propValue = prop.get_value(*uniform);
+
+						if (propType == rttr::type::get<float>())
+						{
+							auto value = propValue.get_value<float>();
+							if (ImGui::InputFloat(propName.data(), &value))
+							{
+								prop.set_value(*uniform, value);
+							}
+						}
+						else if (propType == rttr::type::get<std::string>())
+						{
+							auto value = Utility::GBKToUTF8(propValue.get_value<std::string>());
+							char buffer[256];
+							strncpy_s(buffer, value.c_str(), sizeof(buffer));
+							buffer[sizeof(buffer) - 1] = '\0';
+
+							if (ImGui::InputText(propName.data(), buffer, sizeof(buffer)))
+							{
+								value = Utility::UFT8ToGBK(std::string(buffer));
+								prop.set_value(*uniform, value);
+							}
+							else if (ImGui::BeginDragDropTarget())
+							{
+								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILEPATH"))
+								{
+									if (payload->DataSize > 0)
+									{
+										strncpy_s(buffer, static_cast<const char*>(payload->Data), sizeof(buffer) - 1);
+										buffer[sizeof(buffer) - 1] = '\0';
+										propValue = buffer;
+										prop.set_value(*uniform, propValue);
+									}
+								}
+								ImGui::EndDragDropTarget();
+							}
+						}
+					}
+
+					ImGui::TreePop();
+				}
+			}
+		}
 	}
 
 	ImGui::End();

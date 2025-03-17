@@ -2,6 +2,10 @@
 
 #include "Common/Utility/Utility.h"
 
+#include "Third/nfd/nfd.h"
+
+#include "Core/Render/Material/Material.h"
+
 Mrk::Editor::AssetNode::AssetNode(const std::filesystem::path& p) :
     name(p.filename().string()),
     path(p.relative_path().make_preferred().string()),
@@ -42,14 +46,18 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
 {
     if (node.isDirectory)
     {
-        if (ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node.name).c_str()))
-        {
-            MouseClick(node);
+        bool isOpen = ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node.name).c_str());
 
+        MouseRightClick(node);
+        MouseLeftClick(node);
+
+        if (isOpen)
+        {
             for (auto& child : node.children)
             {
                 DrawNode(child);
             }
+
             ImGui::TreePop();
         }
     }
@@ -57,7 +65,8 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
     {
         ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node.name).c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
-        MouseClick(node);
+        MouseRightClick(node);
+        MouseLeftClick(node);
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
@@ -69,23 +78,23 @@ void Mrk::Editor::AssetViewUI::DrawNode(AssetNode& node)
     }
 }
 
-void Mrk::Editor::AssetViewUI::MouseClick(AssetNode& node)
+void Mrk::Editor::AssetViewUI::MouseRightClick(AssetNode& node)
 {
-    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) 
+    if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Right))
     {
-        ImGui::OpenPopup("AssetRightPopup");
+        ImGui::OpenPopup(node.path.c_str());
     }
 
-    if (ImGui::BeginPopup("AssetRightPopup")) 
+    if (ImGui::BeginPopup(node.path.c_str()))
     {
         std::filesystem::path path = node.path;
 
-        auto behaviors = AssetNodeBehaviorHut::GetBehaviors(path.extension().string());
+        auto behaviors = AssetNodeBehaviorHut::GetRightClickBehaviors(path.extension().string());
         for (auto& [name, behavior] : behaviors)
         {
             if (ImGui::MenuItem(name.c_str())) 
             {
-                behavior();
+                behavior(node);
             }
         }
 
@@ -93,24 +102,89 @@ void Mrk::Editor::AssetViewUI::MouseClick(AssetNode& node)
     }
 }
 
-std::map<std::string, std::function<void()>> Mrk::Editor::AssetNodeBehaviorHut::GetBehaviors(std::string_view suffix)
+void Mrk::Editor::AssetViewUI::MouseLeftClick(AssetNode& node)
+{
+    if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+    {
+        std::filesystem::path path = node.path;
+
+        auto behaviors = AssetNodeBehaviorHut::GetLeftClickBehaviors(path.extension().string());
+        for (auto& [name, behavior] : behaviors)
+        {
+            behavior(node);
+        }
+    }
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::AssetNodeBehaviorHut::GetRightClickBehaviors(std::string_view suffix)
 {
     MRK_INSTANCE_REF;
 
     auto ret = instance.ctors.find(suffix.data());
     if (ret != instance.ctors.end())
     {
-        return std::unique_ptr<IAssertNodeBehavior>(ret->second())->MakeBehaviors();
+        return std::unique_ptr<IAssertNodeBehavior>(ret->second())->MakeRightClickBehaviors();
     }
     
-    return std::map<std::string, std::function<void()>>();
+    return std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>>();
 }
 
-std::map<std::string, std::function<void()>> Mrk::Editor::AssertNodeBehavior_mmsh::MakeBehaviors()
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::AssetNodeBehaviorHut::GetLeftClickBehaviors(std::string_view suffix)
+{
+    MRK_INSTANCE_REF;
+
+    auto ret = instance.ctors.find(suffix.data());
+    if (ret != instance.ctors.end())
+    {
+        return std::unique_ptr<IAssertNodeBehavior>(ret->second())->MakeLeftClickBehaviors();
+    }
+
+    return std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>>();
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::AssetNodeBehavior_mmsh::MakeRightClickBehaviors()
 {
     return {
-        {"This is a mmsh", []() {
-            std::cout << "This is a mmsh" << std::endl;
+        {"This is a mmsh", [](const Mrk::Editor::AssetNode& node) {
+            std::cout << node.path << std::endl;
         }}
+    };
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::IAssertNodeBehavior::MakeRightClickBehaviors()
+{
+    return std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>>();
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::IAssertNodeBehavior::MakeLeftClickBehaviors()
+{
+    return std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>>();
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::AssetNodeBehavior_vert::MakeRightClickBehaviors()
+{
+    return {
+         {"Create (.mmat) File", [](const Mrk::Editor::AssetNode& node) {
+             if (auto sp = Mrk::ShaderProgramHut::GetShaderProgram(node.path))
+             {
+                 nfdchar_t* to;
+
+                 if (NFD_SaveDialog("mmat", NULL, &to) == NFD_OKAY)
+                 {
+                     auto mat = sp->CreateMaterial();
+                     Json::Document jdoc;
+                     Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), Mrk::Utility::UFT8ToGBK(to));
+                 }
+             }
+         }}
+    };
+}
+
+std::map<std::string, std::function<void(const Mrk::Editor::AssetNode&)>> Mrk::Editor::AssetNodeBehavior_mmat::MakeLeftClickBehaviors()
+{
+    return {
+         {"Create (.mmat) File", [](const Mrk::Editor::AssetNode& node) {
+             Mrk::PluginMaterialEditor::GetInstance()->SetSelectedMaterialFile(node.path);
+         }}
     };
 }

@@ -1,5 +1,8 @@
 #include "Utility.h"
 
+#include <fstream>
+#include <filesystem>
+
 std::string Mrk::Utility::GBKToUTF8(std::string_view gbkStr)
 {
 	int wcharSize = MultiByteToWideChar(CP_ACP, 0, gbkStr.data(), -1, NULL, 0);
@@ -24,4 +27,26 @@ std::string Mrk::Utility::UFT8ToGBK(std::string_view utf8Str)
 	WideCharToMultiByte(CP_ACP, 0, wideStr.c_str(), -1, &gbkStr[0], gbkSize, NULL, NULL);
 
 	return gbkStr;
+}
+
+void Mrk::Utility::SaveJson(const Json::Value& json, std::string_view to)
+{
+	std::filesystem::path toPath = to.data();
+
+	if (!std::filesystem::exists(toPath.parent_path()))
+	{
+		std::filesystem::create_directories(toPath.parent_path());
+	}
+
+	std::ofstream ofstream(toPath);
+	if (ofstream.is_open())
+	{
+		Json::StringBuffer buf;
+		Json::PrettyWriter writer(buf);
+
+		json.Accept(writer);
+
+		ofstream << buf.GetString() << std::endl;
+		ofstream.close();
+	}
 }

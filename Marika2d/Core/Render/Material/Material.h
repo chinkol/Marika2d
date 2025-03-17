@@ -13,7 +13,8 @@
 #include <map>
 
 #ifndef MRK_SHADERPROGRAM
-#define MRK_SHADERPROGRAM(x, y) private: static inline bool _mrk_macro_shader_program_##x##_register = [](){ Mrk::ShaderProgramHut::RegisterShaderProgram<x>(y); return true; }();
+#define MRK_SHADERPROGRAM(x, y) private: static inline bool _mrk_macro_shader_program_##x##_register = [](){ Mrk::ShaderProgramHut::RegisterShaderProgram<x>(y); return true; }();	\
+virtual std::string_view GetName() override { return y; }
 #endif // !MRK_SHADERPROGRAM
 
 namespace Mrk
@@ -65,7 +66,7 @@ namespace Mrk
 		ShaderProgram();
 		virtual ~ShaderProgram();
 		virtual std::shared_ptr<Material> CreateMaterial();
-
+		virtual std::string_view GetName() = 0;
 		GLuint GetId();
 		bool Link();
 		void Use();

@@ -210,7 +210,10 @@ namespace Mrk
 	{
 		MRK_PLUGIN(PluginMaterialEditor)
 	public:
+		void SetSelectedMaterialFile(std::string_view file);
 		void Draw();
+	private:
+		std::string selectedMaterialFile;
 	};
 }
 
