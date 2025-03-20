@@ -141,7 +141,8 @@
     <ClCompile Include="Asset\AssetView.cpp" />
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.cpp" />
+    <ClCompile Include="Plugin\PluginInputDlg\PluginInputDlg.cpp" />
+    <ClCompile Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.cpp" />
     <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
     <ClCompile Include="Asset\AssetSys.cpp" />
@@ -150,7 +151,8 @@
   <ItemGroup>
     <ClInclude Include="Asset\AssetView.h" />
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
-    <ClInclude Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.h" />
+    <ClInclude Include="Plugin\PluginInputDlg\PluginInputDlg.h" />
+    <ClInclude Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.h" />
     <ClInclude Include="Plugin\UI\PluginMenuBarUI.h" />
     <ClInclude Include="Plugin\Plugin.h" />
     <ClInclude Include="Asset\AssetSys.h" />

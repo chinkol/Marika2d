@@ -206,9 +206,9 @@ namespace Mrk
 		void Draw();
 	};
 
-	class PluginMaterialEditor : public IPlugin
+	class PluginMaterialEditUI : public IPlugin
 	{
-		MRK_PLUGIN(PluginMaterialEditor)
+		MRK_PLUGIN(PluginMaterialEditUI)
 	public:
 		void SetSelectedMaterialFile(std::string_view file);
 		void Draw();

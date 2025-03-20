@@ -90,25 +90,26 @@ namespace Mrk
 RTTR_ENABLE(Uniform)														\
 public: x() = default;														\
 private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
+	UniformHut::Regeister<x>(#x);											\
 	return true;															\
 	}();																														
 #endif // !MRK_UNIFORM
 
 	class Uniform;
 
-	class UniformFactory : public Singleton<UniformFactory>
+	class UniformHut : public Singleton<UniformHut>
 	{
-		MRK_SINGLETON(UniformFactory)
+		MRK_SINGLETON(UniformHut)
 	public:
 		template<typename T>
 		static void Regeister(std::string_view name);
 		template<typename T>
-		static Uniform* CreateUniform();
+		static std::unique_ptr<Uniform> CreateUniform();
 		template<typename T, typename ...Args>
-		static Uniform* CreateUniform(Args&&... args);
-		static Uniform* CreateUniform(std::string_view name);
+		static std::unique_ptr<Uniform> CreateUniform(Args&&... args);
+		static std::unique_ptr<Uniform> CreateUniform(std::string_view name);
 	private:
-		std::map<std::string, std::function<Uniform*()>> ctors;
+		std::map<std::string, std::function<std::unique_ptr<Uniform>()>> ctors;
 	};
 
 	class Uniform
@@ -167,11 +168,11 @@ private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
 		TexCube = GL_TEXTURE_CUBE_MAP
 	};
 
-	class TextureUniform : public Uniform
+	class UniformTexture2D : public Uniform
 	{
-		MRK_UNIFORM(TextureUniform)
+		MRK_UNIFORM(UniformTexture2D)
 	public:
-		TextureUniform(std::string_view name, TextureUnit unit, TextureType type);
+		UniformTexture2D(std::string_view name, TextureUnit unit, TextureType type);
 
 		const std::string& GetTexturePath();
 		void SetTexturePath_(const std::string& texturePath);
@@ -179,28 +180,23 @@ private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
 		TextureUnit GetTextureUnit();
 		void SetTextureUnit_(TextureUnit unit);
 
-		TextureType GetTextureType();
-		void SetTextureType_(TextureType type);
-
 	private:
 		virtual void BindUniform(GLuint sp) override;
 	private:
 		GLuint textureId = 0;
 		std::string texturePath;
 		TextureUnit textureUnit;
-		TextureType textureType;
-		
 	};
 
 	class Material : public Object
 	{
 		MRK_OBJECT(Material) RTTR_ENABLE(Object)
-		friend class ShaderProgram;
+			friend class ShaderProgram;
 	public:
 		Material();
 	public:
 		void Bind();
-		void AddUniform(Uniform* uniform);
+		void AddUniform(std::unique_ptr<Uniform> uniform);
 		const std::vector<std::unique_ptr<Uniform>>& GetUniforms();
 		virtual Json::Value ToJson(Mrk::JsonAllocator& alloctor);
 		virtual void FromJson(const Json::Value& json);
@@ -213,30 +209,30 @@ private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
 namespace Mrk
 {
 	template<typename T>
-	inline void UniformFactory::Regeister(std::string_view name)
+	inline void UniformHut::Regeister(std::string_view name)
 	{
 		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
 
 		MRK_INSTANCE_REF;
 
 		instance.ctors.try_emplace(name.data(), []() {
-			return new T();
+			return std::make_unique<T>();
 			});
 	}
 	template<typename T>
-	inline Uniform* UniformFactory::CreateUniform()
+	inline std::unique_ptr<Uniform> UniformHut::CreateUniform()
 	{
 		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
 
-		return new T();
+		return std::make_unique<T>();
 	}
 
 	template<typename T, typename ...Args>
-	inline Uniform* UniformFactory::CreateUniform(Args && ...args)
+	inline std::unique_ptr<Uniform> UniformHut::CreateUniform(Args && ...args)
 	{
 		static_assert(std::is_base_of_v<Uniform, T>, "T is not Uniform !");
 
-		return new T(std::forward<Args>(args)...);
+		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
 	template<typename T>

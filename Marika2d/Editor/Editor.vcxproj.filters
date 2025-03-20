@@ -36,7 +36,10 @@
     <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.cpp">
+    <ClCompile Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\PluginInputDlg\PluginInputDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +62,10 @@
     <ClInclude Include="Plugin\UI\PluginMenuBarUI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Plugin\PluginFileSelectDlg\PluginFileSelectDlg.h">
+    <ClInclude Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\PluginInputDlg\PluginInputDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

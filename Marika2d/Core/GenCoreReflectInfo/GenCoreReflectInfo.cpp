@@ -222,11 +222,10 @@ namespace Mrk
 		.property("val", &FloatUniform::val);
 		);
 
-	MRK_CORE_REFLECT_REGISTER(TextureUniform)(
-		rttr::registration::class_<TextureUniform>("TextureUniform")
-		.property("texturePath", &TextureUniform::GetTexturePath, &TextureUniform::SetTexturePath_)
-		.property("textureUnit", &TextureUniform::GetTextureUnit, &TextureUniform::SetTextureUnit_)
-		.property("textureType", &TextureUniform::GetTextureType, &TextureUniform::SetTextureType_);
+	MRK_CORE_REFLECT_REGISTER(UniformTexture2D)(
+		rttr::registration::class_<UniformTexture2D>("UniformTexture2D")
+		.property("texturePath", &UniformTexture2D::GetTexturePath, &UniformTexture2D::SetTexturePath_)
+		.property("textureUnit", &UniformTexture2D::GetTextureUnit, &UniformTexture2D::SetTextureUnit_);
 		);
 }
 

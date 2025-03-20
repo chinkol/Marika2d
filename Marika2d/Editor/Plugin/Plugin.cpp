@@ -642,31 +642,36 @@ bool  Mrk::PluginPropertiesInspectUI::RecurObject(rttr::instance obj, std::strin
 	return false;
 }
 
-void Mrk::PluginMaterialEditor::SetSelectedMaterialFile(std::string_view file)
+void Mrk::PluginMaterialEditUI::SetSelectedMaterialFile(std::string_view file)
 {
 	selectedMaterialFile = file;
 }
 
-void Mrk::PluginMaterialEditor::Draw()
+void Mrk::PluginMaterialEditUI::Draw()
 {
 	ImGui::Begin("Material", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
-	
+
 	std::filesystem::path matPath = selectedMaterialFile;
 	if (std::filesystem::exists(matPath))
 	{
-		if (auto material = MaterialHut::GetMaterial(matPath.string())) 
+		if (auto material = MaterialHut::GetMaterial(matPath.string()))
 		{
 			auto& uniforms = material->GetUniforms();
 			for (auto& uniform : uniforms)
 			{
 				if (ImGui::TreeNode(uniform->GetName().c_str()))
 				{
-					auto props = uniform->get_type().get_global_properties();
+					auto props = uniform->get_type().get_properties();
 					for (auto& prop : props)
 					{
 						auto propType = prop.get_type();
 						auto propName = prop.get_name();
 						auto propValue = prop.get_value(*uniform);
+
+						if (propName == "name")
+						{
+							continue;
+						}
 
 						if (propType == rttr::type::get<float>())
 						{

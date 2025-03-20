@@ -34,7 +34,9 @@ Json::Value Mrk::Material::ToJson(Mrk::JsonAllocator& alloctor)
 
 	for (auto& uniform : uniforms)
 	{
-		jmat.PushBack(ReflectSys::ToJson(*uniform, alloctor), alloctor);
+		auto juniform = ReflectSys::ToJson(*uniform, alloctor);
+		juniform.AddMember("_mrk_uniform_class_name_", Json::Value(uniform->get_type().get_name().data(), alloctor), alloctor);
+		jmat.PushBack(juniform, alloctor);
 	}
 
 	return jmat;
@@ -44,17 +46,24 @@ void Mrk::Material::FromJson(const Json::Value& json)
 {
 	if (json.IsArray())
 	{
-		auto jarr = json.GetArray();
-		for (auto& jitem : jarr)
+		auto juniforms = json.GetArray();
+		for (auto& juniform : juniforms)
 		{
-			
+			if (juniform.IsObject() && juniform.HasMember("_mrk_uniform_class_name_"))
+			{
+				auto& jclassName = juniform["_mrk_uniform_class_name_"];
+				auto uniform = UniformHut::CreateUniform(jclassName.GetString());
+				ReflectSys::FromJson(*uniform, juniform);
+				uniforms.push_back(std::move(uniform));
+			}
+
 		}
 	}
 }
 
-void Mrk::Material::AddUniform(Uniform* uniform)
+void Mrk::Material::AddUniform(std::unique_ptr<Uniform> uniform)
 {
-	uniforms.push_back(std::unique_ptr<Uniform>(uniform));
+	uniforms.push_back(std::move(uniform));
 }
 
 Mrk::Shader::Shader(const std::filesystem::path& path, int shaderType)
@@ -168,7 +177,7 @@ std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetUniqueMaterial()
 std::shared_ptr<Mrk::Material> Mrk::UnlitShaderProgram::CreateMaterial()
 {
 	auto mat = ShaderProgram::CreateMaterial();
-	mat->AddUniform(UniformFactory::CreateUniform<TextureUniform>("diffuse", TextureUnit::Tex0, TextureType::Tex2D));
+	mat->AddUniform(std::move(UniformHut::CreateUniform<UniformTexture2D>("diffuse", TextureUnit::Tex0, TextureType::Tex2D)));
 
 	return mat;
 }
@@ -265,46 +274,35 @@ void Mrk::FloatUniform::BindUniform(GLuint sp)
 	glUniform1f(location, val);
 }
 
-const std::string& Mrk::TextureUniform::GetTexturePath()
+const std::string& Mrk::UniformTexture2D::GetTexturePath()
 {
 	return texturePath;
 }
 
-void Mrk::TextureUniform::SetTexturePath_(const std::string& texturePath)
+void Mrk::UniformTexture2D::SetTexturePath_(const std::string& texturePath)
 {
 	this->texturePath = texturePath;
 }
 
-Mrk::TextureUniform::TextureUniform(std::string_view name, TextureUnit unit, TextureType type) : Uniform(name),
-textureUnit(unit),
-textureType(type)
+Mrk::UniformTexture2D::UniformTexture2D(std::string_view name, TextureUnit unit, TextureType type) : Uniform(name),
+textureUnit(unit)
 {
 }
 
-Mrk::TextureUnit Mrk::TextureUniform::GetTextureUnit()
+Mrk::TextureUnit Mrk::UniformTexture2D::GetTextureUnit()
 {
 	return textureUnit;
 }
 
-void Mrk::TextureUniform::SetTextureUnit_(TextureUnit unit)
+void Mrk::UniformTexture2D::SetTextureUnit_(TextureUnit unit)
 {
 	textureUnit = unit;
 }
 
-Mrk::TextureType Mrk::TextureUniform::GetTextureType()
-{
-	return textureType;
-}
-
-void Mrk::TextureUniform::SetTextureType_(TextureType type)
-{
-	textureType = type;
-}
-
-void Mrk::TextureUniform::BindUniform(GLuint sp)
+void Mrk::UniformTexture2D::BindUniform(GLuint sp)
 {
 	glActiveTexture((GLenum)textureUnit);
-	glBindTexture((GLenum)textureType, textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
 	glUniform1i(location, (GLenum)textureUnit);
 }
 
@@ -355,7 +353,7 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesys
 	return nullptr;
 }
 
-Mrk::Uniform* Mrk::UniformFactory::CreateUniform(std::string_view name)
+std::unique_ptr<Mrk::Uniform> Mrk::UniformHut::CreateUniform(std::string_view name)
 {
 	MRK_INSTANCE_REF;
 
