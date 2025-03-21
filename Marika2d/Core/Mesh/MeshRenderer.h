@@ -15,16 +15,16 @@ namespace Mrk
 		MaterialSlot();
 		bool GetIsShared() const;
 		void SetIsShared(bool val);
-		const std::string& GetSpName() const;
-		void SetSpName(const std::string& spPath);
-		const std::string& GetMatName() const;
-		void SetMatName(const std::string& matName);
+		const std::string& GetSpPath() const;
+		void SetSpPath(const std::string& spPath);
+		const std::string& GetMatPath() const;
+		void SetMatPath(const std::string& matPath);
 		std::shared_ptr<Material> GetMaterial() const;
 		void Load();
 	private:
 		bool isShared;
 		std::string spPath;
-		std::string matName;
+		std::string matPath;
 		std::shared_ptr<Material> material;
 	};
 

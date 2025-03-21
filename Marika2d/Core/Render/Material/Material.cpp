@@ -152,31 +152,6 @@ void Mrk::ShaderProgram::AttachShader(GLuint id)
 	glAttachShader(this->id, id);
 }
 
-std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetSharedMaterial(std::string_view name)
-{
-	auto ret = sharedMaterials.find(name.data());
-	if (ret != sharedMaterials.end())
-	{
-		if (ret->second.expired())
-		{
-			ret->second = CreateMaterial();
-		}
-		return ret->second.lock();
-	}
-	else
-	{
-		auto mat = CreateMaterial();
-		sharedMaterials.emplace(name.data(), mat);
-
-		return mat;
-	}
-}
-
-std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetUniqueMaterial()
-{
-	return CreateMaterial();
-}
-
 std::shared_ptr<Mrk::Material> Mrk::UnlitShaderProgram::CreateMaterial()
 {
 	auto mat = ShaderProgram::CreateMaterial();

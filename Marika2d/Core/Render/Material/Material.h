@@ -82,8 +82,6 @@ namespace Mrk
 		bool Link();
 		void Use();
 		void AttachShader(GLuint id);
-		std::shared_ptr<Material> GetSharedMaterial(std::string_view name);
-		std::shared_ptr<Material> GetUniqueMaterial();
 	private:
 		GLuint id;
 		std::map<std::string, std::weak_ptr<Material>> sharedMaterials;

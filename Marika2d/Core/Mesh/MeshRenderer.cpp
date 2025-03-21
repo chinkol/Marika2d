@@ -13,31 +13,6 @@ const std::string& Mrk::MeshRenderer::GetMeshPath()
 void Mrk::MeshRenderer::SetMeshPath(const std::string& meshPath)
 {
     this->meshPath = meshPath;
-    mesh = MeshHut::GetMesh(meshPath);
-
-    auto& subMeshes = mesh->GetSubMeshes();
-
-    if (subMeshes.size() > matSlots.size())
-    {
-        auto dif = subMeshes.size() - matSlots.size();
-        for (size_t i = 0; i < dif; i++)
-        {
-            if (matSlots.empty())
-            {
-                auto slot = Mrk::MaterialSlot();
-                slot.Load();
-                matSlots.push_back(slot);
-            }
-            else
-            {
-                matSlots.push_back(matSlots.back());
-            }
-        }
-    }
-    else if (subMeshes.size() < matSlots.size())
-    {
-        matSlots.resize(subMeshes.size());
-    }
 }
 
 const std::vector<Mrk::MaterialSlot>& Mrk::MeshRenderer::GetMatSlots()
@@ -52,6 +27,22 @@ void Mrk::MeshRenderer::SetMatSlots(const std::vector<MaterialSlot>& matSlots)
 
 void Mrk::MeshRenderer::Start()
 {
+    mesh = MeshHut::GetMesh(meshPath);
+
+    auto& subMeshes = mesh->GetSubMeshes();
+    if (subMeshes.size() > matSlots.size())
+    {
+        auto dif = subMeshes.size() - matSlots.size();
+        for (size_t i = 0; i < dif; i++)
+        {
+            matSlots.emplace_back();
+        }
+    }
+    else if (subMeshes.size() < matSlots.size())
+    {
+        matSlots.resize(subMeshes.size());
+    }
+
     for (auto& slot : matSlots)
     {
         slot.Load();
@@ -86,7 +77,7 @@ Mrk::MaterialSlot::MaterialSlot() :
     static std::string defaultMatName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultMaterialName");
 
     spPath = defaultSpName;
-    matName = matName = defaultMatName;
+    matPath = matPath = defaultMatName;
 }
 
 bool Mrk::MaterialSlot::GetIsShared() const
@@ -99,24 +90,24 @@ void Mrk::MaterialSlot::SetIsShared(bool val)
     isShared = val;
 }
 
-const std::string& Mrk::MaterialSlot::GetSpName() const
+const std::string& Mrk::MaterialSlot::GetSpPath() const
 {
     return spPath;
 }
 
-void Mrk::MaterialSlot::SetSpName(const std::string& spPath)
+void Mrk::MaterialSlot::SetSpPath(const std::string& spPath)
 {
     this->spPath = spPath;
 }
 
-const std::string& Mrk::MaterialSlot::GetMatName() const
+const std::string& Mrk::MaterialSlot::GetMatPath() const
 {
-    return matName;
+    return matPath;
 }
 
-void Mrk::MaterialSlot::SetMatName(const std::string& matName)
+void Mrk::MaterialSlot::SetMatPath(const std::string& matPath)
 {
-    this->matName = matName;
+    this->matPath = matPath;
 }
 
 std::shared_ptr<Mrk::Material> Mrk::MaterialSlot::GetMaterial() const
@@ -128,6 +119,6 @@ void Mrk::MaterialSlot::Load()
 {
     if (auto sp = ShaderProgramHut::GetShaderProgram(spPath))
     {
-        material = isShared ? sp->GetSharedMaterial(matName) : sp->GetUniqueMaterial();
+        material = MaterialHut::GetMaterial(matPath);
     }
 }
