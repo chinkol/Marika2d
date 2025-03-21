@@ -10,11 +10,11 @@
 
 namespace Mrk
 {
-	enum TextureType
+	/*enum TextureType
 	{
 		Tex2D = GL_TEXTURE_2D,
 		TexCube = GL_TEXTURE_CUBE_MAP,
-	};
+	};*/
 
 	class Texture
 	{
@@ -30,9 +30,9 @@ namespace Mrk
 	class TextureHut : public Singleton<TextureHut>
 	{
 	public:
-		std::shared_ptr<Texture> GetTexture(std::string_view path);
+		static std::shared_ptr<Texture> GetTexture(std::string_view path);
 	private:
-		std::shared_ptr<Texture> LoadTexture(std::string_view path);
+		static std::shared_ptr<Texture> LoadTexture(std::string_view path);
 	private:
 		std::map<std::string, std::shared_ptr<Texture>> textures;
 	};

@@ -19,26 +19,43 @@ void Mrk::Texture::UnBind()
 
 std::shared_ptr<Mrk::Texture> Mrk::TextureHut::GetTexture(std::string_view path)
 {
-	auto ret = Instance().textures.try_emplace(path.data(), nullptr);
-	if (ret.second)
+	MRK_INSTANCE_REF;
+
+	auto ret = instance.textures.find(path.data());
+	if (ret != instance.textures.end())
 	{
-		ret.first->second = LoadTexture(path);
+		return ret->second;
 	}
-	return ret.first->second;
+	else
+	{
+		if (auto tex = LoadTexture(path))
+		{
+			instance.textures.emplace(path.data(), tex);
+			return tex;
+		}
+		
+	}
+
+	return nullptr;
 }
 
 std::shared_ptr<Mrk::Texture> Mrk::TextureHut::LoadTexture(std::string_view path)
 {
-	auto texture = std::make_shared<Mrk::Texture>();
-	texture->id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
+	if (auto id = SOIL_load_OGL_texture(path.data(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS))
+	{
+		auto texture = std::make_shared<Mrk::Texture>();
+		texture->id = id;
 
-	texture->Bind();
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	texture->UnBind();
+		texture->Bind();
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		texture->UnBind();
 
-	return texture;
+		return texture;
+	}
+
+	return nullptr;
 }

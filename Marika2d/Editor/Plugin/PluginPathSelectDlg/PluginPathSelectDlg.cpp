@@ -26,36 +26,24 @@ void Mrk::Editor::PluginPathSelectDlg::SelectNewFile(std::function<void(const st
 
 void Mrk::Editor::PluginPathSelectDlg::Update()
 {
-	if (fileCallback && fileSelector.HasSelected())
-	{
-		fileCallback(fileSelector.GetSelected());
+	auto ProcessSelection = [](auto& selector, auto& callback) {
+		if (callback && selector.HasSelected())
+		{
+			callback(selector.GetSelected());
+			callback = nullptr;
+			selector.ClearSelected();
+		}
+		};
 
-		fileCallback = nullptr;
-		fileSelector.ClearSelected();
-	}
+	ProcessSelection(fileSelector, fileCallback);
+	ProcessSelection(newFileSelector, newFileCallback);
+	ProcessSelection(dirSelector, dirCallback);
 
 	if (filesCallback && filesSelector.HasSelected())
 	{
 		filesCallback(filesSelector.GetMultiSelected());
-
 		filesCallback = nullptr;
 		filesSelector.ClearSelected();
-	}
-
-	if (newFileCallback && newFileSelector.HasSelected())
-	{
-		newFileCallback(newFileSelector.GetSelected());
-
-		newFileCallback = nullptr;
-		newFileSelector.ClearSelected();
-	}
-
-	if (dirCallback && dirSelector.HasSelected())
-	{
-		dirCallback(dirSelector.GetSelected());
-
-		dirCallback = nullptr;
-		dirSelector.ClearSelected();
 	}
 }
 
@@ -79,5 +67,5 @@ void Mrk::Editor::PluginPathSelectDlg::Init()
 	filesSelector.SetTitle("Select Files");
 
 	dirSelector = ImGui::FileBrowser(ImGuiFileBrowserFlags_CloseOnEsc | ImGuiFileBrowserFlags_ConfirmOnEnter | ImGuiFileBrowserFlags_SelectDirectory, ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
-	filesSelector.SetTitle("Select Directory");
+	dirSelector.SetTitle("Select Directory");
 }

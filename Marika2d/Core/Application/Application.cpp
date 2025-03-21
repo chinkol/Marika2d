@@ -100,7 +100,7 @@ void Mrk::Window::InitImGui()
     io.Fonts->AddFontFromFileTTF(ConfigSys::GetConfigItem<std::string>("AppConfig", "fontPath").c_str(), 16.0f, &font_config, io.Fonts->GetGlyphRangesChineseFull());
     io.Fonts->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
 
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
 }

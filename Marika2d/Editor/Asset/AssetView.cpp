@@ -1,6 +1,7 @@
 #include "AssetView.h"
 
 #include "Editor/Plugin/PluginPathSelectDlg/PluginPathSelectDlg.h"
+#include "Editor/Plugin/PluginInputDlg/PluginInputDlg.h"
 
 #include "Common/Utility/Utility.h"
 
@@ -166,7 +167,7 @@ void Mrk::Editor::PluginAssetViewUI::DragDrop(AssetUINode& node)
                 char buffer[256];
                 strncpy_s(buffer, static_cast<const char*>(payload->Data), sizeof(buffer) - 1);
                 buffer[sizeof(buffer) - 1] = '\0';
-                
+
                 std::filesystem::path fromPath(buffer);
                 std::filesystem::path toPath = std::filesystem::path(node.path) / fromPath.filename();
                 if (std::filesystem::exists(fromPath))
@@ -188,15 +189,30 @@ std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Edito
 
     if (node.isDirectory)
     {
-        res.emplace("Refresh", [](AssetUINode& node) {
-            node.LoadChildren();
+        res.emplace("Refresh", [this](AssetUINode& node) {
+            dirtyDirs.emplace(node.path);
             });
     }
 
     if (node.parent)    // ¸ùÄ¿Â¼Ìø¹ý
     {
         res.emplace("Delete", [](AssetUINode& node) {
-            node.Delete();
+            node.Delete();  //TODO:
+            });
+    }
+
+    if (node.isDirectory)
+    {
+        res.emplace("Create New Folder", [this](AssetUINode& node) {
+            PluginInputDlg::GetInstance()->GetString([this, node](const std::string& str) {
+                std::filesystem::path path = node.path;
+                path /= str;
+                if (!std::filesystem::exists(path))
+                {
+                    (void)std::filesystem::create_directories(path);
+                    dirtyDirs.emplace(node.path);
+                }
+                });
             });
     }
 

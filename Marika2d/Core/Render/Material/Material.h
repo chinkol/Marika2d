@@ -17,6 +17,16 @@
 virtual std::string_view GetName() override { return y; }
 #endif // !MRK_SHADERPROGRAM
 
+#ifndef MRK_UNIFORM
+#define MRK_UNIFORM(x)														\
+RTTR_ENABLE(Uniform)														\
+public: x() = default;														\
+private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
+	UniformHut::Regeister<x>(#x);											\
+	return true;															\
+	}();																														
+#endif // !MRK_UNIFORM
+
 namespace Mrk
 {
 	class ShaderSetting : public ConfigGroup
@@ -49,6 +59,7 @@ namespace Mrk
 	public:
 		static std::shared_ptr<Material> GetMaterial(const std::filesystem::path& matPath);
 		static std::shared_ptr<Material> LoadMaterial(const std::filesystem::path& matPath);
+		static void SaveMaterial(std::shared_ptr<Material> material, const std::filesystem::path& matPath);
 	private:
 		std::map<std::string, std::shared_ptr<Material>> materials;
 	};
@@ -84,16 +95,6 @@ namespace Mrk
 	public:
 		virtual std::shared_ptr<Material> CreateMaterial() override;
 	};
-
-#ifndef MRK_UNIFORM
-#define MRK_UNIFORM(x)														\
-RTTR_ENABLE(Uniform)														\
-public: x() = default;														\
-private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
-	UniformHut::Regeister<x>(#x);											\
-	return true;															\
-	}();																														
-#endif // !MRK_UNIFORM
 
 	class Uniform;
 
@@ -172,7 +173,7 @@ private: static inline bool _mrk_uniform_##x##_register_ = [](){			\
 	{
 		MRK_UNIFORM(UniformTexture2D)
 	public:
-		UniformTexture2D(std::string_view name, TextureUnit unit, TextureType type);
+		UniformTexture2D(std::string_view name, TextureUnit unit);
 
 		const std::string& GetTexturePath();
 		void SetTexturePath_(const std::string& texturePath);

@@ -713,6 +713,11 @@ void Mrk::PluginMaterialEditUI::Draw()
 					ImGui::TreePop();
 				}
 			}
+
+			if (ImGui::Button("Save"))
+			{
+				MaterialHut::SaveMaterial(material, matPath.string());
+			}
 		}
 	}
 

@@ -1,6 +1,9 @@
 #include "Material.h"
 
+#include "Common/Utility/Utility.h"
+
 #include "Core/Config/ConfigSys.h"
+#include "Core/Render/Texture/Texture.h"
 
 #include <filesystem>
 #include <iostream>
@@ -177,7 +180,7 @@ std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::GetUniqueMaterial()
 std::shared_ptr<Mrk::Material> Mrk::UnlitShaderProgram::CreateMaterial()
 {
 	auto mat = ShaderProgram::CreateMaterial();
-	mat->AddUniform(std::move(UniformHut::CreateUniform<UniformTexture2D>("diffuse", TextureUnit::Tex0, TextureType::Tex2D)));
+	mat->AddUniform(std::move(UniformHut::CreateUniform<UniformTexture2D>("diffuseMap", TextureUnit::Tex0)));
 
 	return mat;
 }
@@ -284,7 +287,7 @@ void Mrk::UniformTexture2D::SetTexturePath_(const std::string& texturePath)
 	this->texturePath = texturePath;
 }
 
-Mrk::UniformTexture2D::UniformTexture2D(std::string_view name, TextureUnit unit, TextureType type) : Uniform(name),
+Mrk::UniformTexture2D::UniformTexture2D(std::string_view name, TextureUnit unit) : Uniform(name),
 textureUnit(unit)
 {
 }
@@ -301,6 +304,14 @@ void Mrk::UniformTexture2D::SetTextureUnit_(TextureUnit unit)
 
 void Mrk::UniformTexture2D::BindUniform(GLuint sp)
 {
+	if (!textureId)
+	{
+		if (auto tex = TextureHut::GetTexture(texturePath))
+		{
+			textureId = tex->GetID();
+		}
+	}
+
 	glActiveTexture((GLenum)textureUnit);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glUniform1i(location, (GLenum)textureUnit);
@@ -351,6 +362,12 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesys
 	}
 
 	return nullptr;
+}
+
+void Mrk::MaterialHut::SaveMaterial(std::shared_ptr<Material> material, const std::filesystem::path& matPath)
+{
+	Json::Document jdoc;
+	Mrk::Utility::SaveJson(material->ToJson(jdoc.GetAllocator()), matPath.string());
 }
 
 std::unique_ptr<Mrk::Uniform> Mrk::UniformHut::CreateUniform(std::string_view name)
