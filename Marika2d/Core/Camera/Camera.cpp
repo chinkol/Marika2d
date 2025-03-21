@@ -83,9 +83,9 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 		auto proj = frustum.GetProjMatrix();
 		auto viewproj = proj * view;
 
-		glUniformMatrix4fv(MRK_GL_LOCATING_VIEW, 1, GL_FALSE, (GLfloat*)&view);
-		glUniformMatrix4fv(MRK_GL_LOCATING_PROJ, 1, GL_FALSE, (GLfloat*)&proj);
-		glUniformMatrix4fv(MRK_GL_LOCATING_VIEWPROJ, 1, GL_FALSE, (GLfloat*)&viewproj);
+		glUniformMatrix4fv(glGetUniformLocation(1, "view"), 1, GL_FALSE, (GLfloat*)&view);
+		glUniformMatrix4fv(glGetUniformLocation(1, "proj"), 1, GL_FALSE, (GLfloat*)&proj);
+		glUniformMatrix4fv(glGetUniformLocation(1, "viewproj"), 1, GL_FALSE, (GLfloat*)&viewproj);
 	}
 
 	//light
@@ -197,8 +197,8 @@ void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
 	{
 		item.mesh->Bind();
 
-		glUniform2ui(MRK_GL_LOCATING_OBJECTID, item.id.low32, item.id.high32);
-		glUniformMatrix4fv(MRK_GL_LOCATING_WORLD, 1, GL_FALSE, (GLfloat*)&item.world);
+		glUniform2ui(glGetUniformLocation(1, "objectId"), item.id.low32, item.id.high32);
+		glUniformMatrix4fv(glGetUniformLocation(1, "world"), 1, GL_FALSE, (GLfloat*)&item.world);
 
 		auto subMeshes = item.mesh->GetSubMeshes();
 		auto materials = item.materials;

@@ -164,16 +164,16 @@ std::shared_ptr<Mrk::ShaderProgram> Mrk::ShaderProgramHut::GetShaderProgram(std:
 {
 	MRK_INSTANCE_REF;
 
-	auto ret = instance.sps.find(spPath.data());
+	std::filesystem::path _spPath = spPath;
+	auto spName = _spPath.filename().replace_extension().string();
+
+	auto ret = instance.sps.find(spName);
 	if (ret != instance.sps.end())
 	{
 		return ret->second;
 	}
 	else
 	{
-		std::filesystem::path _spPath = spPath;
-
-		auto spName = _spPath.filename().replace_extension().string();
 		auto ctor = instance.spctors.find(spName);
 
 		if (ctor != instance.spctors.end())
@@ -233,14 +233,17 @@ void Mrk::Uniform::Bind(GLuint sp)
 	if (location == -1)
 	{
 		location = glGetUniformLocation(sp, name.data());
-		if (location == -1)
-		{
-			std::cout << std::format("uniform {} not correct !", name) << std::endl;
-			// TODO : log
-		}
 	}
 
-	BindUniform(sp);
+	if (location)
+	{
+		BindUniform(sp);
+	}
+	else
+	{
+		std::cout << std::format("uniform '{}' not correct !", name) << std::endl;
+	}
+	
 }
 
 Mrk::FloatUniform::FloatUniform(std::string_view name) : Uniform(name)
@@ -287,9 +290,12 @@ void Mrk::UniformTexture2D::BindUniform(GLuint sp)
 		}
 	}
 
-	glActiveTexture((GLenum)textureUnit);
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	glUniform1i(location, (GLenum)textureUnit);
+	if (textureId)
+	{
+		glActiveTexture((GLenum)textureUnit);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+		glUniform1i(location, (GLenum)textureUnit);
+	}
 }
 
 std::shared_ptr<Mrk::Material> Mrk::MaterialHut::GetMaterial(const std::filesystem::path& matPath)

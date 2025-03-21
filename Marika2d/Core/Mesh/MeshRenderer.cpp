@@ -120,5 +120,6 @@ void Mrk::MaterialSlot::Load()
     if (auto sp = ShaderProgramHut::GetShaderProgram(spPath))
     {
         material = MaterialHut::GetMaterial(matPath);
+        material->shaderProgram = sp;
     }
 }

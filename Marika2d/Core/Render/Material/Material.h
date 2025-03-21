@@ -191,6 +191,7 @@ namespace Mrk
 	{
 		MRK_OBJECT(Material) RTTR_ENABLE(Object)
 			friend class ShaderProgram;
+		friend class MaterialSlot; // TODO : fix
 	public:
 		Material();
 	public:

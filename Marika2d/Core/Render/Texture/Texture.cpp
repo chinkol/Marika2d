@@ -9,12 +9,12 @@ GLuint Mrk::Texture::GetID()
 
 void Mrk::Texture::Bind()
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+	glBindBuffer(GL_TEXTURE_2D, id);
 }
 
 void Mrk::Texture::UnBind()
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_TEXTURE_2D, 0);
 }
 
 std::shared_ptr<Mrk::Texture> Mrk::TextureHut::GetTexture(std::string_view path)
