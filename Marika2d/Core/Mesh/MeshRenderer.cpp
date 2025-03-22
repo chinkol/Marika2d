@@ -70,24 +70,13 @@ void Mrk::MeshRenderer::PreDraw()
     }
 }
 
-Mrk::MaterialSlot::MaterialSlot() :
-    isShared(true)
+Mrk::MaterialSlot::MaterialSlot()
 {
     static std::string defaultSpName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultShaderProgramName");
     static std::string defaultMatName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultMaterialName");
 
     spPath = defaultSpName;
     matPath = matPath = defaultMatName;
-}
-
-bool Mrk::MaterialSlot::GetIsShared() const
-{
-    return isShared;
-}
-
-void Mrk::MaterialSlot::SetIsShared(bool val)
-{
-    isShared = val;
 }
 
 const std::string& Mrk::MaterialSlot::GetSpPath() const

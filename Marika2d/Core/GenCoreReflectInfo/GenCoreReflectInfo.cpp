@@ -189,7 +189,6 @@ namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(MaterialSlot)(
 		rttr::registration::class_<MaterialSlot>("MaterialSlot")
-		.property("isShared", &MaterialSlot::GetIsShared, &MaterialSlot::SetIsShared)
 		.property("spPath", &MaterialSlot::GetSpPath, &MaterialSlot::SetSpPath)
 		.property("matPath", &MaterialSlot::GetMatPath, &MaterialSlot::SetMatPath);
 		);
