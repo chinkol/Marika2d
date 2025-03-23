@@ -174,7 +174,7 @@ namespace Mrk
 		UniformTexture2D(std::string_view name, TextureUnit unit);
 
 		const std::string& GetTexturePath();
-		void SetTexturePath_(const std::string& texturePath);
+		void SetTexturePath(const std::string& texturePath);
 
 		TextureUnit GetTextureUnit();
 		void SetTextureUnit_(TextureUnit unit);
@@ -182,6 +182,7 @@ namespace Mrk
 	private:
 		virtual void BindUniform(GLuint sp) override;
 	private:
+		bool isDirty = true;
 		GLuint textureId = 0;
 		std::string texturePath;
 		TextureUnit textureUnit;

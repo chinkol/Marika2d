@@ -260,9 +260,10 @@ const std::string& Mrk::UniformTexture2D::GetTexturePath()
 	return texturePath;
 }
 
-void Mrk::UniformTexture2D::SetTexturePath_(const std::string& texturePath)
+void Mrk::UniformTexture2D::SetTexturePath(const std::string& texturePath)
 {
 	this->texturePath = texturePath;
+	isDirty = true;
 }
 
 Mrk::UniformTexture2D::UniformTexture2D(std::string_view name, TextureUnit unit) : Uniform(name),
@@ -282,12 +283,14 @@ void Mrk::UniformTexture2D::SetTextureUnit_(TextureUnit unit)
 
 void Mrk::UniformTexture2D::BindUniform(GLuint sp)
 {
-	if (!textureId)
+	if (!textureId || isDirty)
 	{
 		if (auto tex = TextureHut::GetTexture(texturePath))
 		{
 			textureId = tex->GetID();
 		}
+
+		isDirty = false;
 	}
 
 	if (textureId)
@@ -333,7 +336,8 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesys
 			ifstream.close();
 
 			Json::Document jdoc;
-			jdoc.Parse(content); if (!jdoc.HasParseError())
+			jdoc.Parse(content); 
+			if (!jdoc.HasParseError())
 			{
 				auto mat = std::make_shared<Material>();
 				mat->FromJson(jdoc);
@@ -342,7 +346,7 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesys
 		}
 	}
 
-	return nullptr;
+	return std::shared_ptr<Mrk::Material>();
 }
 
 void Mrk::MaterialHut::SaveMaterial(std::shared_ptr<Material> material, const std::filesystem::path& matPath)

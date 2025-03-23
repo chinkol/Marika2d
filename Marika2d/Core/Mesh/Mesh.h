@@ -49,9 +49,11 @@ namespace Mrk
 		const Vector3& GetBoundingMin();
 		const Vector3& GetBoundingMax();
 		const std::vector<SubMesh>& GetSubMeshes();
+		const std::vector<std::string>& GetSubMeshNames();
 
 	private:
 		std::vector<SubMesh> subMeshes;
+		std::vector<std::string> subMeshNames;
 		Vector3 max;
 		Vector3 min;
 		GLuint vao = 0;

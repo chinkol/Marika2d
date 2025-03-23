@@ -12,7 +12,11 @@ const std::string& Mrk::MeshRenderer::GetMeshPath()
 
 void Mrk::MeshRenderer::SetMeshPath(const std::string& meshPath)
 {
-    this->meshPath = meshPath;
+    if (this->meshPath != meshPath)
+    {
+        this->meshPath = meshPath;
+        isDirty = true;
+    }
 }
 
 const std::vector<Mrk::MaterialSlot>& Mrk::MeshRenderer::GetMatSlots()
@@ -25,32 +29,40 @@ void Mrk::MeshRenderer::SetMatSlots(const std::vector<MaterialSlot>& matSlots)
     this->matSlots = matSlots;
 }
 
-void Mrk::MeshRenderer::Start()
-{
-    mesh = MeshHut::GetMesh(meshPath);
-
-    auto& subMeshes = mesh->GetSubMeshes();
-    if (subMeshes.size() > matSlots.size())
-    {
-        auto dif = subMeshes.size() - matSlots.size();
-        for (size_t i = 0; i < dif; i++)
-        {
-            matSlots.emplace_back();
-        }
-    }
-    else if (subMeshes.size() < matSlots.size())
-    {
-        matSlots.resize(subMeshes.size());
-    }
-
-    for (auto& slot : matSlots)
-    {
-        slot.Load();
-    }
-}
-
 void Mrk::MeshRenderer::PreDraw()
 {
+    if (isDirty)
+    {
+        if (mesh = MeshHut::GetMesh(meshPath))
+        {
+            auto& subMeshNames = mesh->GetSubMeshNames();
+
+            auto subMeshCount = subMeshNames.size();
+            for (size_t i = 0; i < subMeshCount; i++)
+            {
+                if (matSlots.size() > i)
+                {
+                    matSlots[i].name = subMeshNames[i];
+                }
+                else
+                {
+                    matSlots.emplace_back().name = subMeshNames[i];
+                }
+            }
+            
+            for (auto& slot : matSlots)
+            {
+                slot.Load();
+            }
+
+            isDirty = false;
+        }
+        else
+        {
+            // mesh error
+        }
+    }
+
     if (mesh && !holder.expired())
     {
         RenderItem renderItem;
@@ -77,6 +89,11 @@ Mrk::MaterialSlot::MaterialSlot()
 
     spPath = defaultSpName;
     matPath = matPath = defaultMatName;
+}
+
+const std::string& Mrk::MaterialSlot::GetName() const
+{
+    return name;
 }
 
 const std::string& Mrk::MaterialSlot::GetSpPath() const
@@ -108,7 +125,9 @@ void Mrk::MaterialSlot::Load()
 {
     if (auto sp = ShaderProgramHut::GetShaderProgram(spPath))
     {
-        material = MaterialHut::GetMaterial(matPath);
-        material->shaderProgram = sp;
+        if (material = MaterialHut::GetMaterial(matPath))
+        {
+            material->shaderProgram = sp;
+        }
     }
 }

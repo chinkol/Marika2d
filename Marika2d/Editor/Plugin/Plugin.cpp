@@ -441,7 +441,7 @@ bool Mrk::PluginPropertiesInspectUI::RecurString(rttr::variant& str, std::string
 
 	if (ImGui::InputText(name.data(), buffer, sizeof(buffer)))
 	{
-		str = Utility::UFT8ToGBK(std::string(buffer));
+		str = Utility::UTF8ToGBK(std::string(buffer));
 		return true;
 	}
 	else if (ImGui::BeginDragDropTarget())
@@ -690,7 +690,7 @@ void Mrk::PluginMaterialEditUI::Draw()
 
 							if (ImGui::InputText(propName.data(), buffer, sizeof(buffer)))
 							{
-								value = Utility::UFT8ToGBK(std::string(buffer));
+								value = Utility::UTF8ToGBK(std::string(buffer));
 								prop.set_value(*uniform, value);
 							}
 							else if (ImGui::BeginDragDropTarget())

@@ -62,7 +62,7 @@ namespace Mrk
 	class AssetUtility
 	{
 	public:
-		static void MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& filename);
+		static void MeshDataToLocalFile(const std::vector<std::string> names, const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& filename);
 		static void MakePrefab(std::shared_ptr<GameObject> gameObject, const std::filesystem::path& to);
 	private:
 		AssetUtility() = default;
@@ -70,6 +70,11 @@ namespace Mrk
 
 	class AssimpAssetImporter : public IAssetlImporter
 	{
+		struct subMeshInfo
+		{
+			std::string name;
+			aiMesh* aiMesh;
+		};
 	public:
 		virtual ~AssimpAssetImporter() override;
 		virtual void Import(const std::filesystem::path& from, const std::filesystem::path& to) override;
@@ -77,7 +82,7 @@ namespace Mrk
 		void ProcessNode(aiNode* aiNode, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<GameObject> objNode);
 		void ProcessMaterial(aiMaterial* aiMat, const std::filesystem::path& from, const std::filesystem::path& to, std::shared_ptr<MeshRenderer> meshRenderer);
 		void ProcessTexture(const std::filesystem::path& from, const std::filesystem::path& to);
-		void ProcessMesh(std::vector<aiMesh*> aiMeshes, const std::filesystem::path& to);
+		void ProcessMesh(std::vector<subMeshInfo> aiMesh, const std::filesystem::path& to);
 		void ProcessSubMesh(aiMesh* aiMesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 	protected:
 		Assimp::Importer importer;

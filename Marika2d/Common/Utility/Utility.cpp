@@ -16,7 +16,7 @@ std::string Mrk::Utility::GBKToUTF8(std::string_view gbkStr)
 	return utf8Str;
 }
 
-std::string Mrk::Utility::UFT8ToGBK(std::string_view utf8Str)
+std::string Mrk::Utility::UTF8ToGBK(std::string_view utf8Str)
 {
 	int wideCharSize = MultiByteToWideChar(CP_UTF8, 0, utf8Str.data(), -1, NULL, 0);
 	std::wstring wideStr(wideCharSize, 0);

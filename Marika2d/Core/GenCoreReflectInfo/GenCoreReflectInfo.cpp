@@ -189,6 +189,7 @@ namespace Mrk
 {
 	MRK_CORE_REFLECT_REGISTER(MaterialSlot)(
 		rttr::registration::class_<MaterialSlot>("MaterialSlot")
+		.property_readonly("name", &MaterialSlot::GetName)
 		.property("spPath", &MaterialSlot::GetSpPath, &MaterialSlot::SetSpPath)
 		.property("matPath", &MaterialSlot::GetMatPath, &MaterialSlot::SetMatPath);
 		);
@@ -223,7 +224,7 @@ namespace Mrk
 
 	MRK_CORE_REFLECT_REGISTER(UniformTexture2D)(
 		rttr::registration::class_<UniformTexture2D>("UniformTexture2D")
-		.property("texturePath", &UniformTexture2D::GetTexturePath, &UniformTexture2D::SetTexturePath_)
+		.property("texturePath", &UniformTexture2D::GetTexturePath, &UniformTexture2D::SetTexturePath)
 		.property("textureUnit", &UniformTexture2D::GetTextureUnit, &UniformTexture2D::SetTextureUnit_);
 		);
 }

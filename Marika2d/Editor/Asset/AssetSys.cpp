@@ -25,9 +25,9 @@ void Mrk::AssetSys::Import(const std::filesystem::path& from, const std::filesys
 	}
 }
 
-void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& path)
+void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::string> names, const std::vector<std::vector<Vertex>>& vertices, const std::vector<std::vector<uint32_t>>& indices, const std::filesystem::path& path)
 {
-	assert(vertices.size() == indices.size());
+	assert(names.size() == vertices.size() && names.size() == indices.size());
 
 	if (!std::filesystem::exists(path.parent_path()))
 	{
@@ -51,38 +51,52 @@ void Mrk::AssetUtility::MeshDataToLocalFile(const std::vector<std::vector<Vertex
 
 	for (size_t i = 0; i < vertices.size(); i++)
 	{
-		// 顶点
-
-		auto& subVertices = vertices[i];
-
-		//写入顶点数量
-		auto vertexCount = (uint32_t)subVertices.size();
-		file.write(reinterpret_cast<const char*>(&vertexCount), sizeof(uint32_t));
-
-		//写入顶点
-		for (auto& vertex : subVertices)
+		// 名称
 		{
-			file.write(reinterpret_cast<const char*>(&vertex.position), sizeof(vertex.position));
-			file.write(reinterpret_cast<const char*>(&vertex.normal), sizeof(vertex.normal));
-			file.write(reinterpret_cast<const char*>(&vertex.texcoord), sizeof(vertex.texcoord));
+			auto& name = names[i];
+
+			// 写入名称长度（uint32_t）
+			uint32_t nameLen = (uint32_t)(name.size());
+			file.write(reinterpret_cast<const char*>(&nameLen), sizeof(uint32_t));
+
+			// 写入名称
+			file.write(name.data(), nameLen);
+		}
+		 
+		// 顶点
+		{
+			auto& subVertices = vertices[i];
+
+			//写入顶点数量
+			auto vertexCount = (uint32_t)subVertices.size();
+			file.write(reinterpret_cast<const char*>(&vertexCount), sizeof(uint32_t));
+
+			//写入顶点
+			for (auto& vertex : subVertices)
+			{
+				file.write(reinterpret_cast<const char*>(&vertex.position), sizeof(vertex.position));
+				file.write(reinterpret_cast<const char*>(&vertex.normal), sizeof(vertex.normal));
+				file.write(reinterpret_cast<const char*>(&vertex.texcoord), sizeof(vertex.texcoord));
+			}
 		}
 
 		// 索引
-
-		auto& subIndices = indices[i];
-
-		// 写入索引数量
-		auto indexCount = (uint32_t)subIndices.size();
-		file.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
-
-		// 写入索引
-		for (auto& index : subIndices)
 		{
-			auto realIndex = index + indexOffset;
-			file.write(reinterpret_cast<const char*>(&realIndex), sizeof(realIndex));
-		}
+			auto& subIndices = indices[i];
 
-		indexOffset += indexCount;
+			// 写入索引数量
+			auto indexCount = (uint32_t)subIndices.size();
+			file.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
+
+			// 写入索引
+			for (auto& index : subIndices)
+			{
+				auto realIndex = index + indexOffset;
+				file.write(reinterpret_cast<const char*>(&realIndex), sizeof(realIndex));
+			}
+
+			indexOffset += indexCount;
+		}
 	}
 
 	file.close();
@@ -160,14 +174,14 @@ void Mrk::AssimpAssetImporter::ProcessNode(aiNode* aiNode, const std::filesystem
 	{
 		auto meshRenderer = ComponentFactory::CreateNew<MeshRenderer>();
 
-		std::vector<aiMesh*> aiMesh;
+		std::vector<subMeshInfo> aiMesh;
 		for (uint32_t i = 0; i < aiNode->mNumMeshes; i++)
 		{
 			auto aiSubMesh = aiScene->mMeshes[aiNode->mMeshes[i]];
-			aiMesh.push_back(aiSubMesh);
-
-			// mat
 			auto aiMat = aiScene->mMaterials[aiSubMesh->mMaterialIndex];
+
+			aiMesh.push_back({ Mrk::Utility::UTF8ToGBK(aiMat->GetName().C_Str()), aiSubMesh });
+
 			ProcessMaterial(aiMat, from, to / "Materials", meshRenderer);
 		}
 
@@ -188,7 +202,7 @@ void Mrk::AssimpAssetImporter::ProcessNode(aiNode* aiNode, const std::filesystem
 
 		ProcessNode(aiSubNode, from, to, subNode);
 
-		subNode->SetName(Utility::UFT8ToGBK(aiSubNode->mName.C_Str()));
+		subNode->SetName(Utility::UTF8ToGBK(aiSubNode->mName.C_Str()));
 		objNode->AddChild(subNode);
 	}
 }
@@ -200,7 +214,7 @@ void Mrk::AssimpAssetImporter::ProcessMaterial(aiMaterial* aiMat, const std::fil
 		aiString aiPath;
 		aiMat->GetTexture(aiTextureType_DIFFUSE, i, &aiPath);
 
-		std::filesystem::path path = from.parent_path() / Mrk::Utility::UFT8ToGBK(aiPath.C_Str());
+		std::filesystem::path path = from.parent_path() / Mrk::Utility::UTF8ToGBK(aiPath.C_Str());
 
 		ProcessTexture(path, to / path.filename());
 
@@ -221,8 +235,9 @@ void Mrk::AssimpAssetImporter::ProcessTexture(const std::filesystem::path& from,
 	}
 }
 
-void Mrk::AssimpAssetImporter::ProcessMesh(std::vector<aiMesh*> aiMesh, const std::filesystem::path& to)
+void Mrk::AssimpAssetImporter::ProcessMesh(std::vector<subMeshInfo> aiMesh, const std::filesystem::path& to)
 {
+	std::vector<std::string> names;
 	std::vector<std::vector<Vertex>> vertices;
 	std::vector<std::vector<uint32_t>> indices;
 
@@ -231,12 +246,13 @@ void Mrk::AssimpAssetImporter::ProcessMesh(std::vector<aiMesh*> aiMesh, const st
 		std::vector<Vertex> subVertices;
 		std::vector<uint32_t> subIndices;
 
-		ProcessSubMesh(aiSubMesh, subVertices, subIndices);
+		ProcessSubMesh(aiSubMesh.aiMesh, subVertices, subIndices);
+		names.push_back(aiSubMesh.name);
 		vertices.push_back(std::move(subVertices));
 		indices.push_back(std::move(subIndices));
 	}
 
-	AssetUtility::MeshDataToLocalFile(vertices, indices, to);
+	AssetUtility::MeshDataToLocalFile(names, vertices, indices, to);
 }
 
 void Mrk::AssimpAssetImporter::ProcessSubMesh(aiMesh* aiSubMesh, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
