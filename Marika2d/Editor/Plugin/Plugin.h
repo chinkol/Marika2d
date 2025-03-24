@@ -139,6 +139,8 @@ namespace Mrk
 	private:
 		void CreateTreeNode(std::shared_ptr<GameObject> node);
 		void DragDropNode(std::shared_ptr<GameObject> node);
+		void MouseLeftClick(std::shared_ptr<GameObject> node);
+		void MouseRightClick(std::shared_ptr<GameObject> node);
 	};
 
 	class PluginViewportUI : public IPlugin

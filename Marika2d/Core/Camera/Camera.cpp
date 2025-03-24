@@ -36,7 +36,11 @@ const Mrk::Vector2i& Mrk::CameraOutput::GetResolution() const
 void Mrk::CameraOutput::SetResolution(const Vector2i& resolution)
 {
 	this->resolution = resolution;
-	ReSize(resolution);
+
+	this->resolution.x = std::max(this->resolution.x, 1);
+	this->resolution.y = std::max(this->resolution.y, 1);
+
+	ReSize(this->resolution);
 }
 
 const Mrk::CameraFrustum& Mrk::CameraOutput::GetFrustum() const

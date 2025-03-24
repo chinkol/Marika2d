@@ -15,6 +15,17 @@ Mrk::Material::Material()
 
 void Mrk::Material::Bind()
 {
+	if (isDirty || !shaderProgram)
+	{
+		shaderProgram = ShaderProgramHut::GetShaderProgram(spPath);
+		isDirty = false;
+
+		if (!shaderProgram)
+		{
+			// log
+		}
+	}
+
 	if (shaderProgram)
 	{
 		shaderProgram->Use();
@@ -26,6 +37,39 @@ void Mrk::Material::Bind()
 	}
 }
 
+void Mrk::Material::Reset()
+{
+	if (!shaderProgram)
+	{
+		shaderProgram = Mrk::ShaderProgramHut::GetShaderProgram(spPath);
+	}
+
+	if (shaderProgram)
+	{
+		/*auto newMat = shaderProgram->CreateMaterial();
+		auto& resetUniforms = newMat->uniforms;
+		for (size_t i = 0; i < resetUniforms.size(); i++)
+		{
+			*uniforms[i] = *resetUniforms[i];
+		}*/
+	}
+	else
+	{
+		// log
+	}
+}
+
+const std::string& Mrk::Material::GetSpPath() const
+{
+	return spPath;
+}
+
+void Mrk::Material::SetSpPath(const std::string& path)
+{
+	spPath = path;
+	isDirty = true;
+}
+
 const std::vector<std::unique_ptr<Mrk::Uniform>>& Mrk::Material::GetUniforms()
 {
 	return uniforms;
@@ -33,33 +77,52 @@ const std::vector<std::unique_ptr<Mrk::Uniform>>& Mrk::Material::GetUniforms()
 
 Json::Value Mrk::Material::ToJson(Mrk::JsonAllocator& alloctor)
 {
-	Json::Value jmat(Json::ArrayType);
+	auto jmat = ReflectSys::ToJson(*this, alloctor);
+
+	Json::Value juniforms(Json::ArrayType);
 
 	for (auto& uniform : uniforms)
 	{
 		auto juniform = ReflectSys::ToJson(*uniform, alloctor);
 		juniform.AddMember("_mrk_uniform_class_name_", Json::Value(uniform->get_type().get_name().data(), alloctor), alloctor);
-		jmat.PushBack(juniform, alloctor);
+		juniforms.PushBack(juniform, alloctor);
 	}
+
+	jmat.AddMember("uniforms", juniforms, alloctor);
 
 	return jmat;
 }
 
 void Mrk::Material::FromJson(const Json::Value& json)
 {
-	if (json.IsArray())
+	if (json.IsObject())
 	{
-		auto juniforms = json.GetArray();
-		for (auto& juniform : juniforms)
+		auto jspPath = json.FindMember("spPath");
+		if (jspPath != json.MemberEnd() && jspPath->value.IsString())
 		{
-			if (juniform.IsObject() && juniform.HasMember("_mrk_uniform_class_name_"))
-			{
-				auto& jclassName = juniform["_mrk_uniform_class_name_"];
-				auto uniform = UniformHut::CreateUniform(jclassName.GetString());
-				ReflectSys::FromJson(*uniform, juniform);
-				uniforms.push_back(std::move(uniform));
-			}
+			spPath = jspPath->value.GetString();
+		}
 
+		auto juniformsMember = json.FindMember("uniforms");
+		if (juniformsMember != json.MemberEnd() && juniformsMember->value.IsArray())
+		{
+			auto juniforms = juniformsMember->value.GetArray();
+			for (auto& juniform : juniforms)
+			{
+				if (juniform.IsObject())
+				{
+					auto jclassName = juniform.FindMember("_mrk_uniform_class_name_");
+					if (jclassName != juniform.MemberEnd())
+					{
+						if (jclassName->value.IsString())
+						{
+							auto uniform = UniformHut::CreateUniform(jclassName->value.GetString());
+							ReflectSys::FromJson(*uniform, juniform);
+							uniforms.push_back(std::move(uniform));
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -243,7 +306,7 @@ void Mrk::Uniform::Bind(GLuint sp)
 	{
 		std::cout << std::format("uniform '{}' not correct !", name) << std::endl;
 	}
-	
+
 }
 
 Mrk::FloatUniform::FloatUniform(std::string_view name) : Uniform(name)
@@ -301,6 +364,14 @@ void Mrk::UniformTexture2D::BindUniform(GLuint sp)
 	}
 }
 
+void Mrk::MaterialHut::ReloadMaterial(const std::filesystem::path& matPath)
+{
+	MRK_INSTANCE_REF;
+
+	auto pathStr = matPath.string();
+	instance.materials[pathStr] = LoadMaterial(pathStr);
+}
+
 std::shared_ptr<Mrk::Material> Mrk::MaterialHut::GetMaterial(const std::filesystem::path& matPath)
 {
 	MRK_INSTANCE_REF;
@@ -314,7 +385,7 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::GetMaterial(const std::filesyst
 	}
 	else
 	{
-		return LoadMaterial(matPath);
+		return instance.materials.emplace(matPath.string(), LoadMaterial(matPath)).first->second;
 	}
 }
 
@@ -336,12 +407,12 @@ std::shared_ptr<Mrk::Material> Mrk::MaterialHut::LoadMaterial(const std::filesys
 			ifstream.close();
 
 			Json::Document jdoc;
-			jdoc.Parse(content); 
+			jdoc.Parse(content);
 			if (!jdoc.HasParseError())
 			{
 				auto mat = std::make_shared<Material>();
 				mat->FromJson(jdoc);
-				return instance.materials.emplace(matPath.string(), mat).first->second;
+				return mat;
 			}
 		}
 	}

@@ -78,9 +78,9 @@ namespace Mrk::Editor
         MRK_ASSETNOEW_BEHAVIOR(AssetUINodeBehavior_frag, ".frag")
     };
 
-    class PluginAssetViewUI : public IPlugin
+    class PluginAssetTreeUI : public IPlugin
     {
-        MRK_PLUGIN(PluginAssetViewUI)
+        MRK_PLUGIN(PluginAssetTreeUI)
     public:
         void Init();
         void Draw();
@@ -94,6 +94,13 @@ namespace Mrk::Editor
     private:
         AssetUINode root;
         std::set<std::string> dirtyDirs;
+    };
+
+    class PluginAssetViewUI : public IPlugin
+    {
+        MRK_PLUGIN(PluginAssetViewUI)
+    public:
+        void Draw();
     };
 }
 

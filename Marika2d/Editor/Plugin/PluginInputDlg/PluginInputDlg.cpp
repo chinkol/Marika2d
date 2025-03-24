@@ -52,6 +52,7 @@ void Mrk::PluginInputDlg::Draw()
 		static char buffer[256] = { 0 };
 
 		(void)ImGui::InputText((char*)u8"Input String", buffer, sizeof(buffer));
+
 		if (ImGui::Button("OK") && stringCallback)
 		{
 			buffer[sizeof(buffer) - 1] = '\0';
@@ -60,6 +61,15 @@ void Mrk::PluginInputDlg::Draw()
 			std::memset(buffer, 0, sizeof(buffer));
 			ImGui::CloseCurrentPopup();
 		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel"))
+		{
+			stringCallback = nullptr;
+			ImGui::CloseCurrentPopup();
+		}
+
 		ImGui::EndPopup();
 	}
 }

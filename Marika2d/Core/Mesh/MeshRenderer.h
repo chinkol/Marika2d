@@ -15,15 +15,11 @@ namespace Mrk
 	public:
 		MaterialSlot();
 		const std::string& GetName() const;
-		const std::string& GetSpPath() const;
-		void SetSpPath(const std::string& spPath);
 		const std::string& GetMatPath() const;
 		void SetMatPath(const std::string& matPath);
 		std::shared_ptr<Material> GetMaterial() const;
-		void Load();
 	private:
 		std::string name;
-		std::string spPath;
 		std::string matPath;
 		std::shared_ptr<Material> material;
 	};

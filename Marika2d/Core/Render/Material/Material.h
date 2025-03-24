@@ -57,6 +57,7 @@ namespace Mrk
 	{
 		MRK_SINGLETON(MaterialHut)
 	public:
+		static void ReloadMaterial(const std::filesystem::path& matPath);
 		static std::shared_ptr<Material> GetMaterial(const std::filesystem::path& matPath);
 		static std::shared_ptr<Material> LoadMaterial(const std::filesystem::path& matPath);
 		static void SaveMaterial(std::shared_ptr<Material> material, const std::filesystem::path& matPath);
@@ -76,7 +77,7 @@ namespace Mrk
 	public:
 		ShaderProgram();
 		virtual ~ShaderProgram();
-		virtual std::shared_ptr<Material> CreateMaterial();
+		virtual std::shared_ptr<Material> CreateMaterial();	// TODO : 暂时用这种方式，后面改成解析shader来提取uniforms
 		virtual std::string_view GetName() = 0;
 		GLuint GetId();
 		bool Link();
@@ -87,7 +88,7 @@ namespace Mrk
 		std::map<std::string, std::weak_ptr<Material>> sharedMaterials;
 	};
 
-	class UnlitShaderProgram : public ShaderProgram
+	class UnlitShaderProgram : public ShaderProgram	// TODO ：暂时用这种方式，后面改成自己解析shader来生成sp
 	{
 		MRK_SHADERPROGRAM(UnlitShaderProgram, "Unlit")
 	public:
@@ -190,18 +191,26 @@ namespace Mrk
 
 	class Material : public Object
 	{
-		MRK_OBJECT(Material) RTTR_ENABLE(Object)
-			friend class ShaderProgram;
+		friend class ShaderProgram;
 		friend class MaterialSlot; // TODO : fix
+
+		MRK_OBJECT(Material) RTTR_ENABLE(Object)
 	public:
 		Material();
 	public:
 		void Bind();
+		void Reset();
+
+		const std::string& GetSpPath() const;
+		void SetSpPath(const std::string& path);
+
 		void AddUniform(std::unique_ptr<Uniform> uniform);
 		const std::vector<std::unique_ptr<Uniform>>& GetUniforms();
 		virtual Json::Value ToJson(Mrk::JsonAllocator& alloctor);
 		virtual void FromJson(const Json::Value& json);
 	private:
+		bool isDirty = true;
+		std::string spPath;
 		std::shared_ptr<ShaderProgram> shaderProgram;
 		std::vector<std::unique_ptr<Uniform>> uniforms;
 	};

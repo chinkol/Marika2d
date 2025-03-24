@@ -103,6 +103,9 @@ void Mrk::Window::InitImGui()
     ImGui::StyleColorsLight();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.85f, 0.85f, 0.75f, 1.0f);
 }
 
 void Mrk::Window::Cleanup()

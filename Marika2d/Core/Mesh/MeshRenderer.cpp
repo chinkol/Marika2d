@@ -49,11 +49,6 @@ void Mrk::MeshRenderer::PreDraw()
                     matSlots.emplace_back().name = subMeshNames[i];
                 }
             }
-            
-            for (auto& slot : matSlots)
-            {
-                slot.Load();
-            }
 
             isDirty = false;
         }
@@ -84,26 +79,11 @@ void Mrk::MeshRenderer::PreDraw()
 
 Mrk::MaterialSlot::MaterialSlot()
 {
-    static std::string defaultSpName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultShaderProgramName");
-    static std::string defaultMatName = Mrk::ConfigSys::GetConfigItem<std::string>("ShaderSetting", "defaultMaterialName");
-
-    spPath = defaultSpName;
-    matPath = matPath = defaultMatName;
 }
 
 const std::string& Mrk::MaterialSlot::GetName() const
 {
     return name;
-}
-
-const std::string& Mrk::MaterialSlot::GetSpPath() const
-{
-    return spPath;
-}
-
-void Mrk::MaterialSlot::SetSpPath(const std::string& spPath)
-{
-    this->spPath = spPath;
 }
 
 const std::string& Mrk::MaterialSlot::GetMatPath() const
@@ -114,20 +94,10 @@ const std::string& Mrk::MaterialSlot::GetMatPath() const
 void Mrk::MaterialSlot::SetMatPath(const std::string& matPath)
 {
     this->matPath = matPath;
+    material = MaterialHut::GetMaterial(matPath);
 }
 
 std::shared_ptr<Mrk::Material> Mrk::MaterialSlot::GetMaterial() const
 {
     return material;
-}
-
-void Mrk::MaterialSlot::Load()
-{
-    if (auto sp = ShaderProgramHut::GetShaderProgram(spPath))
-    {
-        if (material = MaterialHut::GetMaterial(matPath))
-        {
-            material->shaderProgram = sp;
-        }
-    }
 }

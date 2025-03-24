@@ -49,22 +49,22 @@ void Mrk::Editor::AssetUINode::Delete()
     }
 }
 
-void Mrk::Editor::PluginAssetViewUI::Init()
+void Mrk::Editor::PluginAssetTreeUI::Init()
 {
     root = AssetUINode(ConfigSys::GetConfigItem<std::string>("AppConfig", "projDir"));
     root.LoadChildren();
 }
 
-void Mrk::Editor::PluginAssetViewUI::Draw()
+void Mrk::Editor::PluginAssetTreeUI::Draw()
 {
-    ImGui::Begin("AssetView", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Begin("AssetTree", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
     DrawNode(root);
 
     ImGui::End();
 }
 
-void Mrk::Editor::PluginAssetViewUI::DrawNode(AssetUINode& node)
+void Mrk::Editor::PluginAssetTreeUI::DrawNode(AssetUINode& node)
 {
     if (node.isDirectory)
     {
@@ -100,7 +100,7 @@ void Mrk::Editor::PluginAssetViewUI::DrawNode(AssetUINode& node)
     }
 }
 
-void Mrk::Editor::PluginAssetViewUI::MouseRightClick(AssetUINode& node)
+void Mrk::Editor::PluginAssetTreeUI::MouseRightClick(AssetUINode& node)
 {
     if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Right))
     {
@@ -135,7 +135,7 @@ void Mrk::Editor::PluginAssetViewUI::MouseRightClick(AssetUINode& node)
     }
 }
 
-void Mrk::Editor::PluginAssetViewUI::MouseLeftClick(AssetUINode& node)
+void Mrk::Editor::PluginAssetTreeUI::MouseLeftClick(AssetUINode& node)
 {
     if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {
@@ -148,7 +148,7 @@ void Mrk::Editor::PluginAssetViewUI::MouseLeftClick(AssetUINode& node)
     }
 }
 
-void Mrk::Editor::PluginAssetViewUI::DragDrop(AssetUINode& node)
+void Mrk::Editor::PluginAssetTreeUI::DragDrop(AssetUINode& node)
 {
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
     {
@@ -183,7 +183,7 @@ void Mrk::Editor::PluginAssetViewUI::DragDrop(AssetUINode& node)
     }
 }
 
-std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Editor::PluginAssetViewUI::MakeDefaultRightClickBehaviors(AssetUINode& node)
+std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Editor::PluginAssetTreeUI::MakeDefaultRightClickBehaviors(AssetUINode& node)
 {
     std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> res;
 
@@ -270,8 +270,9 @@ std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Edito
          {"Create (.mmat) File", [](Mrk::Editor::AssetUINode& node) {
              if (auto sp = Mrk::ShaderProgramHut::GetShaderProgram(node.path))
              {
-                 PluginPathSelectDlg::GetInstance()->SelectNewFile([sp](const std::filesystem::path& path) {
+                 PluginPathSelectDlg::GetInstance()->SelectNewFile([sp, node](const std::filesystem::path& path) {
                      auto mat = sp->CreateMaterial();
+                     mat->SetSpPath(node.path.c_str());
                      Json::Document jdoc;
                      Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), path.string());
                      });
@@ -285,4 +286,11 @@ std::function<void(Mrk::Editor::AssetUINode&)> Mrk::Editor::AssetUINodeBehavior_
     return [](Mrk::Editor::AssetUINode& node) {
         Mrk::PluginMaterialEditUI::GetInstance()->SetSelectedMaterialFile(node.path);
         };
+}
+
+void Mrk::Editor::PluginAssetViewUI::Draw()
+{
+    ImGui::Begin("AssetView", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+
+    ImGui::End();
 }

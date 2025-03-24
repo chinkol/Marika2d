@@ -1,6 +1,8 @@
 #include "Plugin.h"
 
 #include "Editor/Asset/AssetSys.h"
+#include "Editor/Plugin/PluginPathSelectDlg/PluginPathSelectDlg.h"
+#include "Editor/Plugin/PluginInputDlg/PluginInputDlg.h"
 
 #include "Core/Scene/Scene.h"
 #include "Core/GameObject/GameObject.h"
@@ -140,15 +142,14 @@ void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
 	{
 		ImGui::PushID(std::to_string(node->GetID().total64).c_str());
 
-		if (ImGui::TreeNodeEx(node->GetName().c_str(), node->GetChildren().empty() ? ImGuiTreeNodeFlags_Leaf : 0))
+		bool isOpen = ImGui::TreeNodeEx(node->GetName().c_str(), node->GetChildren().empty() ? ImGuiTreeNodeFlags_Leaf : 0);
+
+		DragDropNode(node);
+		MouseLeftClick(node);
+		MouseRightClick(node);
+
+		if (isOpen)
 		{
-			DragDropNode(node);
-
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				PluginObjectSelecter::GetInstance()->SetSelection(node);
-			}
-
 			auto& children = node->GetChildren();
 			for (auto& child : children)
 			{
@@ -156,10 +157,6 @@ void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
 			}
 
 			ImGui::TreePop();
-		}
-		else if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-		{
-			PluginObjectSelecter::GetInstance()->SetSelection(node);
 		}
 
 		ImGui::PopID();
@@ -195,6 +192,38 @@ void Mrk::PluginSceneTreeUI::DragDropNode(std::shared_ptr<GameObject> node)
 			dragged.reset();
 		}
 		ImGui::EndDragDropTarget();
+	}
+}
+
+void Mrk::PluginSceneTreeUI::MouseLeftClick(std::shared_ptr<GameObject> node)
+{
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+	{
+		PluginObjectSelecter::GetInstance()->SetSelection(node);
+	}
+}
+
+void Mrk::PluginSceneTreeUI::MouseRightClick(std::shared_ptr<GameObject> node)
+{
+	if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Right))
+	{
+		ImGui::OpenPopup("SceneTreeUI_MouseRightClick");
+	}
+
+	if (ImGui::BeginPopup("SceneTreeUI_MouseRightClick"))
+	{
+		if (ImGui::MenuItem("Rename"))
+		{
+			std::weak_ptr<GameObject> obj = node;
+			Mrk::PluginInputDlg::GetInstance()->GetString([obj](const std::string& str) {
+				if (!obj.expired())
+				{
+					obj.lock()->SetName(str);
+				}
+				});
+		}
+
+		ImGui::EndPopup();
 	}
 }
 
@@ -656,6 +685,34 @@ void Mrk::PluginMaterialEditUI::Draw()
 	{
 		if (auto material = MaterialHut::GetMaterial(matPath.string()))
 		{
+			ImGui::Text(Mrk::Utility::GBKToUTF8(matPath.filename().string()).c_str());
+
+			{
+				auto value = Utility::GBKToUTF8(material->GetSpPath());
+				char buffer[256];
+				strncpy_s(buffer, value.c_str(), sizeof(buffer));
+				buffer[sizeof(buffer) - 1] = '\0';
+
+				if (ImGui::InputText("sp path", buffer, sizeof(buffer)))
+				{
+					value = Utility::UTF8ToGBK(std::string(buffer));
+					material->SetSpPath(value);
+				}
+				else if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILEPATH"))
+					{
+						if (payload->DataSize > 0)
+						{
+							strncpy_s(buffer, static_cast<const char*>(payload->Data), sizeof(buffer) - 1);
+							buffer[sizeof(buffer) - 1] = '\0';
+							material->SetSpPath(buffer);
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+			}
+
 			auto& uniforms = material->GetUniforms();
 			for (auto& uniform : uniforms)
 			{
@@ -717,6 +774,13 @@ void Mrk::PluginMaterialEditUI::Draw()
 			if (ImGui::Button("Save"))
 			{
 				MaterialHut::SaveMaterial(material, matPath.string());
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("ReLoad"))
+			{
+				MaterialHut::ReloadMaterial(matPath.string());
 			}
 		}
 	}
