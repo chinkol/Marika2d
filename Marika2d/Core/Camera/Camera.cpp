@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include "Core/Mesh/Mesh.h"
+#include "Core/Input/InputSys.h"
 
 Mrk::CameraOutput::~CameraOutput()
 {
@@ -73,13 +74,22 @@ GLuint Mrk::CameraOutput::GetDepthBuffertexture()
 	return depthBufferTextures[currBackBufferIndex];
 }
 
-void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& renderLayers)
+void Mrk::CameraOutput::Shot(const RenderSpGroups& spGroups)
 {
-	//bind backbuffer
 	auto backbuffer = backBuffers[currBackBufferIndex];
 	glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
 
-	//camera
+	glViewport(0, 0, resolution.x, resolution.y);
+	glClearColor(190.0f * 0.9f / 255.0f, 237.0f * 0.9f / 255.0f, 199.0f * 0.9f / 255.0f, 1.0f);
+	GLuint clearColor[] = { 0, 0, 0, 0 };
+	glClearBufferuiv(GL_COLOR, 2, clearColor);
+	glClearBufferuiv(GL_COLOR, 1, clearColor);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (trans)
 	{
@@ -92,40 +102,85 @@ void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& rende
 		glUniformMatrix4fv(glGetUniformLocation(1, "viewproj"), 1, GL_FALSE, (GLfloat*)&viewproj);
 	}
 
-	//light
-	//......
+	for (auto& [shader, matGroups] : spGroups)
+	{
+		shader->Use(); // 绑定 Shader
 
-	//clear
-	glViewport(0, 0, resolution.x, resolution.y);
-	glClearColor(190.0f * 0.9f / 255.0f, 237.0f * 0.9f / 255.0f, 199.0f * 0.9f / 255.0f, 1.0f);
-	GLuint clearColor[] = { 0, 0, 0, 0 };
-	glClearBufferuiv(GL_COLOR, 2, clearColor);
-	glClearBufferuiv(GL_COLOR, 1, clearColor);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		for (auto& [mat, meshGroups] : matGroups)
+		{
+			mat->Bind();
 
-	//background
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_FALSE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	Shot(renderLayers[(int)RenderLayer::BackGround]);
+			for (auto& [mesh, items] : meshGroups)
+			{
+				mesh->Bind(); // 只绑定一次 VAO/VBO
 
-	//geometry
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	Shot(renderLayers[(int)RenderLayer::Geometry]);
-
-	//transparent
-	//......
-
-	//foreground
-	//......
+				for (auto& item : items)
+				{
+					glUniform2ui(glGetUniformLocation(1, "objectId"), item->id.low32, item->id.high32);
+					glUniformMatrix4fv(glGetUniformLocation(1, "world"), 1, GL_FALSE, (GLfloat*)&item->world);
+					glDrawElements(GL_TRIANGLES, item->count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * item->offset));
+				}
+			}
+		}
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glFlush();
 }
+
+//void Mrk::CameraOutput::Shot(const std::array<std::vector<RenderItem>, 4>& renderLayers)
+//{
+//	//bind backbuffer
+//	auto backbuffer = backBuffers[currBackBufferIndex];
+//	glBindFramebuffer(GL_FRAMEBUFFER, backbuffer);
+//
+//	//camera
+//
+//	if (trans)
+//	{
+//		auto view = trans->GetViewMatrix();
+//		auto proj = frustum.GetProjMatrix();
+//		auto viewproj = proj * view;
+//
+//		glUniformMatrix4fv(glGetUniformLocation(1, "view"), 1, GL_FALSE, (GLfloat*)&view);
+//		glUniformMatrix4fv(glGetUniformLocation(1, "proj"), 1, GL_FALSE, (GLfloat*)&proj);
+//		glUniformMatrix4fv(glGetUniformLocation(1, "viewproj"), 1, GL_FALSE, (GLfloat*)&viewproj);
+//	}
+//
+//	//light
+//	//......
+//
+//	//clear
+//	glViewport(0, 0, resolution.x, resolution.y);
+//	glClearColor(190.0f * 0.9f / 255.0f, 237.0f * 0.9f / 255.0f, 199.0f * 0.9f / 255.0f, 1.0f);
+//	GLuint clearColor[] = { 0, 0, 0, 0 };
+//	glClearBufferuiv(GL_COLOR, 2, clearColor);
+//	glClearBufferuiv(GL_COLOR, 1, clearColor);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//	//background
+//	glEnable(GL_DEPTH_TEST);
+//	glDepthFunc(GL_LESS);
+//	glDepthMask(GL_FALSE);
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//	Shot(renderLayers[(int)RenderLayer::BackGround]);
+//
+//	//geometry
+//	glEnable(GL_DEPTH_TEST);
+//	glDepthFunc(GL_LESS);
+//	glDepthMask(GL_TRUE);
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//	Shot(renderLayers[(int)RenderLayer::Geometry]);
+//
+//	//transparent
+//	//......
+//
+//	//foreground
+//	//......
+//
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glFlush();
+//}
 
 void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 {
@@ -195,32 +250,32 @@ void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 	}
 }
 
-void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
-{
-	for (auto& item : renderItems)
-	{
-		item.mesh->Bind();
-
-		glUniform2ui(glGetUniformLocation(1, "objectId"), item.id.low32, item.id.high32);
-		glUniformMatrix4fv(glGetUniformLocation(1, "world"), 1, GL_FALSE, (GLfloat*)&item.world);
-
-		auto subMeshes = item.mesh->GetSubMeshes();
-		auto materials = item.materials;
-		assert(materials.size() == subMeshes.size());
-
-		for (size_t i = 0; i < subMeshes.size(); i++)
-		{
-			auto& material = materials[i];
-			if (material)
-			{
-				material->Bind();
-
-				auto& subMesh = subMeshes[i];
-				glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
-			}
-		}
-	}
-}
+//void Mrk::CameraOutput::Shot(const std::vector<RenderItem>& renderItems)
+//{
+//	for (auto& item : renderItems)
+//	{
+//		item.mesh->Bind();
+//
+//		glUniform2ui(glGetUniformLocation(1, "objectId"), item.id.low32, item.id.high32);
+//		glUniformMatrix4fv(glGetUniformLocation(1, "world"), 1, GL_FALSE, (GLfloat*)&item.world);
+//
+//		auto subMeshes = item.mesh->GetSubMeshes();
+//		auto materials = item.materials;
+//		assert(materials.size() == subMeshes.size());
+//
+//		for (size_t i = 0; i < subMeshes.size(); i++)
+//		{
+//			auto& material = materials[i];
+//			if (material)
+//			{
+//				material->Bind();
+//
+//				auto& subMesh = subMeshes[i];
+//				glDrawElements(GL_TRIANGLES, subMesh.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * subMesh.offset));
+//			}
+//		}
+//	}
+//}
 
 void Mrk::Camera::Init()
 {
@@ -320,26 +375,27 @@ void Mrk::CameraController::Start()
 	trans = holder.lock()->GetComponent<Transform>();
 }
 
-#include "Third/imgui/imgui.h"
-
 void Mrk::CameraController::Update()
 {
-	auto& io = ImGui::GetIO();
+	auto& io = InputSys::GetInputIO("Runtime");
 
-	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+	auto mouseDelta = io.GetMouseDelta();
+	auto mouseWheel = io.GetMouseWheel();
+
+	if (io.IsMouseDown(MouseBtn::Right))
 	{
-		trans->RotateWorld(io.MouseDelta.x * 0.1f, { 0.0f, -1.0f, 0.0f });
-		trans->RotateLocal(io.MouseDelta.y * 0.1f, { 1.0f, 0.0f, 0.0f });
+		trans->RotateWorld(mouseDelta.x * 0.1f, { 0.0f, -1.0f, 0.0f });
+		trans->RotateLocal(mouseDelta.y * 0.1f, { 1.0f, 0.0f, 0.0f });
 	}
 
-	if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
+	if (io.IsMouseDown(MouseBtn::Middle))
 	{
-		trans->TranslateLocal({ 0.025f * io.MouseDelta.x, 0.025f * io.MouseDelta.y, 0 });
+		trans->TranslateLocal({ 0.025f * mouseDelta.x, 0.025f * mouseDelta.y, 0 });
 	}
 
-	if (io.MouseWheel != 0)
+	if (mouseWheel != 0)
 	{
-		trans->TranslateLocal({ 0.0f, 0.0f, io.MouseWheel });
+		trans->TranslateLocal({ 0.0f, 0.0f, mouseWheel });
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Core/Scene/Scene.h"
 #include "Core/GameObject/GameObject.h"
 #include "Core/Camera/Camera.h"
+#include "Core/Input/InputSys.h"
 
 #include "Third/imnodes/imnodes.h"
 #include "Third/imgui/imgui_internal.h"
@@ -244,12 +245,25 @@ void Mrk::PluginObjectSelecter::SetSelection(std::shared_ptr<GameObject> selecti
 	}
 }
 
-void Mrk::PluginViewportUI::Draw()
+void Mrk::PluginRuntimeViewportUI::Init()
 {
-	ImGui::Begin("Viewport");
+	runtimeIO = &InputSys::GetInputIO("Runtime");
+}
+
+void Mrk::PluginRuntimeViewportUI::Draw()
+{
+	ImGui::Begin("Runtime ViewPort");
 
 	auto wndSize = ImGui::GetContentRegionAvail();
 	auto wndPos = ImGui::GetCurrentWindow()->WorkRect.Min;
+
+	if (runtimeIO->IsMouseDown(MouseBtn::Middle))
+	{
+		std::cout << "middle" << std::endl;
+	}
+
+	runtimeIO->SetEnable(ImGui::IsWindowFocused());
+	runtimeIO->SetRect(wndPos.x, wndPos.y, wndPos.x + wndSize.x, wndPos.y + wndSize.y);
 
 	if (auto mainCamera = Mrk::CameraHut::GetMainCamera())
 	{
@@ -801,6 +815,24 @@ void Mrk::PluginImNodesTest::Draw()
 	ImNodes::EndNode();
 
 	ImNodes::EndNodeEditor();
+
+	ImGui::End();
+}
+
+void Mrk::PluginEditorViewportUI::Init()
+{
+	editorIO = &InputSys::GetInputIO("Editor");
+}
+
+void Mrk::PluginEditorViewportUI::Draw()
+{
+	ImGui::Begin("Editor ViewPort");
+
+	auto wndSize = ImGui::GetContentRegionAvail();
+	auto wndPos = ImGui::GetCurrentWindow()->WorkRect.Min;
+
+	editorIO->SetEnable(ImGui::IsWindowFocused());
+	editorIO->SetRect(wndPos.x, wndPos.y, wndPos.x + wndSize.x, wndPos.y + wndSize.y);
 
 	ImGui::End();
 }

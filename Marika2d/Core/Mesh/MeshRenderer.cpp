@@ -1,7 +1,8 @@
 #include "MeshRenderer.h"
 
-#include "Core/Render/Render.h"
 #include "Core/GameObject/GameObject.h"
+#include "Core/Mesh/Mesh.h"
+#include "Core/Render/Render.h"
 
 #include <algorithm>
 
@@ -27,6 +28,11 @@ const std::vector<Mrk::MaterialSlot>& Mrk::MeshRenderer::GetMatSlots()
 void Mrk::MeshRenderer::SetMatSlots(const std::vector<MaterialSlot>& matSlots)
 {
     this->matSlots = matSlots;
+}
+
+void Mrk::MeshRenderer::Start()
+{
+    renderItem = std::make_shared<RenderItem>();
 }
 
 void Mrk::MeshRenderer::PreDraw()
@@ -60,20 +66,20 @@ void Mrk::MeshRenderer::PreDraw()
 
     if (mesh && !holder.expired())
     {
-        RenderItem renderItem;
-        renderItem.id = holder.lock()->GetID();
-        renderItem.mesh = mesh;
-        renderItem.world = Matrix4(1);
-
-        // fix
+        int subMeshIndex = 0;
+        for (auto& slot : matSlots)
         {
-            std::transform(matSlots.begin(), matSlots.end(), std::back_inserter(renderItem.materials), [](const MaterialSlot& slot) {
-                return slot.GetMaterial();
-                });
+            auto& subMesh = mesh->GetSubMeshes()[subMeshIndex++];
+
+            renderItem->count = subMesh.count;
+            renderItem->offset = subMesh.offset;
+            renderItem->mat = slot.material;
+            renderItem->id = holder.lock()->GetID();
+            renderItem->mesh = mesh;
+            renderItem->world = Matrix4(1);
+
+            RenderSys::Commit(renderItem);
         }
-
-
-        RenderSys::Commit(RenderLayer::Geometry, renderItem);
     }
 }
 

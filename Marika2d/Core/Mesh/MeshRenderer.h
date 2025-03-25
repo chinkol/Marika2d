@@ -3,11 +3,12 @@
 #include "Core/Component/Component.h"
 #include "Core/OpenGL/OpenGL.h"
 #include "Core/Scene/Scene.h"
-#include "Core/Mesh/Mesh.h"
 
 namespace Mrk
 {
+	class Mesh;
 	class Material;
+	struct RenderItem;
 
 	class MaterialSlot
 	{
@@ -28,6 +29,7 @@ namespace Mrk
 	{
 		MRK_COMPONENT(MeshRenderer) //MRK_POOLABLE(MeshRenderer, 100)
 	public:
+		void Start();
 		void PreDraw();
 
 		const std::string& GetMeshPath();
@@ -40,5 +42,6 @@ namespace Mrk
 		bool isDirty = true;
 		std::shared_ptr<Mesh> mesh;
 		std::vector<MaterialSlot> matSlots;
+		std::shared_ptr<RenderItem> renderItem;
 	};
 }

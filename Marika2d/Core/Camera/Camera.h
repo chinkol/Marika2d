@@ -82,10 +82,10 @@ namespace Mrk
 		GLuint GetBackBuffertexture();
 		GLuint GetDepthBuffertexture();
 
-		void Shot(const std::array<std::vector<RenderItem>, 4>& renderLayers);
+		void Shot(const RenderSpGroups& spGroups);
 	private:
 		void ReSize(const Vector2i& newSize);
-		void Shot(const std::vector<RenderItem>& renderItems);
+		//void Shot(const std::vector<RenderItem>& renderItems);
 	private:
 		Vector2i resolution;
 		Vector2i outputPos = { 0, 0 };

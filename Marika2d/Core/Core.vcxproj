@@ -27,6 +27,7 @@
     <ClCompile Include="GenCoreReflectInfo\GenCoreReflectInfo.cpp" />
     <ClCompile Include="Global\Global.cpp" />
     <ClCompile Include="IDGenerater\IDGenerater.cpp" />
+    <ClCompile Include="Input\InputSys.cpp" />
     <ClCompile Include="Render\Material\Material.cpp" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Mesh\MeshRenderer.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="GenCoreReflectInfo\GenCoreReflectInfo.h" />
     <ClInclude Include="Global\Global.h" />
     <ClInclude Include="IDGenerater\IDGenerater.h" />
+    <ClInclude Include="Input\InputSys.h" />
     <ClInclude Include="Render\Material\Material.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Mesh\MeshRenderer.h" />

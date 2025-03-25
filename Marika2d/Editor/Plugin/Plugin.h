@@ -143,11 +143,26 @@ namespace Mrk
 		void MouseRightClick(std::shared_ptr<GameObject> node);
 	};
 
-	class PluginViewportUI : public IPlugin
+	class InputIO;
+
+	class PluginRuntimeViewportUI : public IPlugin
 	{
-		MRK_PLUGIN(PluginViewportUI)
+		MRK_PLUGIN(PluginRuntimeViewportUI)
 	public:
+		virtual void Init() override;
 		virtual void Draw() override;
+	private:
+		InputIO* runtimeIO = nullptr;
+	};
+
+	class PluginEditorViewportUI : public IPlugin
+	{
+		MRK_PLUGIN(PluginEditorViewportUI)
+	public:
+		virtual void Init() override;
+		virtual void Draw() override;
+	private:
+		InputIO* editorIO = nullptr;
 	};
 
 	// ±‡º≠∆˜≈‰÷√

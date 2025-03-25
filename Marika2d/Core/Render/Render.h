@@ -25,18 +25,25 @@ namespace Mrk
 	struct RenderItem
 	{
 		ID id;
+		GLuint offset;
+		GLuint count;
 		Matrix4 world;
 		std::shared_ptr<Mesh> mesh;
-		std::vector<std::shared_ptr<Material>> materials;
+		std::shared_ptr<Material> mat;
 	};
+
+	using RenderItemGroup = std::vector<std::shared_ptr<RenderItem>>;
+	using RenderMeshGroups = std::map<std::shared_ptr<Mesh>, RenderItemGroup>;
+	using RenderMatGroups = std::map<std::shared_ptr<Material>, RenderMeshGroups>;
+	using RenderSpGroups = std::map<std::shared_ptr<ShaderProgram>, RenderMatGroups>;
 
 	class RenderSys : public Singleton<RenderSys>
 	{
 		MRK_SINGLETON(RenderSys)
 	public:
 		static void Draw();
-		static void Commit(RenderLayer renderLayer, const RenderItem& renderParam);
+		static void Commit(std::shared_ptr<RenderItem> renderItem);
 	private:
-		std::array<std::vector<RenderItem>, 4> renderLayers;
+		RenderSpGroups spGroups;
 	};
 }

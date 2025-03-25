@@ -2,6 +2,7 @@
 
 #include "Core/Component/Component.h"
 #include "Core/Render/Render.h"
+#include "Core/Input/InputSys.h"
 
 #include "Third/imgui/imgui.h"
 #include "Third/imgui/imgui_impl_glfw.h"
@@ -147,6 +148,8 @@ void Mrk::Application::Run()
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
+
+            Mrk::InputSys::Update();
 
             Mrk::ComponentHut::Invoke("PreUpdate");
             Mrk::ComponentHut::Invoke("Update");

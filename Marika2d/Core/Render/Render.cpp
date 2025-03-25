@@ -1,28 +1,30 @@
 #include "Render.h"
 
 #include "Core/Camera/Camera.h"
+#include "Core/Mesh/Mesh.h"
 
 void Mrk::RenderSys::Draw()
 {
-	MRK_INSTANCE_REF;
+    MRK_INSTANCE_REF;
 
 	if (auto mainCamera = CameraHut::GetMainCamera())
 	{
 		auto output = mainCamera->GetComponent<CameraOutput>();
-		output->Shot(instance.renderLayers);
+		output->Shot(instance.spGroups);
 	}
 
-	for (auto& renderLayer : instance.renderLayers)
-	{
-		renderLayer.clear();
-	}
+	instance.spGroups.clear();
 }
 
-void Mrk::RenderSys::Commit(RenderLayer renderLayer, const RenderItem& renderItem)
+void Mrk::RenderSys::Commit(std::shared_ptr<RenderItem> renderItem)
 {
 	MRK_INSTANCE_REF;
 
-	assert((int)renderLayer < instance.renderLayers.size());
+	if (!renderItem || !renderItem->mat || !renderItem->mesh)
+		return;
 
-	instance.renderLayers[(int)renderLayer].push_back(renderItem);
+    if (auto shader = renderItem->mat->GetShaderProgram())
+    {
+		instance.spGroups[shader][renderItem->mat][renderItem->mesh].push_back(renderItem);
+    }
 }

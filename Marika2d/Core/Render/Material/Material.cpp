@@ -67,7 +67,13 @@ const std::string& Mrk::Material::GetSpPath() const
 void Mrk::Material::SetSpPath(const std::string& path)
 {
 	spPath = path;
-	isDirty = true;
+	shaderProgram = ShaderProgramHut::GetShaderProgram(spPath);
+	//isDirty = true;
+}
+
+std::shared_ptr<Mrk::ShaderProgram> Mrk::Material::GetShaderProgram()
+{
+	return shaderProgram;
 }
 
 const std::vector<std::unique_ptr<Mrk::Uniform>>& Mrk::Material::GetUniforms()
@@ -100,7 +106,7 @@ void Mrk::Material::FromJson(const Json::Value& json)
 		auto jspPath = json.FindMember("spPath");
 		if (jspPath != json.MemberEnd() && jspPath->value.IsString())
 		{
-			spPath = jspPath->value.GetString();
+			SetSpPath(jspPath->value.GetString());
 		}
 
 		auto juniformsMember = json.FindMember("uniforms");

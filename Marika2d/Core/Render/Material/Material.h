@@ -192,7 +192,6 @@ namespace Mrk
 	class Material : public Object
 	{
 		friend class ShaderProgram;
-		friend class MaterialSlot; // TODO : fix
 
 		MRK_OBJECT(Material) RTTR_ENABLE(Object)
 	public:
@@ -203,6 +202,8 @@ namespace Mrk
 
 		const std::string& GetSpPath() const;
 		void SetSpPath(const std::string& path);
+
+		std::shared_ptr<ShaderProgram> GetShaderProgram();
 
 		void AddUniform(std::unique_ptr<Uniform> uniform);
 		const std::vector<std::unique_ptr<Uniform>>& GetUniforms();
