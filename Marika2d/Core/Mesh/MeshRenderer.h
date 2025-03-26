@@ -8,7 +8,7 @@ namespace Mrk
 {
 	class Mesh;
 	class Material;
-	struct RenderItem;
+	class ShaderProgram;
 
 	class MaterialSlot
 	{
@@ -18,10 +18,15 @@ namespace Mrk
 		const std::string& GetName() const;
 		const std::string& GetMatPath() const;
 		void SetMatPath(const std::string& matPath);
+		const std::string& GetSpPath() const;
+		void SetSpPath(const std::string& spPath);
 		std::shared_ptr<Material> GetMaterial() const;
+		std::shared_ptr<ShaderProgram> GetShaderProgram() const;
 	private:
 		std::string name;
+		std::string spPath;
 		std::string matPath;
+		std::shared_ptr<ShaderProgram> shaderProgram;
 		std::shared_ptr<Material> material;
 	};
 
@@ -39,9 +44,8 @@ namespace Mrk
 	private:
 		std::string meshPath;
 	private:
-		bool isDirty = true;
+		bool isMeshDirty = true;
 		std::shared_ptr<Mesh> mesh;
 		std::vector<MaterialSlot> matSlots;
-		std::shared_ptr<RenderItem> renderItem;
 	};
 }

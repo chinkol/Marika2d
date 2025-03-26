@@ -20,16 +20,24 @@ namespace Mrk
 	{
 		friend class TextureHut;
 	public:
+		int GetWidth();
+		int GetHeight();
+		int GetChannels();
+
 		GLuint GetID();
 		void Bind();
 		void UnBind();
 	private:
 		GLuint id;
+		int width;
+		int height;
+		int channels;
 	};
 
 	class TextureHut : public Singleton<TextureHut>
 	{
 	public:
+		static const std::map<std::string, std::shared_ptr<Texture>>& GetTextures();
 		static std::shared_ptr<Texture> GetTexture(std::string_view path);
 	private:
 		static std::shared_ptr<Texture> LoadTexture(std::string_view path);

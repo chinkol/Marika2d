@@ -91,24 +91,24 @@ void Mrk::CameraOutput::Shot(const RenderSpGroups& spGroups)
 	glDepthMask(GL_TRUE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	if (trans)
-	{
-		auto view = trans->GetViewMatrix();
-		auto proj = frustum.GetProjMatrix();
-		auto viewproj = proj * view;
-
-		glUniformMatrix4fv(glGetUniformLocation(1, "view"), 1, GL_FALSE, (GLfloat*)&view);
-		glUniformMatrix4fv(glGetUniformLocation(1, "proj"), 1, GL_FALSE, (GLfloat*)&proj);
-		glUniformMatrix4fv(glGetUniformLocation(1, "viewproj"), 1, GL_FALSE, (GLfloat*)&viewproj);
-	}
-
 	for (auto& [shader, matGroups] : spGroups)
 	{
 		shader->Use(); // °ó¶¨ Shader
 
+		if (trans)
+		{
+			auto view = trans->GetViewMatrix();
+			auto proj = frustum.GetProjMatrix();
+			auto viewproj = proj * view;
+
+			glUniformMatrix4fv(glGetUniformLocation(shader->GetId(), "view"), 1, GL_FALSE, (GLfloat*)&view);
+			glUniformMatrix4fv(glGetUniformLocation(shader->GetId(), "proj"), 1, GL_FALSE, (GLfloat*)&proj);
+			glUniformMatrix4fv(glGetUniformLocation(shader->GetId(), "viewproj"), 1, GL_FALSE, (GLfloat*)&viewproj);
+		}
+
 		for (auto& [mat, meshGroups] : matGroups)
 		{
-			mat->Bind();
+			mat->Bind(shader->GetId());
 
 			for (auto& [mesh, items] : meshGroups)
 			{
@@ -116,9 +116,9 @@ void Mrk::CameraOutput::Shot(const RenderSpGroups& spGroups)
 
 				for (auto& item : items)
 				{
-					glUniform2ui(glGetUniformLocation(1, "objectId"), item->id.low32, item->id.high32);
-					glUniformMatrix4fv(glGetUniformLocation(1, "world"), 1, GL_FALSE, (GLfloat*)&item->world);
-					glDrawElements(GL_TRIANGLES, item->count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * item->offset));
+					glUniform2ui(glGetUniformLocation(shader->GetId(), "objectId"), item.id.low32, item.id.high32);
+					glUniformMatrix4fv(glGetUniformLocation(shader->GetId(), "world"), 1, GL_FALSE, (GLfloat*)&item.world);
+					glDrawElements(GL_TRIANGLES, item.count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(unsigned int) * item.offset));
 				}
 			}
 		}

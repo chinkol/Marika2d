@@ -186,7 +186,7 @@ namespace Mrk
 		bool isDirty = true;
 		GLuint textureId = 0;
 		std::string texturePath;
-		TextureUnit textureUnit;
+		TextureUnit textureUnit = TextureUnit::Tex0;
 	};
 
 	class Material : public Object
@@ -197,22 +197,13 @@ namespace Mrk
 	public:
 		Material();
 	public:
-		void Bind();
-		void Reset();
-
-		const std::string& GetSpPath() const;
-		void SetSpPath(const std::string& path);
-
-		std::shared_ptr<ShaderProgram> GetShaderProgram();
+		void Bind(GLuint sp);
 
 		void AddUniform(std::unique_ptr<Uniform> uniform);
 		const std::vector<std::unique_ptr<Uniform>>& GetUniforms();
 		virtual Json::Value ToJson(Mrk::JsonAllocator& alloctor);
 		virtual void FromJson(const Json::Value& json);
 	private:
-		bool isDirty = true;
-		std::string spPath;
-		std::shared_ptr<ShaderProgram> shaderProgram;
 		std::vector<std::unique_ptr<Uniform>> uniforms;
 	};
 }

@@ -1,0 +1,36 @@
+#include "PluginTexureMergeUI.h"
+
+#include "Core/Render/Texture/Texture.h"
+
+#include "Third/imnodes/imnodes.h"
+
+void Mrk::PluginTexureMergeUI::Draw()
+{
+    ImNodesStyle& style = ImNodes::GetStyle();
+    style.NodePadding = ImVec2(0, 0);  // 去除节点内边距
+
+	ImGui::Begin("Texture Merge");
+    {
+        ImNodes::BeginNodeEditor();
+        {
+            int index = 0;
+
+            auto& textures = TextureHut::GetTextures();
+            for (auto& [_, tex] : textures)
+            {
+                ImNodes::BeginNode(index);
+                {
+                    ImVec2 tex_size = ImVec2(tex->GetWidth() / 10, tex->GetHeight() / 10);
+
+                    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+                    ImGui::Image((ImTextureID)tex->GetID(), tex_size);
+                    ImGui::PopStyleVar();
+                }
+                ImNodes::EndNode();
+                index++;
+            }
+        }
+        ImNodes::EndNodeEditor();
+    }
+    ImGui::End();
+}

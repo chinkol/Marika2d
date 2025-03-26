@@ -13,67 +13,12 @@ Mrk::Material::Material()
 {
 }
 
-void Mrk::Material::Bind()
+void Mrk::Material::Bind(GLuint sp)
 {
-	if (isDirty || !shaderProgram)
+	for (auto& uniform : uniforms)
 	{
-		shaderProgram = ShaderProgramHut::GetShaderProgram(spPath);
-		isDirty = false;
-
-		if (!shaderProgram)
-		{
-			// log
-		}
+		uniform->Bind(sp);
 	}
-
-	if (shaderProgram)
-	{
-		shaderProgram->Use();
-		auto sp = shaderProgram->GetId();
-		for (auto& uniform : uniforms)
-		{
-			uniform->Bind(sp);
-		}
-	}
-}
-
-void Mrk::Material::Reset()
-{
-	if (!shaderProgram)
-	{
-		shaderProgram = Mrk::ShaderProgramHut::GetShaderProgram(spPath);
-	}
-
-	if (shaderProgram)
-	{
-		/*auto newMat = shaderProgram->CreateMaterial();
-		auto& resetUniforms = newMat->uniforms;
-		for (size_t i = 0; i < resetUniforms.size(); i++)
-		{
-			*uniforms[i] = *resetUniforms[i];
-		}*/
-	}
-	else
-	{
-		// log
-	}
-}
-
-const std::string& Mrk::Material::GetSpPath() const
-{
-	return spPath;
-}
-
-void Mrk::Material::SetSpPath(const std::string& path)
-{
-	spPath = path;
-	shaderProgram = ShaderProgramHut::GetShaderProgram(spPath);
-	//isDirty = true;
-}
-
-std::shared_ptr<Mrk::ShaderProgram> Mrk::Material::GetShaderProgram()
-{
-	return shaderProgram;
 }
 
 const std::vector<std::unique_ptr<Mrk::Uniform>>& Mrk::Material::GetUniforms()
@@ -103,11 +48,7 @@ void Mrk::Material::FromJson(const Json::Value& json)
 {
 	if (json.IsObject())
 	{
-		auto jspPath = json.FindMember("spPath");
-		if (jspPath != json.MemberEnd() && jspPath->value.IsString())
-		{
-			SetSpPath(jspPath->value.GetString());
-		}
+		ReflectSys::FromJson(*this, json);
 
 		auto juniformsMember = json.FindMember("uniforms");
 		if (juniformsMember != json.MemberEnd() && juniformsMember->value.IsArray())
@@ -179,10 +120,7 @@ Mrk::ShaderProgram::~ShaderProgram()
 
 std::shared_ptr<Mrk::Material> Mrk::ShaderProgram::CreateMaterial()
 {
-	auto mat = std::shared_ptr<Material>(new Mrk::Material());
-	mat->shaderProgram = shared_from_this();
-
-	return mat;
+	return std::make_shared<Material>();
 }
 
 GLuint Mrk::ShaderProgram::GetId()

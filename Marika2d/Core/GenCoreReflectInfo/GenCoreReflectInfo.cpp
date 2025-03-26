@@ -190,7 +190,8 @@ namespace Mrk
 	MRK_CORE_REFLECT_REGISTER(MaterialSlot)(
 		rttr::registration::class_<MaterialSlot>("MaterialSlot")
 		.property_readonly("name", &MaterialSlot::GetName)
-		.property("matPath", &MaterialSlot::GetMatPath, &MaterialSlot::SetMatPath);
+		.property("matPath", &MaterialSlot::GetMatPath, &MaterialSlot::SetMatPath)
+		.property("spPath", &MaterialSlot::GetSpPath, &MaterialSlot::SetSpPath);
 		);
 
 	MRK_CORE_REFLECT_REGISTER(MeshRenderer)(
@@ -228,8 +229,7 @@ namespace Mrk
 		);
 
 	MRK_CORE_REFLECT_REGISTER(Material)(
-		rttr::registration::class_<Material>("Material")
-		.property("spPath", &Material::GetSpPath, &Material::SetSpPath);
+		rttr::registration::class_<Material>("Material");
 		);
 }
 

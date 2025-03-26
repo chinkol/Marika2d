@@ -257,13 +257,8 @@ void Mrk::PluginRuntimeViewportUI::Draw()
 	auto wndSize = ImGui::GetContentRegionAvail();
 	auto wndPos = ImGui::GetCurrentWindow()->WorkRect.Min;
 
-	if (runtimeIO->IsMouseDown(MouseBtn::Middle))
-	{
-		std::cout << "middle" << std::endl;
-	}
-
 	runtimeIO->SetEnable(ImGui::IsWindowFocused());
-	runtimeIO->SetRect(wndPos.x, wndPos.y, wndPos.x + wndSize.x, wndPos.y + wndSize.y);
+	runtimeIO->SetRect((int)wndPos.x, (int)wndPos.y, (int)wndPos.x + (int)wndSize.x, (int)wndPos.y + (int)wndSize.y);
 
 	if (auto mainCamera = Mrk::CameraHut::GetMainCamera())
 	{
@@ -701,32 +696,6 @@ void Mrk::PluginMaterialEditUI::Draw()
 		{
 			ImGui::Text(Mrk::Utility::GBKToUTF8(matPath.filename().string()).c_str());
 
-			{
-				auto value = Utility::GBKToUTF8(material->GetSpPath());
-				char buffer[256];
-				strncpy_s(buffer, value.c_str(), sizeof(buffer));
-				buffer[sizeof(buffer) - 1] = '\0';
-
-				if (ImGui::InputText("sp path", buffer, sizeof(buffer)))
-				{
-					value = Utility::UTF8ToGBK(std::string(buffer));
-					material->SetSpPath(value);
-				}
-				else if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILEPATH"))
-					{
-						if (payload->DataSize > 0)
-						{
-							strncpy_s(buffer, static_cast<const char*>(payload->Data), sizeof(buffer) - 1);
-							buffer[sizeof(buffer) - 1] = '\0';
-							material->SetSpPath(buffer);
-						}
-					}
-					ImGui::EndDragDropTarget();
-				}
-			}
-
 			auto& uniforms = material->GetUniforms();
 			for (auto& uniform : uniforms)
 			{
@@ -806,9 +775,12 @@ void Mrk::PluginImNodesTest::Draw()
 {
 	const int hardcoded_node_id = 1;
 
-	ImGui::Begin("node editor");
+	/*ImGui::Begin("node editor");
 
 	ImNodes::BeginNodeEditor();
+
+	ImGui::BeginChild("h", { 100, 100 });
+	ImGui::EndChild();
 
 	ImNodes::BeginNode(hardcoded_node_id);
 	ImGui::Dummy(ImVec2(80.0f, 45.0f));
@@ -816,7 +788,7 @@ void Mrk::PluginImNodesTest::Draw()
 
 	ImNodes::EndNodeEditor();
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Mrk::PluginEditorViewportUI::Init()

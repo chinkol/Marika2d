@@ -5,7 +5,7 @@
 
 void Mrk::RenderSys::Draw()
 {
-    MRK_INSTANCE_REF;
+	MRK_INSTANCE_REF;
 
 	if (auto mainCamera = CameraHut::GetMainCamera())
 	{
@@ -16,15 +16,12 @@ void Mrk::RenderSys::Draw()
 	instance.spGroups.clear();
 }
 
-void Mrk::RenderSys::Commit(std::shared_ptr<RenderItem> renderItem)
+void Mrk::RenderSys::Commit(const RenderItem& renderItem)
 {
 	MRK_INSTANCE_REF;
 
-	if (!renderItem || !renderItem->mat || !renderItem->mesh)
-		return;
-
-    if (auto shader = renderItem->mat->GetShaderProgram())
-    {
-		instance.spGroups[shader][renderItem->mat][renderItem->mesh].push_back(renderItem);
-    }
+	if (renderItem.mat && renderItem.mesh && renderItem.sp)
+	{
+		instance.spGroups[renderItem.sp][renderItem.mat][renderItem.mesh].push_back(renderItem);
+	}
 }

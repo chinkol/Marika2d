@@ -41,7 +41,7 @@ namespace Mrk
 		void SetAspect(float aspect);
 		const Matrix4& GetProjMatrix();
 	private:
-		Matrix4 proj;
+		Matrix4 proj = Matrix4(1);
 		float nearZ = 0.1f;
 		float farZ = 100.0f;
 		float angle = 45.0f;
@@ -87,17 +87,17 @@ namespace Mrk
 		void ReSize(const Vector2i& newSize);
 		//void Shot(const std::vector<RenderItem>& renderItems);
 	private:
-		Vector2i resolution;
+		Vector2i resolution = { 0, 0 };
 		Vector2i outputPos = { 0, 0 };
 
 		CameraFrustum frustum;
 		std::shared_ptr<Transform> trans;	// 缓存camera的trans, 这里不会构成循环引用
 
 		int currBackBufferIndex = 0;
-		std::array<GLuint, 2> backBuffers;
-		std::array<GLuint, 2> idTextures;
-		std::array<GLuint, 2> backBufferTextures;
-		std::array<GLuint, 2> depthBufferTextures;
+		std::array<GLuint, 2> backBuffers = { 0 };
+		std::array<GLuint, 2> idTextures = { 0 };
+		std::array<GLuint, 2> backBufferTextures = { 0 };
+		std::array<GLuint, 2> depthBufferTextures = { 0 };
 	};
 
 	class Camera : public GameObject

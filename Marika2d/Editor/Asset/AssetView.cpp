@@ -272,7 +272,6 @@ std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Edito
              {
                  PluginPathSelectDlg::GetInstance()->SelectNewFile([sp, node](const std::filesystem::path& path) {
                      auto mat = sp->CreateMaterial();
-                     mat->SetSpPath(node.path.c_str());
                      Json::Document jdoc;
                      Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), path.string());
                      });

@@ -141,6 +141,7 @@
     <ClCompile Include="Asset\AssetView.cpp" />
     <ClCompile Include="GenEditorReflectInfo\GenEditorReflectInfo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Plugin\UI\PluginTexureMergeUI.cpp" />
     <ClCompile Include="Plugin\PluginInputDlg\PluginInputDlg.cpp" />
     <ClCompile Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.cpp" />
     <ClCompile Include="Plugin\UI\PluginMenuBarUI.cpp" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Asset\AssetView.h" />
     <ClInclude Include="GenEditorReflectInfo\GenEditorReflectInfo.h" />
+    <ClInclude Include="Plugin\UI\PluginTexureMergeUI.h" />
     <ClInclude Include="Plugin\PluginInputDlg\PluginInputDlg.h" />
     <ClInclude Include="Plugin\PluginPathSelectDlg\PluginPathSelectDlg.h" />
     <ClInclude Include="Plugin\UI\PluginMenuBarUI.h" />

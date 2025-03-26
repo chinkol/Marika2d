@@ -3,6 +3,7 @@
 #include "Core/GameObject/GameObject.h"
 #include "Core/Mesh/Mesh.h"
 #include "Core/Render/Render.h"
+#include "Core/Render/Material/Material.h"
 
 #include <algorithm>
 
@@ -16,7 +17,7 @@ void Mrk::MeshRenderer::SetMeshPath(const std::string& meshPath)
     if (this->meshPath != meshPath)
     {
         this->meshPath = meshPath;
-        isDirty = true;
+        isMeshDirty = true;
     }
 }
 
@@ -32,12 +33,11 @@ void Mrk::MeshRenderer::SetMatSlots(const std::vector<MaterialSlot>& matSlots)
 
 void Mrk::MeshRenderer::Start()
 {
-    renderItem = std::make_shared<RenderItem>();
 }
 
 void Mrk::MeshRenderer::PreDraw()
 {
-    if (isDirty)
+    if (isMeshDirty)
     {
         if (mesh = MeshHut::GetMesh(meshPath))
         {
@@ -56,7 +56,7 @@ void Mrk::MeshRenderer::PreDraw()
                 }
             }
 
-            isDirty = false;
+            isMeshDirty = false;
         }
         else
         {
@@ -71,12 +71,15 @@ void Mrk::MeshRenderer::PreDraw()
         {
             auto& subMesh = mesh->GetSubMeshes()[subMeshIndex++];
 
-            renderItem->count = subMesh.count;
-            renderItem->offset = subMesh.offset;
-            renderItem->mat = slot.material;
-            renderItem->id = holder.lock()->GetID();
-            renderItem->mesh = mesh;
-            renderItem->world = Matrix4(1);
+            RenderItem renderItem;
+
+            renderItem.id = holder.lock()->GetID();
+            renderItem.count = subMesh.count;
+            renderItem.offset = subMesh.offset;
+            renderItem.world = Matrix4(1);
+            renderItem.mat = slot.material;
+            renderItem.mesh = mesh;
+            renderItem.sp = slot.shaderProgram;
 
             RenderSys::Commit(renderItem);
         }
@@ -103,7 +106,23 @@ void Mrk::MaterialSlot::SetMatPath(const std::string& matPath)
     material = MaterialHut::GetMaterial(matPath);
 }
 
+const std::string& Mrk::MaterialSlot::GetSpPath() const
+{
+    return spPath;
+}
+
+void Mrk::MaterialSlot::SetSpPath(const std::string& spPath)
+{
+    this->spPath = spPath;
+    shaderProgram = ShaderProgramHut::GetShaderProgram(spPath);
+}
+
 std::shared_ptr<Mrk::Material> Mrk::MaterialSlot::GetMaterial() const
 {
     return material;
+}
+
+std::shared_ptr<Mrk::ShaderProgram> Mrk::MaterialSlot::GetShaderProgram() const
+{
+    return shaderProgram;
 }

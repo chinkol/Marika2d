@@ -25,14 +25,15 @@ namespace Mrk
 	struct RenderItem
 	{
 		ID id;
-		GLuint offset;
 		GLuint count;
+		GLuint offset;
 		Matrix4 world;
 		std::shared_ptr<Mesh> mesh;
 		std::shared_ptr<Material> mat;
+		std::shared_ptr<ShaderProgram> sp;
 	};
 
-	using RenderItemGroup = std::vector<std::shared_ptr<RenderItem>>;
+	using RenderItemGroup = std::vector<RenderItem>;	// TODO : 缓存渲染项，不用每帧上传
 	using RenderMeshGroups = std::map<std::shared_ptr<Mesh>, RenderItemGroup>;
 	using RenderMatGroups = std::map<std::shared_ptr<Material>, RenderMeshGroups>;
 	using RenderSpGroups = std::map<std::shared_ptr<ShaderProgram>, RenderMatGroups>;
@@ -42,7 +43,7 @@ namespace Mrk
 		MRK_SINGLETON(RenderSys)
 	public:
 		static void Draw();
-		static void Commit(std::shared_ptr<RenderItem> renderItem);
+		static void Commit(const RenderItem& renderItem);
 	private:
 		RenderSpGroups spGroups;
 	};
