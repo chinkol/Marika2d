@@ -6,7 +6,7 @@ namespace Mrk
 {
 	class Mesh;
 
-	class PluginTexureMergeUI : public IPlugin
+	class PluginTexureMergeUI : public     IPlugin
 	{
 		MRK_PLUGIN(PluginTexureMergeUI)
 	public:

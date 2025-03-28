@@ -21,6 +21,22 @@ std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(std::string_v
 	return std::shared_ptr<GameObject>();
 }
 
+std::shared_ptr<Mrk::GameObject> Mrk::GameObjectFactory::CreateNew(const Json::Value& json)
+{
+	if (json.IsObject())
+	{
+		auto jclassname = json.FindMember(MRK_REFLECT_CLASS_JSON_PROP_NAME); 
+		if (jclassname != json.MemberEnd())
+		{
+			auto obj = CreateNew(jclassname->value.GetString());
+			obj->FromJson(json);
+			return obj;
+		}
+	}
+
+	return std::shared_ptr<GameObject>();
+}
+
 const std::map<std::string, std::function<std::shared_ptr<Mrk::GameObject>()>>& Mrk::GameObjectFactory::GetCreators()
 {
 	MRK_INSTANCE_REF;

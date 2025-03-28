@@ -45,6 +45,9 @@
     <ClCompile Include="Plugin\UI\PluginTexureMergeUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Plugin\PluginMessageBoxDlg\PluginMessageBoxDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset\AssetSys.h">
@@ -72,6 +75,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\UI\PluginTexureMergeUI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\PluginMessageBoxDlg\PluginMessageBoxDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

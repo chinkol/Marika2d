@@ -180,17 +180,19 @@ void Mrk::AssimpAssetImporter::ProcessNode(aiNode* aiNode, const std::filesystem
 			auto aiSubMesh = aiScene->mMeshes[aiNode->mMeshes[i]];
 			auto aiMat = aiScene->mMaterials[aiSubMesh->mMaterialIndex];
 
-			aiMesh.push_back({ Mrk::Utility::UTF8ToGBK(aiMat->GetName().C_Str()), aiSubMesh });
+			aiMesh.push_back({ Mrk::Utility::UTF8ToGBK(aiSubMesh->mName.C_Str()), aiSubMesh });
 
 			ProcessMaterial(aiMat, from, to / "Materials", meshRenderer);
 		}
 
-		auto dump = to / "Meshes" / aiNode->mName.C_Str();	// 转储路径
-		dump += MRK_MESH_FILE_EXTENSION;
+		auto dump = to / "Meshes" / Mrk::Utility::UTF8ToGBK(aiNode->mName.C_Str());	// 转储路径
+		dump += ".mmsh";
 
 		ProcessMesh(aiMesh, dump);
 
 		meshRenderer->SetMeshPath(dump.string());
+		meshRenderer->LoadMesh();
+
 		objNode->AddComponent(meshRenderer);
 	}
 

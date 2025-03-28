@@ -1,9 +1,14 @@
 #include "PluginMenuBarUI.h"
 
+#include "Common/Utility/Utility.h"
+
 #include "Core/GameObject/GameObject.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Render/Material/Material.h"
 #include "Core/Mesh/MeshRenderer.h"
+
+#include "Editor/Plugin/PluginPathSelectDlg/PluginPathSelectDlg.h"
+#include "Editor/Plugin/PluginMessageBoxDlg/PluginMessageBoxDlg.h"
 
 void Mrk::PluginMenuBarUI::Draw()
 {
@@ -72,7 +77,25 @@ void Mrk::PluginMenuBarUI::Draw()
 		{
 			if (ImGui::MenuItem("Load(.mpre)"))
 			{
-
+				Mrk::Editor::PluginPathSelectDlg::GetInstance()->SelectFile([](const std::filesystem::path& path) {
+					if (auto obj = GameObjectFactory::CreateNew(Mrk::Utility::ReadJson(path)))
+					{
+						if (auto parent = PluginObjectSelecter::GetInstance()->GetSelection())
+						{
+							parent->AddChild(obj);
+						}
+						else if (auto scene = SceneHut::GetCurrScene())
+						{
+							scene->GetRoot()->AddChild(obj);
+						}
+						else
+						{
+							SceneHut::CreateNew("Scene", 1000);
+							SceneHut::GetCurrScene()->GetRoot()->AddChild(obj);
+						}
+					}
+					});
+				
 			}
 
 			if (ImGui::BeginMenu("GameObject"))
@@ -101,12 +124,14 @@ void Mrk::PluginMenuBarUI::Draw()
 
 		if (ImGui::BeginMenu("Test"))
 		{
-			if (ImGui::MenuItem("ReLoad Font"))
+			if (ImGui::MenuItem("Hello"))
 			{
+				PluginMessageBoxDlg::GetInstance()->Pop("Hello");
 			}
 
-			if (ImGui::MenuItem("ReLoad Font With FreeType"))
+			if (ImGui::MenuItem("World"))
 			{
+				PluginMessageBoxDlg::GetInstance()->Pop("World");
 			}
 
 			ImGui::EndMenu();

@@ -93,6 +93,11 @@ namespace Mrk
 	{
 		MRK_ASSET_IMPORTER(FbxImporter, fbx)
 	};
+
+	class PmxImporter : public AssimpAssetImporter
+	{
+		MRK_ASSET_IMPORTER(PmxImporter, pmx)
+	};
 }
 
 namespace Mrk

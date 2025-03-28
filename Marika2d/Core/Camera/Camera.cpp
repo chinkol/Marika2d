@@ -184,7 +184,7 @@ void Mrk::CameraOutput::Shot(const RenderSpGroups& spGroups)
 
 void Mrk::CameraOutput::ReSize(const Vector2i& newSize)
 {
-	resolution = { std::max(0, newSize.x), std::max(0, newSize.y) };
+	resolution = { std::max(1, newSize.x), std::max(1, newSize.y) };
 
 	frustum.SetAspect((float)resolution.x / (float)resolution.y);
 

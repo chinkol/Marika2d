@@ -162,7 +162,7 @@ std::shared_ptr<Mrk::Mesh> Mrk::MeshHut::LoadMesh(std::string_view path)
 				indexOffset += subIndexCount;
 			}
 
-			if (!mesh->subMeshes.empty()) 
+			if (!mesh->subMeshes.empty())
 			{
 				mesh->subMeshes.pop_back();
 			}

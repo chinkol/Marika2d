@@ -31,37 +31,43 @@ void Mrk::MeshRenderer::SetMatSlots(const std::vector<MaterialSlot>& matSlots)
     this->matSlots = matSlots;
 }
 
+void Mrk::MeshRenderer::LoadMesh()
+{
+    if (mesh = MeshHut::GetMesh(meshPath))
+    {
+        auto& subMeshNames = mesh->GetSubMeshNames();
+
+        auto subMeshCount = subMeshNames.size();
+        for (size_t i = 0; i < subMeshCount; i++)
+        {
+            if (matSlots.size() > i)
+            {
+                matSlots[i].name = subMeshNames[i];
+            }
+            else
+            {
+                matSlots.emplace_back().name = subMeshNames[i];
+            }
+        }
+
+        isMeshDirty = false;
+    }
+    else
+    {
+        // mesh error
+    }
+}
+
 void Mrk::MeshRenderer::Start()
 {
+
 }
 
 void Mrk::MeshRenderer::PreDraw()
 {
     if (isMeshDirty)
     {
-        if (mesh = MeshHut::GetMesh(meshPath))
-        {
-            auto& subMeshNames = mesh->GetSubMeshNames();
-
-            auto subMeshCount = subMeshNames.size();
-            for (size_t i = 0; i < subMeshCount; i++)
-            {
-                if (matSlots.size() > i)
-                {
-                    matSlots[i].name = subMeshNames[i];
-                }
-                else
-                {
-                    matSlots.emplace_back().name = subMeshNames[i];
-                }
-            }
-
-            isMeshDirty = false;
-        }
-        else
-        {
-            // mesh error
-        }
+        LoadMesh();
     }
 
     if (mesh && !holder.expired())

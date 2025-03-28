@@ -271,9 +271,26 @@ std::map<std::string, std::function<void(Mrk::Editor::AssetUINode&)>> Mrk::Edito
              if (auto sp = Mrk::ShaderProgramHut::GetShaderProgram(node.path))
              {
                  PluginPathSelectDlg::GetInstance()->SelectNewFile([sp, node](const std::filesystem::path& path) {
+                     auto pathCopy = path;
+                     pathCopy.replace_extension(".mmat");
                      auto mat = sp->CreateMaterial();
                      Json::Document jdoc;
-                     Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), path.string());
+                     Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), pathCopy.string());
+                     });
+             }
+         }},
+        {"Create (.mmat) Files", [](Mrk::Editor::AssetUINode& node) {
+             if (auto sp = Mrk::ShaderProgramHut::GetShaderProgram(node.path))
+             {
+                 PluginPathSelectDlg::GetInstance()->SelectFiles([sp, node](const std::vector<std::filesystem::path>& paths) {
+                     auto pathCopys = paths;
+                     for (auto& path : pathCopys)
+                     {
+                         path.replace_extension(".mmat");
+                         auto mat = sp->CreateMaterial();
+                         Json::Document jdoc;
+                         Mrk::Utility::SaveJson(mat->ToJson(jdoc.GetAllocator()), path.string());
+                     }
                      });
              }
          }}

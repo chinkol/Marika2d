@@ -41,6 +41,7 @@ namespace Mrk
 		void SetMeshPath(const std::string& meshPath);
 		const std::vector<MaterialSlot>& GetMatSlots();
 		void SetMatSlots(const std::vector<MaterialSlot>& matSlots);
+		void LoadMesh();
 	private:
 		std::string meshPath;
 	private:

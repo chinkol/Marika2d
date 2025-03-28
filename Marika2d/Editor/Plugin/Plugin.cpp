@@ -143,7 +143,7 @@ void Mrk::PluginSceneTreeUI::CreateTreeNode(std::shared_ptr<GameObject> node)
 	{
 		ImGui::PushID(std::to_string(node->GetID().total64).c_str());
 
-		bool isOpen = ImGui::TreeNodeEx(node->GetName().c_str(), node->GetChildren().empty() ? ImGuiTreeNodeFlags_Leaf : 0);
+		bool isOpen = ImGui::TreeNodeEx(Mrk::Utility::GBKToUTF8(node->GetName()).c_str(), node->GetChildren().empty() ? ImGuiTreeNodeFlags_Leaf : 0);
 
 		DragDropNode(node);
 		MouseLeftClick(node);
