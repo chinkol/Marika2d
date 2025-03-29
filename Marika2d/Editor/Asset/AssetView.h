@@ -84,6 +84,8 @@ namespace Mrk::Editor
     public:
         void Init();
         void Draw();
+        const std::string& GetSelected();
+
     private:
         void DrawNode(AssetUINode& node);
         void MouseRightClick(AssetUINode& node);
@@ -94,6 +96,7 @@ namespace Mrk::Editor
     private:
         AssetUINode root;
         std::set<std::string> dirtyDirs;
+        std::string selected;
     };
 
     class PluginAssetViewUI : public IPlugin

@@ -8,6 +8,7 @@
 #include "Core/GameObject/GameObject.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Input/InputSys.h"
+#include "Core/Render/Texture/Texture.h"
 
 #include "Third/imnodes/imnodes.h"
 #include "Third/imgui/imgui_internal.h"
@@ -747,6 +748,13 @@ void Mrk::PluginMaterialEditUI::Draw()
 								}
 								ImGui::EndDragDropTarget();
 							}
+
+							if (auto tex = TextureHut::GetTexture(propValue.get_value<std::string>()))
+							{
+								float texScale = 100.0f / (float)tex->GetHeight();
+								ImGui::Image((ImTextureID)tex->GetID(), { tex->GetWidth() * texScale, tex->GetHeight() * texScale });
+							}
+
 						}
 					}
 

@@ -4,12 +4,17 @@
 
 #include "Third/imnodes/imnodes.h"
 
+void Mrk::PluginTexureMergeUI::SetMesh(std::shared_ptr<Mesh> mesh)
+{
+    this->mesh = mesh;
+}
+
 void Mrk::PluginTexureMergeUI::Draw()
 {
     ImNodesStyle& style = ImNodes::GetStyle();
     style.NodePadding = ImVec2(0, 0);  // 去除节点内边距
 
-	ImGui::Begin("Texture Merge");
+    ImGui::Begin("Texture Merge");
     {
         ImNodes::BeginNodeEditor();
         {
@@ -20,7 +25,7 @@ void Mrk::PluginTexureMergeUI::Draw()
             {
                 ImNodes::BeginNode(index);
                 {
-                    ImVec2 tex_size = ImVec2(tex->GetWidth() / 10, tex->GetHeight() / 10);
+                    ImVec2 tex_size = ImVec2((float)tex->GetWidth() / 16, (float)tex->GetHeight() / 16);
 
                     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
                     ImGui::Image((ImTextureID)tex->GetID(), tex_size);

@@ -6,6 +6,7 @@
 #include "Common/Utility/Utility.h"
 
 #include "Core/Render/Material/Material.h"
+#include "Core/Render/Texture/Texture.h"
 
 Mrk::Editor::AssetUINode::AssetUINode(const std::filesystem::path& p) :
     name(p.filename().string()),
@@ -62,6 +63,11 @@ void Mrk::Editor::PluginAssetTreeUI::Draw()
     DrawNode(root);
 
     ImGui::End();
+}
+
+const std::string& Mrk::Editor::PluginAssetTreeUI::GetSelected()
+{
+    return selected;
 }
 
 void Mrk::Editor::PluginAssetTreeUI::DrawNode(AssetUINode& node)
@@ -139,6 +145,8 @@ void Mrk::Editor::PluginAssetTreeUI::MouseLeftClick(AssetUINode& node)
 {
     if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {
+        selected = node.path;
+
         std::filesystem::path path = node.path;
 
         if (auto behavior = AssetUINodeBehaviorHut::GetLeftClickBehavior(path.extension().string()))
@@ -307,6 +315,69 @@ std::function<void(Mrk::Editor::AssetUINode&)> Mrk::Editor::AssetUINodeBehavior_
 void Mrk::Editor::PluginAssetViewUI::Draw()
 {
     ImGui::Begin("AssetView", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+
+    std::filesystem::path selected = PluginAssetTreeUI::GetInstance()->GetSelected();
+
+    if (!std::filesystem::exists(selected))
+    {
+        ImGui::End();
+        return;
+    }
+
+    if (std::filesystem::is_directory(selected))
+    {
+        auto uiWidth = ImGui::GetWindowSize().x;
+        auto columns = (int)std::floor(uiWidth / 115.0f);
+
+        int count = 0;
+
+        for (auto& entry : std::filesystem::directory_iterator(selected))
+        {
+            if (columns != 0 && count % columns != 0)
+            {
+                ImGui::SameLine();
+            }
+
+            auto& subPath = entry.path();
+
+            if (!std::filesystem::exists(subPath))
+            {
+                continue;
+            }
+
+            if (!std::filesystem::is_directory(subPath))
+            {
+                if (auto tex = TextureHut::GetTexture(subPath.string()))
+                {
+                    auto xScale = 100.0f / tex->GetWidth();
+                    auto yScale = 100.0f / tex->GetHeight();
+                    auto scale = std::min(xScale, yScale);
+
+                    ImGui::BeginGroup();
+                    (void)ImGui::ImageButton(subPath.string().c_str(), tex->GetID(), { tex->GetWidth() * scale, tex->GetHeight() * scale });
+
+                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+                    {
+                        auto text = subPath.string();
+                        ImGui::SetDragDropPayload("FILEPATH", text.c_str(), strlen(text.c_str()) + 1); // ·¢ËÍÂ·¾¶
+                        ImGui::Text(Mrk::Utility::GBKToUTF8(subPath.filename().string()).c_str());
+                        ImGui::EndDragDropSource();
+                    }
+
+                    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + 100);
+                    ImGui::Text(Mrk::Utility::GBKToUTF8(subPath.filename().string()).c_str());
+                    ImGui::PopTextWrapPos();
+                    ImGui::EndGroup();
+
+                    count++;
+                }
+            }
+        }
+    }
+    else
+    {
+
+    }
 
     ImGui::End();
 }
